@@ -155,7 +155,13 @@ void Terrain::terrainUpdate(glm::vec4 playerPos){
 
     for (auto offset : offsets){
         if (!hasChunkAt(x + offset.first, z + offset.second)){
-            instantiateChunkAt(x + offset.first, z + offset.second);
+            for(int i = x + offset.first; i < x + offset.first + 64; i += 16) {
+                for(int j = z + offset.second; j < z + offset.second + 64; j += 16) {
+                    instantiateChunkAt(i, j);
+                }
+            }
+            m_generatedTerrain.insert(toKey(x + offset.first, z + offset.second));
+
         }
     }
 
