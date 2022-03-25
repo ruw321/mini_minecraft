@@ -80,6 +80,8 @@ public:
     // given type.
     void setBlockAt(int x, int y, int z, BlockType t);
 
+    void terrainUpdate(glm::vec4 playerPos);
+
     // Draws every Chunk that falls within the bounding box
     // described by the min and max coords, using the provided
     // ShaderProgram

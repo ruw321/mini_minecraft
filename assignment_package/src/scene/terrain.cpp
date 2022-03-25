@@ -139,6 +139,28 @@ Chunk* Terrain::instantiateChunkAt(int x, int z) {
     return cPtr;
 }
 
+void Terrain::terrainUpdate(glm::vec4 playerPos){
+    int x = static_cast<int>(glm::floor(playerPos.x / 16.f) * 16);
+    int z = static_cast<int>(glm::floor(playerPos.z / 16.f) * 16);
+
+    std::vector<std::pair<int, int>> offsets;
+    offsets.push_back(std::make_pair(0, 16));
+    offsets.push_back(std::make_pair(16, 0));
+    offsets.push_back(std::make_pair(0, -16));
+    offsets.push_back(std::make_pair(-16, 0));
+    offsets.push_back(std::make_pair(16, -16));
+    offsets.push_back(std::make_pair(16, 16));
+    offsets.push_back(std::make_pair(-16, -16));
+    offsets.push_back(std::make_pair(-16, 16));
+
+    for (auto offset : offsets){
+        if (!hasChunkAt(x + offset.first, z + offset.second)){
+            instantiateChunkAt(x + offset.first, z + offset.second);
+        }
+    }
+
+}
+
 // TODO: When you make Chunk inherit from Drawable, change this code so
 // it draws each Chunk with the given ShaderProgram, remembering to set the
 // model matrix to the proper X and Z translation!

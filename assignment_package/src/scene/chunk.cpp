@@ -10,377 +10,52 @@ void Chunk::createVBOdata(){
     std::vector<glm::vec4> posAndColor;
     std::vector<GLuint> idx;
 
+    std::unordered_map<BlockType, glm::vec4> blockColorMp = {
+        {GRASS, glm::vec4(95.f, 159.f, 53.f, 0)/ 255.f},
+        {DIRT, glm::vec4(121.f, 85.f, 58.f, 0)/ 255.f},
+        {STONE, glm::vec4(0.5, 0.5, 0.5, 0)},
+        {WATER, glm::vec4(0.f, 0.f, 0.75, 0)},
+        {SNOW, glm::vec4(0.f, 0.f, 0.f, 0)},
+        {SAND, glm::vec4(1.f, 0.95, 0.9, 0)}
+    };
+
     //front 1, back 2, left 3, right 4, up 5, down 6
-    std::vector<std::pair<int, int>> blockFaceNeedRender;
+//    std::vector<std::pair<int, int>> blockFaceNeedRender;
     int currentIdx = 0;
+    for (int z = 0; z < 16; z++){
+        for (int y = 0; y < 256; y++){
+            for (int x = 0; x < 16; x++){
+                BlockType current = getBlockAt(x, y, z);
+                glm::vec4 currentPos = glm::vec4(x, y, z, 0);
+                if (current != EMPTY){
+                    for (BlockFace neighborFace : adjacentFaces){
+                        glm::vec3 neighborPos = neighborFace.directionVec
+                                + glm::vec3(x, y, z);
+                        BlockType neighborType = getBlockAt(int(neighborPos.x),
+                                                            int(neighborPos.y),
+                                                            int(neighborPos.z));
+                        if (neighborType == EMPTY){
+                            for (int i = 0; i < 4; i++){
+                                posAndColor.push_back(neighborFace.vertices[i].m_pos
+                                                      + currentPos);
+                                posAndColor.push_back(blockColorMp[current]);
+                            }
+                            idx.push_back(currentIdx);
+                            idx.push_back(currentIdx + 1);
+                            idx.push_back(currentIdx + 2);
+                            idx.push_back(currentIdx);
+                            idx.push_back(currentIdx + 2);
+                            idx.push_back(currentIdx + 3);
+                            currentIdx += 4;
+                        }
 
-    for (int i = 0; i <65536; i++){
-        int zpos = floor(i / (16 * 256.f));
-        int ypos = floor((i - zpos * 16 * 256) / 16.f);
-        int xpos = i - zpos * 16 * 256 - ypos * 16;
-        glm::vec4 currentPos = glm::vec4(xpos, ypos, zpos, 1);
-        BlockType currentType = this->m_blocks[xpos + ypos * 16 + zpos * 16 * 256];
-        if (currentType == EMPTY){
-            continue;
-        }
-
-
-        //front
-        int newZpos = zpos + 1;
-        if (newZpos < 16 && this->m_blocks[xpos + ypos * 16 +
-                newZpos * 16 * 256] == EMPTY){
-            blockFaceNeedRender.push_back({i, 1});
-
-            glm::vec4 offset[4] = {glm::vec4(0, 0, 1, 0),
-                                  glm::vec4(0, 1, 1, 0),
-                                  glm::vec4(1, 1, 1, 0),
-                                  glm::vec4(1, 0, 1, 0)};
-
-            for (int j = 0; j < 4; j++){
-                posAndColor.push_back(offset[j] + currentPos);
-                switch(currentType) {
-                    case GRASS:
-                        posAndColor.push_back(glm::vec4
-                                              (95.f, 159.f, 53.f, 0)
-                                              / 255.f);
-                        break;
-                    case DIRT:
-                        posAndColor.push_back(glm::vec4
-                                          (121.f, 85.f, 58.f, 0)
-                                          / 255.f);
-                        break;
-                    case STONE:
-                        posAndColor.push_back(glm::vec4(0.5, 0.5, 0.5, 0)
-                                              );
-                        break;
-                    case WATER:
-                        posAndColor.push_back(glm::vec4
-                                          (0.f, 0.f, 0.75, 0)
-                                          );
-                        break;
-                    case SNOW:
-                        posAndColor.push_back(glm::vec4
-                                      (0.f, 0.f, 0.f, 0)
-                                      );
-                        break;
-                    case SAND:
-                        posAndColor.push_back(glm::vec4
-                                  (1.f, 0.95, 0.9, 0)
-                                  );
-                        break;
-                    default:
-                        posAndColor.push_back(glm::vec4
-                              (1.f, 0.f, 1.f, 0)
-                              );
-                        break;
+                    }
                 }
             }
-            idx.push_back(currentIdx);
-            idx.push_back(currentIdx + 1);
-            idx.push_back(currentIdx + 2);
-            idx.push_back(currentIdx);
-            idx.push_back(currentIdx + 2);
-            idx.push_back(currentIdx + 3);
-            currentIdx += 4;
-
-        }
-
-        //back
-        newZpos = zpos - 1;
-        if (newZpos > 0 && this->m_blocks[xpos + ypos * 16 +
-                newZpos * 16 * 256] == EMPTY){
-            blockFaceNeedRender.push_back({i, 2});
-
-            glm::vec4 offset[4] = {glm::vec4(0, 0, 0, 0),
-                                  glm::vec4(0, 1, 0, 0),
-                                  glm::vec4(1, 1, 0, 0),
-                                  glm::vec4(1, 0, 0, 0)};
-
-            for (int j = 0; j < 4; j++){
-                posAndColor.push_back(offset[j] + currentPos);
-                switch(currentType) {
-                    case GRASS:
-                        posAndColor.push_back(glm::vec4
-                                              (95.f, 159.f, 53.f, 0)
-                                              / 255.f);
-                        break;
-                    case DIRT:
-                        posAndColor.push_back(glm::vec4
-                                          (121.f, 85.f, 58.f, 0)
-                                          / 255.f);
-                        break;
-                    case STONE:
-                        posAndColor.push_back(glm::vec4(0.5, 0.5, 0.5, 0)
-                                              );
-                        break;
-                    case WATER:
-                        posAndColor.push_back(glm::vec4
-                                          (0.f, 0.f, 0.75, 0)
-                                          );
-                        break;
-                    case SNOW:
-                        posAndColor.push_back(glm::vec4
-                                      (0.f, 0.f, 0.f, 0)
-                                      );
-                        break;
-                    case SAND:
-                        posAndColor.push_back(glm::vec4
-                                  (1.f, 0.95, 0.9, 0)
-                                  );
-                        break;
-                    default:
-                        posAndColor.push_back(glm::vec4
-                              (1.f, 0.f, 1.f, 0)
-                              );
-                        break;
-                }
-
-            }
-            idx.push_back(currentIdx);
-            idx.push_back(currentIdx + 1);
-            idx.push_back(currentIdx + 2);
-            idx.push_back(currentIdx);
-            idx.push_back(currentIdx + 2);
-            idx.push_back(currentIdx + 3);
-            currentIdx += 4;
-        }
-
-        //left
-        int newXpos = xpos + 1;
-        if (newXpos < 16 && this->m_blocks[newXpos + ypos * 16 +
-                zpos * 16 * 256] == EMPTY){
-            blockFaceNeedRender.push_back({i, 3});
-
-            glm::vec4 offset[4] = {glm::vec4(0, 0, 0, 0),
-                                  glm::vec4(0, 1, 0, 0),
-                                  glm::vec4(1, 1, 0, 0),
-                                  glm::vec4(1, 0, 0, 0)};
-
-            for (int j = 0; j < 4; j++){
-                posAndColor.push_back(offset[j] + currentPos);
-                switch(currentType) {
-                    case GRASS:
-                        posAndColor.push_back(glm::vec4
-                                              (95.f, 159.f, 53.f, 0)
-                                              / 255.f);
-                        break;
-                    case DIRT:
-                        posAndColor.push_back(glm::vec4
-                                          (121.f, 85.f, 58.f, 0)
-                                          / 255.f);
-                        break;
-                    case STONE:
-                        posAndColor.push_back(glm::vec4(0.5, 0.5, 0.5, 0)
-                                              );
-                        break;
-                    case WATER:
-                        posAndColor.push_back(glm::vec4
-                                          (0.f, 0.f, 0.75, 0)
-                                          );
-                        break;
-                    case SNOW:
-                        posAndColor.push_back(glm::vec4
-                                      (0.f, 0.f, 0.f, 0)
-                                      );
-                        break;
-                    case SAND:
-                        posAndColor.push_back(glm::vec4
-                                  (1.f, 0.95, 0.9, 0)
-                                  );
-                        break;
-                    default:
-                        posAndColor.push_back(glm::vec4
-                              (1.f, 0.f, 1.f, 0)
-                              );
-                        break;
-                }
-
-            }
-            idx.push_back(currentIdx);
-            idx.push_back(currentIdx + 1);
-            idx.push_back(currentIdx + 2);
-            idx.push_back(currentIdx);
-            idx.push_back(currentIdx + 2);
-            idx.push_back(currentIdx + 3);
-            currentIdx += 4;
-        }
-
-        //right
-        newXpos = xpos - 1;
-        if (newXpos > 0 && this->m_blocks[newXpos + ypos * 16 +
-                zpos * 16 * 256] == EMPTY){
-            blockFaceNeedRender.push_back({i, 4});
-            glm::vec4 offset[4] = {glm::vec4(1, 0, 0, 0),
-                                  glm::vec4(1, 1, 0, 0),
-                                  glm::vec4(1, 1, 1, 0),
-                                  glm::vec4(1, 0, 1, 0)};
-
-            for (int j = 0; j < 4; j++){
-                posAndColor.push_back(offset[j] + currentPos);
-                switch(currentType) {
-                    case GRASS:
-                        posAndColor.push_back(glm::vec4
-                                              (95.f, 159.f, 53.f, 0)
-                                              / 255.f);
-                        break;
-                    case DIRT:
-                        posAndColor.push_back(glm::vec4
-                                          (121.f, 85.f, 58.f, 0)
-                                          / 255.f);
-                        break;
-                    case STONE:
-                        posAndColor.push_back(glm::vec4(0.5, 0.5, 0.5, 0)
-                                              );
-                        break;
-                    case WATER:
-                        posAndColor.push_back(glm::vec4
-                                          (0.f, 0.f, 0.75, 0)
-                                          );
-                        break;
-                    case SNOW:
-                        posAndColor.push_back(glm::vec4
-                                      (0.f, 0.f, 0.f, 0)
-                                      );
-                        break;
-                    case SAND:
-                        posAndColor.push_back(glm::vec4
-                                  (1.f, 0.95, 0.9, 0)
-                                  );
-                        break;
-                    default:
-                        posAndColor.push_back(glm::vec4
-                              (1.f, 0.f, 1.f, 0)
-                              );
-                        break;
-                }
-
-            }
-            idx.push_back(currentIdx);
-            idx.push_back(currentIdx + 1);
-            idx.push_back(currentIdx + 2);
-            idx.push_back(currentIdx);
-            idx.push_back(currentIdx + 2);
-            idx.push_back(currentIdx + 3);
-            currentIdx += 4;
-        }
-
-        //up
-        int newYpos = ypos + 1;
-        if (newYpos < 256 && this->m_blocks[xpos + newYpos * 16 +
-                zpos * 16 * 256] == EMPTY){
-            blockFaceNeedRender.push_back({i, 5});
-            glm::vec4 offset[4] = {glm::vec4(0, 0, 1, 0),
-                                  glm::vec4(1, 0, 1, 0),
-                                  glm::vec4(1, 1, 1, 0),
-                                  glm::vec4(0, 1, 1, 0)};
-
-            for (int j = 0; j < 4; j++){
-                posAndColor.push_back(offset[j] + currentPos);
-                switch(currentType) {
-                    case GRASS:
-                        posAndColor.push_back(glm::vec4
-                                              (95.f, 159.f, 53.f, 0)
-                                              / 255.f);
-                        break;
-                    case DIRT:
-                        posAndColor.push_back(glm::vec4
-                                          (121.f, 85.f, 58.f, 0)
-                                          / 255.f);
-                        break;
-                    case STONE:
-                        posAndColor.push_back(glm::vec4(0.5, 0.5, 0.5, 0)
-                                              );
-                        break;
-                    case WATER:
-                        posAndColor.push_back(glm::vec4
-                                          (0.f, 0.f, 0.75, 0)
-                                          );
-                        break;
-                    case SNOW:
-                        posAndColor.push_back(glm::vec4
-                                      (0.f, 0.f, 0.f, 0)
-                                      );
-                        break;
-                    case SAND:
-                        posAndColor.push_back(glm::vec4
-                                  (1.f, 0.95, 0.9, 0)
-                                  );
-                        break;
-                    default:
-                        posAndColor.push_back(glm::vec4
-                              (1.f, 0.f, 1.f, 0)
-                              );
-                        break;
-                }
-            }
-            idx.push_back(currentIdx);
-            idx.push_back(currentIdx + 1);
-            idx.push_back(currentIdx + 2);
-            idx.push_back(currentIdx);
-            idx.push_back(currentIdx + 2);
-            idx.push_back(currentIdx + 3);
-            currentIdx += 4;
-        }
-
-        //down
-        newYpos = ypos - 1;
-        if (newYpos > 0 && this->m_blocks[xpos + newYpos * 16 +
-                zpos * 16 * 256] == EMPTY){
-            blockFaceNeedRender.push_back({i, 6});
-
-            glm::vec4 offset[4] = {glm::vec4(0, 0, 0, 0),
-                                  glm::vec4(1, 0, 0, 0),
-                                  glm::vec4(1, 1, 0, 0),
-                                  glm::vec4(0, 1, 0, 0)};
-
-            for (int j = 0; j < 4; j++){
-                posAndColor.push_back(offset[j] + currentPos);
-                switch(currentType) {
-                    case GRASS:
-                        posAndColor.push_back(glm::vec4
-                                              (95.f, 159.f, 53.f, 0)
-                                              / 255.f);
-                        break;
-                    case DIRT:
-                        posAndColor.push_back(glm::vec4
-                                          (121.f, 85.f, 58.f, 0)
-                                          / 255.f);
-                        break;
-                    case STONE:
-                        posAndColor.push_back(glm::vec4(0.5, 0.5, 0.5, 0)
-                                              );
-                        break;
-                    case WATER:
-                        posAndColor.push_back(glm::vec4
-                                          (0.f, 0.f, 0.75, 0)
-                                          );
-                        break;
-                    case SNOW:
-                        posAndColor.push_back(glm::vec4
-                                      (0.f, 0.f, 0.f, 0)
-                                      );
-                        break;
-                    case SAND:
-                        posAndColor.push_back(glm::vec4
-                                  (1.f, 0.95, 0.9, 0)
-                                  );
-                        break;
-                    default:
-                        posAndColor.push_back(glm::vec4
-                              (1.f, 0.f, 1.f, 0)
-                              );
-                        break;
-                }
-            }
-            idx.push_back(currentIdx);
-            idx.push_back(currentIdx + 1);
-            idx.push_back(currentIdx + 2);
-            idx.push_back(currentIdx);
-            idx.push_back(currentIdx + 2);
-            idx.push_back(currentIdx + 3);
-            currentIdx += 4;
         }
     }
+
+
     m_count = idx.size();
 
     generateIdx();

@@ -33,6 +33,74 @@ struct EnumHash {
     }
 };
 
+struct VertexData{
+    glm::vec4 m_pos;
+    glm::vec2 m_uv;
+
+    VertexData(glm::vec4 pos, glm::vec2 uv)
+        : m_pos(pos), m_uv(uv)
+    {}
+};
+
+struct BlockFace{
+    Direction direction;
+    glm::vec3 directionVec;
+    std::array<VertexData, 4> vertices;
+    BlockFace(Direction dir, glm::vec3 dirV, const VertexData &a,
+              const VertexData &b, const VertexData &c,
+              const VertexData &d)
+        : direction(dir), directionVec(dirV), vertices{a, b, c, d}
+    {}
+};
+
+#define BLK_UVX * 0.03125
+#define BLK_UVY * 0.03125
+#define BLK_UV 0.03125
+
+const static std::array<BlockFace, 6> adjacentFaces{
+    //+X
+    BlockFace(XPOS, glm::vec3(1, 0, 0),
+              VertexData(glm::vec4(1, 0, 1, 1), glm::vec2(0, 0)),
+              VertexData(glm::vec4(1, 0, 0, 1), glm::vec2(BLK_UV, 0)),
+              VertexData(glm::vec4(1, 1, 0, 1), glm::vec2(BLK_UV, BLK_UV)),
+              VertexData(glm::vec4(1, 1, 1, 1), glm::vec2(0, BLK_UV))),
+
+    //-X
+    BlockFace(XNEG, glm::vec3(-1, 0, 0),
+              VertexData(glm::vec4(0, 0, 0, 1), glm::vec2(0, 0)),
+              VertexData(glm::vec4(0, 0, 1, 1), glm::vec2(BLK_UV, 0)),
+              VertexData(glm::vec4(0, 1, 1, 1), glm::vec2(BLK_UV, BLK_UV)),
+              VertexData(glm::vec4(0, 1, 0, 1), glm::vec2(0, BLK_UV))),
+
+            //+Y
+            BlockFace(YPOS, glm::vec3(0, 1, 0),
+                      VertexData(glm::vec4(0, 1, 1, 1), glm::vec2(0, 0)),
+                      VertexData(glm::vec4(1, 1, 1, 1), glm::vec2(BLK_UV, 0)),
+                      VertexData(glm::vec4(1, 1, 0, 1), glm::vec2(BLK_UV, BLK_UV)),
+                      VertexData(glm::vec4(0, 1, 0, 1), glm::vec2(0, BLK_UV))),
+            //-Y
+            BlockFace(YNEG, glm::vec3(0, -1, 0),
+                      VertexData(glm::vec4(0, 0, 0, 1), glm::vec2(0, 0)),
+                      VertexData(glm::vec4(1, 0, 0, 1), glm::vec2(BLK_UV, 0)),
+                      VertexData(glm::vec4(1, 0, 1, 1), glm::vec2(BLK_UV, BLK_UV)),
+                      VertexData(glm::vec4(0, 0, 1, 1), glm::vec2(0, BLK_UV))),
+            //+Z
+            BlockFace(ZPOS, glm::vec3(0, 0, 1),
+                      VertexData(glm::vec4(0, 0, 1, 1), glm::vec2(0, 0)),
+                      VertexData(glm::vec4(1, 0, 1, 1), glm::vec2(BLK_UV, 0)),
+                      VertexData(glm::vec4(1, 1, 1, 1), glm::vec2(BLK_UV, BLK_UV)),
+                      VertexData(glm::vec4(0, 1, 1, 1), glm::vec2(0, BLK_UV))),
+
+            //-Z
+            BlockFace(ZNEG, glm::vec3(0, 0, -1),
+                      VertexData(glm::vec4(1, 0, 0, 1), glm::vec2(0, 0)),
+                      VertexData(glm::vec4(0, 0, 1, 1), glm::vec2(BLK_UV, 0)),
+                      VertexData(glm::vec4(0, 1, 0, 1), glm::vec2(BLK_UV, BLK_UV)),
+                      VertexData(glm::vec4(1, 1, 0, 1), glm::vec2(0, BLK_UV)))
+
+
+};
+
 // One Chunk is a 16 x 256 x 16 section of the world,
 // containing all the Minecraft blocks in that area.
 // We divide the world into Chunks in order to make
