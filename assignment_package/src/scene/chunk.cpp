@@ -6,6 +6,8 @@ Chunk::Chunk(OpenGLContext* context) : Drawable(context), m_blocks(), m_neighbor
     std::fill_n(m_blocks.begin(), 65536, EMPTY);
 }
 
+Chunk::~Chunk(){}
+
 void Chunk::createVBOdata(){
     std::vector<glm::vec4> posAndColor;
     std::vector<GLuint> idx;
