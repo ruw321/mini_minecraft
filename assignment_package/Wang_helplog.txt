@@ -1,0 +1,7 @@
+2022-03-23 10:27PM : Looked up qt creator keypressevent and read the documentation
+- https://doc.qt.io/qt-5/qkeyevent.html
+
+2022-03-23 10:40PM : incomplete QDateTime
+- https://stackoverflow.com/questions/45848488/qdate-has-incomplete-type-declaring-as-private-member
+
+2022-03-25 3:56PM : Asked the TA for help regarding the check on ground and collision detection functions
