@@ -8,6 +8,7 @@
 #include "shaderprogram.h"
 #include "cube.h"
 
+#include "biomes.h"
 
 //using namespace std;
 
@@ -79,6 +80,7 @@ public:
     // values) set the block at that point in space to the
     // given type.
     void setBlockAt(int x, int y, int z, BlockType t);
+    void setBlockAt(glm::vec3 p, BlockType t);
 
     // Draws every Chunk that falls within the bounding box
     // described by the min and max coords, using the provided
@@ -88,4 +90,15 @@ public:
     // Initializes the Chunks that store the 64 x 256 x 64 block scene you
     // see when the base code is run.
     void CreateTestScene();
+
+
+    /*
+    Milestone 1
+    */
+
+    void updateScene(glm::vec3 p);
+    void fillColumn(int x, int z);
+
+    BlockType BlockType(int height, int maxHeight, BiomeType biome);
+
 };
