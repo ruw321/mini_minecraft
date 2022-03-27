@@ -8,6 +8,9 @@
 #include "shaderprogram.h"
 #include "cube.h"
 
+#include <thread>
+#include <mutex>
+
 #include "biomes.h"
 
 //using namespace std;
@@ -100,5 +103,18 @@ public:
     void fillColumn(int x, int z);
 
     BlockType BlockType(int height, int maxHeight, BiomeType biome);
+
+
+
+    /*
+    Milestone 2
+    */
+    std::mutex BlockTypeMutex;
+    std::vector<std::thread> BlockTypeWorkers;
+    std::mutex VBOMutex;
+    std::vector<std::thread> VBOWorkers;
+
+    void BlockTypeWorker(uPtr<Chunk> chunk);
+    void VBOWorker(uPtr<Chunk> chunk);
 
 };

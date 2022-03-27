@@ -72,31 +72,31 @@ const static std::array<BlockFace, 6> adjacentFaces{
               VertexData(glm::vec4(0, 1, 1, 1), glm::vec2(BLK_UV, BLK_UV)),
               VertexData(glm::vec4(0, 1, 0, 1), glm::vec2(0, BLK_UV))),
 
-            //+Y
-            BlockFace(YPOS, glm::vec3(0, 1, 0),
-                      VertexData(glm::vec4(0, 1, 1, 1), glm::vec2(0, 0)),
-                      VertexData(glm::vec4(1, 1, 1, 1), glm::vec2(BLK_UV, 0)),
-                      VertexData(glm::vec4(1, 1, 0, 1), glm::vec2(BLK_UV, BLK_UV)),
-                      VertexData(glm::vec4(0, 1, 0, 1), glm::vec2(0, BLK_UV))),
-            //-Y
-            BlockFace(YNEG, glm::vec3(0, -1, 0),
-                      VertexData(glm::vec4(0, 0, 0, 1), glm::vec2(0, 0)),
-                      VertexData(glm::vec4(1, 0, 0, 1), glm::vec2(BLK_UV, 0)),
-                      VertexData(glm::vec4(1, 0, 1, 1), glm::vec2(BLK_UV, BLK_UV)),
-                      VertexData(glm::vec4(0, 0, 1, 1), glm::vec2(0, BLK_UV))),
-            //+Z
-            BlockFace(ZPOS, glm::vec3(0, 0, 1),
-                      VertexData(glm::vec4(0, 0, 1, 1), glm::vec2(0, 0)),
-                      VertexData(glm::vec4(1, 0, 1, 1), glm::vec2(BLK_UV, 0)),
-                      VertexData(glm::vec4(1, 1, 1, 1), glm::vec2(BLK_UV, BLK_UV)),
-                      VertexData(glm::vec4(0, 1, 1, 1), glm::vec2(0, BLK_UV))),
+    //+Y
+    BlockFace(YPOS, glm::vec3(0, 1, 0),
+              VertexData(glm::vec4(0, 1, 1, 1), glm::vec2(0, 0)),
+              VertexData(glm::vec4(1, 1, 1, 1), glm::vec2(BLK_UV, 0)),
+              VertexData(glm::vec4(1, 1, 0, 1), glm::vec2(BLK_UV, BLK_UV)),
+              VertexData(glm::vec4(0, 1, 0, 1), glm::vec2(0, BLK_UV))),
+    //-Y
+    BlockFace(YNEG, glm::vec3(0, -1, 0),
+              VertexData(glm::vec4(0, 0, 0, 1), glm::vec2(0, 0)),
+              VertexData(glm::vec4(1, 0, 0, 1), glm::vec2(BLK_UV, 0)),
+              VertexData(glm::vec4(1, 0, 1, 1), glm::vec2(BLK_UV, BLK_UV)),
+              VertexData(glm::vec4(0, 0, 1, 1), glm::vec2(0, BLK_UV))),
+    //+Z
+    BlockFace(ZPOS, glm::vec3(0, 0, 1),
+              VertexData(glm::vec4(0, 0, 1, 1), glm::vec2(0, 0)),
+              VertexData(glm::vec4(1, 0, 1, 1), glm::vec2(BLK_UV, 0)),
+              VertexData(glm::vec4(1, 1, 1, 1), glm::vec2(BLK_UV, BLK_UV)),
+              VertexData(glm::vec4(0, 1, 1, 1), glm::vec2(0, BLK_UV))),
 
-            //-Z
-            BlockFace(ZNEG, glm::vec3(0, 0, -1),
-                      VertexData(glm::vec4(1, 0, 0, 1), glm::vec2(0, 0)),
-                      VertexData(glm::vec4(0, 0, 1, 1), glm::vec2(BLK_UV, 0)),
-                      VertexData(glm::vec4(0, 1, 0, 1), glm::vec2(BLK_UV, BLK_UV)),
-                      VertexData(glm::vec4(1, 1, 0, 1), glm::vec2(0, BLK_UV)))
+    //-Z
+    BlockFace(ZNEG, glm::vec3(0, 0, -1),
+              VertexData(glm::vec4(1, 0, 0, 1), glm::vec2(0, 0)),
+              VertexData(glm::vec4(0, 0, 1, 1), glm::vec2(BLK_UV, 0)),
+              VertexData(glm::vec4(0, 1, 0, 1), glm::vec2(BLK_UV, BLK_UV)),
+              VertexData(glm::vec4(1, 1, 0, 1), glm::vec2(0, BLK_UV)))
 
 
 };
@@ -109,6 +109,20 @@ const static std::array<BlockFace, 6> adjacentFaces{
 // to render the world block by block.
 
 // TODO have Chunk inherit from Drawable
+
+
+/*
+Milestone 2
+*/
+struct ChunkVBOData
+{
+    int64_t key;
+    std::vector<glm::vec4> vec_data;
+    std::vector<GLuint> vec_id;
+};
+
+
+
 class Chunk : public Drawable{
 private:
     // All of the blocks contained within this Chunk
@@ -120,7 +134,7 @@ private:
     std::unordered_map<Direction, Chunk*, EnumHash> m_neighbors;
 
 public:
-    Chunk(OpenGLContext* context);
+    Chunk(OpenGLContext* context, int x, int z);
     ~Chunk();
     void createVBOdata() override;
     GLenum drawMode() override;
@@ -128,4 +142,11 @@ public:
     BlockType getBlockAt(int x, int y, int z) const;
     void setBlockAt(unsigned int x, unsigned int y, unsigned int z, BlockType t);
     void linkNeighbor(uPtr<Chunk>& neighbor, Direction dir);
+
+
+    /*
+    Milestone 2
+    */
+    glm::ivec2 m_pos;
+    ChunkVBOData VBOData;
 };

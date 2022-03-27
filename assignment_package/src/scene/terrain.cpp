@@ -119,7 +119,7 @@ void Terrain::setBlockAt(glm::vec3 p, enum BlockType t) {
 }
 
 Chunk* Terrain::instantiateChunkAt(int x, int z) {
-    uPtr<Chunk> chunk = mkU<Chunk>(mp_context);
+    uPtr<Chunk> chunk = mkU<Chunk>(mp_context, x, z);
     Chunk *cPtr = chunk.get();
     m_chunks[toKey(x, z)] = move(chunk);
     // Set the neighbor pointers of itself and its neighbors
@@ -153,10 +153,24 @@ Chunk* Terrain::instantiateChunkAt(int x, int z) {
 // it draws each Chunk with the given ShaderProgram, remembering to set the
 // model matrix to the proper X and Z translation!
 void Terrain::draw(int minX, int maxX, int minZ, int maxZ, ShaderProgram *shaderProgram) {
+
+    for(int x = minX; x < maxX; x += 16) {
+        for(int z = minZ; z < maxZ; z += 16) {
+            if (hasChunkAt(x, z)) {
+                const uPtr<Chunk> &chunk = getChunkAt(x, z);
+
+                chunk->createVBOdata();
+
+                shaderProgram->setModelMatrix(glm::translate(glm::mat4(1.f), glm::vec3(x, 0.f, z)));
+                shaderProgram->drawInterleave(*chunk);
+            }
+        }
+    }
+
+
+    /*
     m_geomCube.clearOffsetBuf();
     m_geomCube.clearColorBuf();
-
-
 
     std::vector<glm::vec3> offsets, colors;
 
@@ -200,12 +214,15 @@ void Terrain::draw(int minX, int maxX, int minZ, int maxZ, ShaderProgram *shader
                         }
                     }
                 }
+
             }
         }
     }
 
     m_geomCube.createInstancedVBOdata(offsets, colors);
     shaderProgram->drawInstanced(m_geomCube);
+
+    */
 }
 
 void Terrain::CreateTestScene()
@@ -278,7 +295,35 @@ BlockType Terrain::BlockType(int height, int maxHeight, enum BiomeType biome) {
 }
 
 
+/*
+Milestone 2
+*/
+
+void Terrain::VBOWorker(uPtr<Chunk> chunk)
+{
+    chunk->createVBOdata();
+    this->VBOMutex.lock();
 
 
+    // VBOChunks[toKey(chunk->getChunkPos().x, chunk->getChunkPos().y)] = move(chunk);
+
+
+    this->VBOMutex.unlock();
+}
+
+void Terrain::BlockTypeWorker(uPtr<Chunk> chunk)
+{
+//    glm::ivec2 chunkPos = chunk->getChunkPos();
+
+    // createBlocks(chunkPos.x, chunkPos.y, chunk.get());
+
+    BlockTypeMutex.lock();
+
+
+    // BlockTypeChunks[toKey(chunk->getChunkPos().x, chunk->getChunkPos().y)] = move(chunk);
+
+
+    BlockTypeMutex.unlock();
+}
 
 

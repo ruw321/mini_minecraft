@@ -1,10 +1,11 @@
 #include "chunk.h"
+#include <iostream>
 
-
-Chunk::Chunk(OpenGLContext* context)
+Chunk::Chunk(OpenGLContext* context, int x, int z)
       : Drawable(context),
         m_blocks(),
-        m_neighbors{{XPOS, nullptr}, {XNEG, nullptr}, {ZPOS, nullptr}, {ZNEG, nullptr}}
+        m_neighbors{{XPOS, nullptr}, {XNEG, nullptr}, {ZPOS, nullptr}, {ZNEG, nullptr}},
+        m_pos(glm::ivec2(x,z))
 {
     std::fill_n(m_blocks.begin(), 65536, EMPTY);
 }
@@ -34,8 +35,8 @@ void Chunk::createVBOdata(){
                 glm::vec4 currentPos = glm::vec4(x, y, z, 0);
                 if (current != EMPTY){
                     for (BlockFace neighborFace : adjacentFaces){
-                        glm::vec3 neighborPos = neighborFace.directionVec
-                                + glm::vec3(x, y, z);
+                        glm::vec3 neighborPos = neighborFace.directionVec + glm::vec3(x, y, z);
+
                         BlockType neighborType = getBlockAt(int(neighborPos.x),
                                                             int(neighborPos.y),
                                                             int(neighborPos.z));
@@ -61,6 +62,7 @@ void Chunk::createVBOdata(){
     }
 
 
+
     m_count = idx.size();
 
     generateIdx();
@@ -74,11 +76,6 @@ void Chunk::createVBOdata(){
     mp_context->glBufferData(GL_ARRAY_BUFFER,
                              posAndColor.size() * sizeof (glm::vec4),
                              posAndColor.data(), GL_STATIC_DRAW);
-
-
-
-
-
 }
 
 GLenum Chunk::drawMode(){
@@ -92,6 +89,9 @@ BlockType Chunk::getBlockAt(unsigned int x, unsigned int y, unsigned int z) cons
 
 // Exists to get rid of compiler warnings about int -> unsigned int implicit conversion
 BlockType Chunk::getBlockAt(int x, int y, int z) const {
+    if (x < 0 || x > 15 || y < 0 || y > 255 || z < 0 || z > 15) {
+        return EMPTY;
+    }
     return getBlockAt(static_cast<unsigned int>(x), static_cast<unsigned int>(y), static_cast<unsigned int>(z));
 }
 
