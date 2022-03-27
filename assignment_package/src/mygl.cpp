@@ -10,7 +10,7 @@ MyGL::MyGL(QWidget *parent)
     : OpenGLContext(parent),
       m_worldAxes(this),
       m_progLambert(this), m_progFlat(this), m_progInstanced(this),
-      m_terrain(this), m_player(glm::vec3(48.f, 129.f, 48.f), m_terrain)
+      m_terrain(this), m_player(glm::vec3(48.f, 250.f, 48.f), m_terrain)
 {
     // Connect the timer to a function so that when the timer ticks the function is executed
     connect(&m_timer, SIGNAL(timeout()), this, SLOT(tick()));
@@ -71,7 +71,7 @@ void MyGL::initializeGL()
     // using multiple VAOs, we can just bind one once.
     glBindVertexArray(vao);
 
-    m_terrain.CreateTestScene();
+//    m_terrain.CreateTestScene();
 }
 
 void MyGL::resizeGL(int w, int h) {
@@ -94,6 +94,7 @@ void MyGL::resizeGL(int w, int h) {
 // all per-frame actions here, such as performing physics updates on all
 // entities in the scene.
 void MyGL::tick() {
+    m_terrain.updateTerrian(m_player.mcr_position);
     update(); // Calls paintGL() as part of a larger QOpenGLWidget pipeline
     sendPlayerDataToGUI(); // Updates the info in the secondary window displaying player data
 }
@@ -123,18 +124,24 @@ void MyGL::paintGL() {
 
     renderTerrain();
 
-    glDisable(GL_DEPTH_TEST);
-    m_progFlat.setModelMatrix(glm::mat4());
-    m_progFlat.setViewProjMatrix(m_player.mcr_camera.getViewProj());
-    m_progFlat.draw(m_worldAxes);
-    glEnable(GL_DEPTH_TEST);
+//    glDisable(GL_DEPTH_TEST);
+//    m_progFlat.setModelMatrix(glm::mat4());
+//    m_progFlat.setViewProjMatrix(m_player.mcr_camera.getViewProj());
+
+//    m_progFlat.draw(m_worldAxes);
+//    glEnable(GL_DEPTH_TEST);
 }
 
 // TODO: Change this so it renders the nine zones of generated
 // terrain that surround the player (refer to Terrain::m_generatedTerrain
 // for more info)
 void MyGL::renderTerrain() {
-    m_terrain.draw(0, 64, 0, 64, &m_progInstanced);
+    // Entity.mcr_position
+    int x = 16 * static_cast<int>(glm::floor(m_player.mcr_position.x / 16.f));
+    int z = 16 * static_cast<int>(glm::floor(m_player.mcr_position.z / 16.f));
+    m_terrain.draw(x - 256, x + 256, z - 256, z + 256, &m_progFlat);
+
+//    m_terrain.draw(0, 64, 0, 64, &m_progInstanced);
 }
 
 
@@ -175,6 +182,11 @@ void MyGL::keyPressEvent(QKeyEvent *e) {
 
 void MyGL::mouseMoveEvent(QMouseEvent *e) {
     // TODO
+    float dx = (width() * 0.5 - e->pos().x()) / width();
+    float dy = (height() * 0.5 - e->pos().y()) / height();
+    m_player.rotateOnUpGlobal(dx * 360 * 0.1f);
+    m_player.rotateOnRightLocal(dy * 360 * 0.1f);
+    moveMouseToCenter();
 }
 
 void MyGL::mousePressEvent(QMouseEvent *e) {
