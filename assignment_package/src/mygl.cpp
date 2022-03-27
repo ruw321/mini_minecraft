@@ -71,7 +71,7 @@ void MyGL::initializeGL()
     // using multiple VAOs, we can just bind one once.
     glBindVertexArray(vao);
 
-    m_terrain.CreateTestScene();
+//    m_terrain.CreateTestScene();
 }
 
 void MyGL::resizeGL(int w, int h) {
@@ -94,7 +94,7 @@ void MyGL::resizeGL(int w, int h) {
 // all per-frame actions here, such as performing physics updates on all
 // entities in the scene.
 void MyGL::tick() {
-    m_terrain.updateScene(m_player.mcr_position);
+    m_terrain.updateTerrian(m_player.mcr_position);
     update(); // Calls paintGL() as part of a larger QOpenGLWidget pipeline
     sendPlayerDataToGUI(); // Updates the info in the secondary window displaying player data
 }
@@ -124,11 +124,12 @@ void MyGL::paintGL() {
 
     renderTerrain();
 
-    glDisable(GL_DEPTH_TEST);
-    m_progFlat.setModelMatrix(glm::mat4());
-    m_progFlat.setViewProjMatrix(m_player.mcr_camera.getViewProj());
-    m_progFlat.draw(m_worldAxes);
-    glEnable(GL_DEPTH_TEST);
+//    glDisable(GL_DEPTH_TEST);
+//    m_progFlat.setModelMatrix(glm::mat4());
+//    m_progFlat.setViewProjMatrix(m_player.mcr_camera.getViewProj());
+
+//    m_progFlat.draw(m_worldAxes);
+//    glEnable(GL_DEPTH_TEST);
 }
 
 // TODO: Change this so it renders the nine zones of generated
@@ -138,7 +139,7 @@ void MyGL::renderTerrain() {
     // Entity.mcr_position
     int x = 16 * static_cast<int>(glm::floor(m_player.mcr_position.x / 16.f));
     int z = 16 * static_cast<int>(glm::floor(m_player.mcr_position.z / 16.f));
-    m_terrain.draw(x - 256, x + 256, z - 256, z + 256, &m_progInstanced);
+    m_terrain.draw(x - 256, x + 256, z - 256, z + 256, &m_progFlat);
 
 //    m_terrain.draw(0, 64, 0, 64, &m_progInstanced);
 }

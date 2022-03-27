@@ -315,6 +315,7 @@ void ShaderProgram::printLinkInfoLog(int prog)
 void ShaderProgram::drawInterleave(Drawable &d)
 {
     useMe();
+
     if (d.elemCount() < 0){
         throw std::out_of_range("Attempting to draw a drawable with m_count of " + std::to_string(d.elemCount()) + "!");
     }
@@ -332,4 +333,7 @@ void ShaderProgram::drawInterleave(Drawable &d)
                                        false, 2 * sizeof(glm::vec4),
                                        (void*)sizeof(glm::vec4));
     }
+
+    d.bindIdx();
+    context->glDrawElements(d.drawMode(), d.elemCount(), GL_UNSIGNED_INT, 0);
 }

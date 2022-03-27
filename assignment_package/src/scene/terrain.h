@@ -99,22 +99,24 @@ public:
     Milestone 1
     */
 
-    void updateScene(glm::vec3 p);
+    void updateTerrian(glm::vec3 p);
     void fillColumn(int x, int z);
 
     BlockType BlockType(int height, int maxHeight, BiomeType biome);
 
-
-
+    std::vector<glm::ivec2> getSurroundingZones(int x, int z, int r = 2);
+    bool hasZoneAt(int x, int z) const;
+    void initializeChunk(Chunk *chunk);
     /*
     Milestone 2
     */
+
+
+
     std::mutex BlockTypeMutex;
     std::vector<std::thread> BlockTypeWorkers;
-    std::mutex VBOMutex;
-    std::vector<std::thread> VBOWorkers;
 
-    void BlockTypeWorker(uPtr<Chunk> chunk);
-    void VBOWorker(uPtr<Chunk> chunk);
+    void BlockTypeWorker(glm::ivec2 m_pos);
+
 
 };

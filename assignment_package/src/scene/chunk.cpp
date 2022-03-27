@@ -17,12 +17,12 @@ void Chunk::createVBOdata(){
     std::vector<GLuint> idx;
 
     std::unordered_map<BlockType, glm::vec4> blockColorMp = {
-        {GRASS, glm::vec4(95.f, 159.f, 53.f, 0)/ 255.f},
-        {DIRT, glm::vec4(121.f, 85.f, 58.f, 0)/ 255.f},
-        {STONE, glm::vec4(0.5, 0.5, 0.5, 0)},
-        {WATER, glm::vec4(0.f, 0.f, 0.75, 0)},
-        {SNOW, glm::vec4(0.f, 0.f, 0.f, 0)},
-        {SAND, glm::vec4(1.f, 0.95, 0.9, 0)}
+        {GRASS, glm::vec4(95.f, 159.f, 53.f, 0) / 255.f},
+        {DIRT, glm::vec4(121.f, 85.f, 58.f, 0) / 255.f},
+        {STONE, glm::vec4(0.5, 0.5, 0.5f, 0)},
+        {WATER, glm::vec4(0.f, 0.f, 0.75f, 0)},
+        {SNOW, glm::vec4(1.f, 1.f, 1.f, 0)},
+        {SAND, glm::vec4(1.f, 0.95, 0.9f, 0)}
     };
 
     //front 1, back 2, left 3, right 4, up 5, down 6
@@ -42,8 +42,7 @@ void Chunk::createVBOdata(){
                                                             int(neighborPos.z));
                         if (neighborType == EMPTY){
                             for (int i = 0; i < 4; i++){
-                                posAndColor.push_back(neighborFace.vertices[i].m_pos
-                                                      + currentPos);
+                                posAndColor.push_back(neighborFace.vertices[i].m_pos + currentPos);
                                 posAndColor.push_back(blockColorMp[current]);
                             }
                             idx.push_back(currentIdx);
