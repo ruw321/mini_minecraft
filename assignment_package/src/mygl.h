@@ -11,7 +11,7 @@
 #include <QOpenGLVertexArrayObject>
 #include <QOpenGLShaderProgram>
 #include <smartpointerhelp.h>
-
+#include <QDateTime>
 
 class MyGL : public OpenGLContext
 {

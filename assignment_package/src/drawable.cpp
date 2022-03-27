@@ -58,6 +58,11 @@ void Drawable::generateNor()
     mp_context->glGenBuffers(1, &m_bufNor);
 }
 
+void Drawable::generateInterleave(){
+    m_interleaveGenerated = true;
+    mp_context->glGenBuffers(1, &m_bufInterleave);
+}
+
 void Drawable::generateCol()
 {
     m_colGenerated = true;
@@ -71,6 +76,13 @@ bool Drawable::bindIdx()
         mp_context->glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_bufIdx);
     }
     return m_idxGenerated;
+}
+
+bool Drawable::bindInterleave(){
+    if (m_interleaveGenerated){
+        mp_context->glBindBuffer(GL_ARRAY_BUFFER, m_bufInterleave);
+    }
+    return m_interleaveGenerated;
 }
 
 bool Drawable::bindPos()
