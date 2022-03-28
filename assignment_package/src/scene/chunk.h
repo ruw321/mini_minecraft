@@ -99,6 +99,7 @@ const static std::array<BlockFace, 6> adjacentFaces{
               VertexData(glm::vec4(1, 1, 0, 1), glm::vec2(0, BLK_UV)))
 
 
+
 };
 
 // One Chunk is a 16 x 256 x 16 section of the world,
@@ -110,17 +111,11 @@ const static std::array<BlockFace, 6> adjacentFaces{
 
 // TODO have Chunk inherit from Drawable
 
-
-/*
-Milestone 2
-*/
 struct ChunkVBOData
 {
     std::vector<GLuint> idx;
     std::vector<glm::vec4> data;
 };
-
-
 
 class Chunk : public Drawable{
 private:
@@ -133,7 +128,9 @@ private:
     std::unordered_map<Direction, Chunk*, EnumHash> m_neighbors;
 
 public:
+
     Chunk(OpenGLContext* context, int x, int z);
+
     ~Chunk();
     void createVBOdata() override;
     void sendVBOdata();
