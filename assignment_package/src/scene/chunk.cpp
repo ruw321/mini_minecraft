@@ -53,6 +53,7 @@ void Chunk::createVBOdata(){
                                                       + currentPos);
 
                                 posAndColor.push_back(blockColorMp[current]);
+                                posAndColor.push_back(glm::vec4(neighborFace.directionVec, 0));
                             }
                             idx.push_back(currentIdx);
                             idx.push_back(currentIdx + 1);
