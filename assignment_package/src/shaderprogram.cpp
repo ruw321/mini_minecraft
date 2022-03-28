@@ -136,6 +136,27 @@ void ShaderProgram::setGeometryColor(glm::vec4 color)
     }
 }
 
+//void ShaderProgram::drawInterleave(Drawable &d)
+//{
+//    useMe();
+//    if (d.elemCount() < 0){
+//        throw std::out_of_range("Attempting to draw a drawable with m_count of " + std::to_string(d.elemCount()) + "!");
+//    }
+
+//    if (attrPos != -1 && d.bindInterleave()){
+//        context->glEnableVertexAttribArray(attrPos);
+//        context->glVertexAttribPointer(attrPos,  4, GL_FLOAT,
+//                                       false, 2 * sizeof(glm::vec4),
+//                                       (void*)0);
+//    }
+
+//    if (attrCol != -1 && d.bindInterleave()){
+//        context->glEnableVertexAttribArray(attrCol);
+//        context->glVertexAttribPointer(attrCol, 4, GL_FLOAT,
+//                                       false, 2 * sizeof(glm::vec4),
+//                                       (void*)sizeof(glm::vec4));
+//    }
+//}
 //This function, as its name implies, uses the passed in GL widget
 void ShaderProgram::draw(Drawable &d)
 {
@@ -347,4 +368,5 @@ void ShaderProgram::drawInterleave(Drawable &d)
     if (attrNor != -1) context->glDisableVertexAttribArray(attrNor);
     if (attrCol != -1) context->glDisableVertexAttribArray(attrCol);
     context->printGLErrorLog();
+
 }

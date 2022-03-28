@@ -128,7 +128,9 @@ void Terrain::setBlockAt(glm::vec3 p, enum BlockType t) {
 }
 
 Chunk* Terrain::instantiateChunkAt(int x, int z) {
+
     uPtr<Chunk> chunk = mkU<Chunk>(mp_context, x, z);
+
     Chunk *cPtr = chunk.get();
     m_chunks[toKey(x, z)] = move(chunk);
     // Set the neighbor pointers of itself and its neighbors
@@ -156,6 +158,34 @@ Chunk* Terrain::instantiateChunkAt(int x, int z) {
     }
 
     return cPtr;
+}
+
+void Terrain::terrainUpdate(glm::vec4 playerPos){
+    int x = static_cast<int>(glm::floor(playerPos.x / 16.f) * 16);
+    int z = static_cast<int>(glm::floor(playerPos.z / 16.f) * 16);
+
+    std::vector<std::pair<int, int>> offsets;
+    offsets.push_back(std::make_pair(0, 16));
+    offsets.push_back(std::make_pair(16, 0));
+    offsets.push_back(std::make_pair(0, -16));
+    offsets.push_back(std::make_pair(-16, 0));
+    offsets.push_back(std::make_pair(16, -16));
+    offsets.push_back(std::make_pair(16, 16));
+    offsets.push_back(std::make_pair(-16, -16));
+    offsets.push_back(std::make_pair(-16, 16));
+
+    for (auto offset : offsets){
+        if (!hasChunkAt(x + offset.first, z + offset.second)){
+            for(int i = x + offset.first; i < x + offset.first + 64; i += 16) {
+                for(int j = z + offset.second; j < z + offset.second + 64; j += 16) {
+                    instantiateChunkAt(i, j);
+                }
+            }
+            m_generatedTerrain.insert(toKey(x + offset.first, z + offset.second));
+
+        }
+    }
+
 }
 
 // TODO: When you make Chunk inherit from Drawable, change this code so

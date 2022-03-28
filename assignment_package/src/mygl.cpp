@@ -139,7 +139,9 @@ void MyGL::renderTerrain() {
     // Entity.mcr_position
     int x = 16 * static_cast<int>(glm::floor(m_player.mcr_position.x / 16.f));
     int z = 16 * static_cast<int>(glm::floor(m_player.mcr_position.z / 16.f));
+
     m_terrain.draw(x - 256, x + 256, z - 256, z + 256, &m_progLambert);
+
 
 }
 
