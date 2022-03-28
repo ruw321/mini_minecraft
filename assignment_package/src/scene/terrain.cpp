@@ -4,11 +4,14 @@
 #include <iostream>
 
 Terrain::Terrain(OpenGLContext *context)
-    : m_chunks(), m_generatedTerrain(), m_geomCube(context), mp_context(context)
+    : m_chunks(),
+      m_generatedTerrain(),
+//      m_geomCube(context),
+      mp_context(context)
 {}
 
 Terrain::~Terrain() {
-    m_geomCube.destroyVBOdata();
+//    m_geomCube.destroyVBOdata();
 }
 
 // Combine two 32-bit ints into one 64-bit int
@@ -263,7 +266,8 @@ void Terrain::draw(int minX, int maxX, int minZ, int maxZ, ShaderProgram *shader
 void Terrain::CreateTestScene()
 {
     // TODO: DELETE THIS LINE WHEN YOU DELETE m_geomCube!
-    m_geomCube.createVBOdata();
+//    m_geomCube.createVBOdata();
+
 
 }
 
@@ -326,9 +330,9 @@ void Terrain::updateTerrian(glm::vec3 p) {
     }
 
     for (auto &thread : this->BlockTypeWorkers) {
-        if(thread.joinable()) {
+//        if(thread.joinable()) {
             thread.join();
-        }
+//        }
     }
 
     this->BlockTypeWorkers.clear();
