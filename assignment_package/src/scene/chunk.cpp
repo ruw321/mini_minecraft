@@ -12,8 +12,8 @@ Chunk::Chunk(OpenGLContext* context, int x, int z)
 
 Chunk::~Chunk(){}
 
-void Chunk::createVBOdata(){
-    std::vector<glm::vec4> posAndColor;
+void Chunk::createVBOdata() {
+    std::vector<glm::vec4> VBOdata;
     std::vector<GLuint> idx;
 
     std::unordered_map<BlockType, glm::vec4> blockColorMp = {
@@ -42,9 +42,9 @@ void Chunk::createVBOdata(){
                                                             int(neighborPos.z));
                         if (neighborType == EMPTY){
                             for (int i = 0; i < 4; i++){
-                                posAndColor.push_back(neighborFace.vertices[i].m_pos + currentPos);
-                                posAndColor.push_back(blockColorMp[current]);
-                                posAndColor.push_back(glm::vec4(neighborFace.directionVec, 0));
+                                VBOdata.push_back(neighborFace.vertices[i].m_pos + currentPos);
+                                VBOdata.push_back(blockColorMp[current]);
+                                VBOdata.push_back(glm::vec4(neighborFace.directionVec, 0));
                             }
                             idx.push_back(currentIdx);
                             idx.push_back(currentIdx + 1);
@@ -61,22 +61,33 @@ void Chunk::createVBOdata(){
         }
     }
 
+    this->m_count = idx.size();
+
+    this->m_VBOdata.idx = idx;
+    this->m_VBOdata.data = VBOdata;
 
 
-    m_count = idx.size();
+
+}
+
+void Chunk::sendVBOdata() {
+
 
     generateIdx();
     bindIdx();
     mp_context->glBufferData(GL_ELEMENT_ARRAY_BUFFER,
-                             idx.size() * sizeof (GLuint), idx.data(),
+                             this->m_VBOdata.idx.size() * sizeof (GLuint),
+                             this->m_VBOdata.idx.data(),
                              GL_STATIC_DRAW);
 
     generateInterleave();
     bindInterleave();
     mp_context->glBufferData(GL_ARRAY_BUFFER,
-                             posAndColor.size() * sizeof (glm::vec4),
-                             posAndColor.data(), GL_STATIC_DRAW);
+                             this->m_VBOdata.data.size() * sizeof (glm::vec4),
+                             this->m_VBOdata.data.data(),
+                             GL_STATIC_DRAW);
 }
+
 
 GLenum Chunk::drawMode(){
     return GL_TRIANGLES;
