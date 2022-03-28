@@ -113,9 +113,8 @@ const static std::array<BlockFace, 6> adjacentFaces{
 
 struct ChunkVBOData
 {
-    int64_t key;
-    std::vector<glm::vec4> vec_data;
-    std::vector<GLuint> vec_id;
+    std::vector<GLuint> idx;
+    std::vector<glm::vec4> data;
 };
 
 class Chunk : public Drawable{
@@ -134,6 +133,8 @@ public:
 
     ~Chunk();
     void createVBOdata() override;
+    void sendVBOdata();
+
     GLenum drawMode() override;
     BlockType getBlockAt(unsigned int x, unsigned int y, unsigned int z) const;
     BlockType getBlockAt(int x, int y, int z) const;
@@ -145,5 +146,5 @@ public:
     Milestone 2
     */
     glm::ivec2 m_pos;
-    ChunkVBOData VBOData;
+    ChunkVBOData m_VBOdata;
 };

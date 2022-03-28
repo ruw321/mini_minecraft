@@ -114,11 +114,10 @@ public:
     */
 
 
-
-    std::mutex BlockTypeMutex;
     std::vector<std::thread> BlockTypeWorkers;
+    std::vector<std::thread> VBOWorkers;
 
     void BlockTypeWorker(glm::ivec2 m_pos);
-
+    void VBOWorker(Chunk *chunk);
 
 };
