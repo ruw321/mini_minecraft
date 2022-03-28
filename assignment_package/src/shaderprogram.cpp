@@ -323,17 +323,28 @@ void ShaderProgram::drawInterleave(Drawable &d)
     if (attrPos != -1 && d.bindInterleave()){
         context->glEnableVertexAttribArray(attrPos);
         context->glVertexAttribPointer(attrPos,  4, GL_FLOAT,
-                                       false, 2 * sizeof(glm::vec4),
+                                       false, 3 * sizeof(glm::vec4),
                                        (void*)0);
     }
 
     if (attrCol != -1 && d.bindInterleave()){
         context->glEnableVertexAttribArray(attrCol);
         context->glVertexAttribPointer(attrCol, 4, GL_FLOAT,
-                                       false, 2 * sizeof(glm::vec4),
+                                       false, 3 * sizeof(glm::vec4),
                                        (void*)sizeof(glm::vec4));
+    }
+
+    if (attrNor != -1 && d.bindInterleave()){
+        context->glEnableVertexAttribArray(attrNor);
+        context->glVertexAttribPointer(attrNor, 4, GL_FLOAT,
+                                       false, 3 * sizeof(glm::vec4),
+                                       (void*)(sizeof(glm::vec4) * 2));
     }
 
     d.bindIdx();
     context->glDrawElements(d.drawMode(), d.elemCount(), GL_UNSIGNED_INT, 0);
+    if (attrPos != -1) context->glDisableVertexAttribArray(attrPos);
+    if (attrNor != -1) context->glDisableVertexAttribArray(attrNor);
+    if (attrCol != -1) context->glDisableVertexAttribArray(attrCol);
+    context->printGLErrorLog();
 }

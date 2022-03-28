@@ -10,7 +10,7 @@ MyGL::MyGL(QWidget *parent)
     : OpenGLContext(parent),
       m_worldAxes(this),
       m_progLambert(this), m_progFlat(this), m_progInstanced(this),
-      m_terrain(this), m_player(glm::vec3(48.f, 250.f, 48.f), m_terrain)
+      m_terrain(this), m_player(glm::vec3(48.f, 200.f, 48.f), m_terrain)
 {
     // Connect the timer to a function so that when the timer ticks the function is executed
     connect(&m_timer, SIGNAL(timeout()), this, SLOT(tick()));
@@ -65,7 +65,7 @@ void MyGL::initializeGL()
     // This will ultimately not be used when you change
     // your program to render Chunks with vertex colors
     // and UV coordinates
-    m_progLambert.setGeometryColor(glm::vec4(0,1,0,1));
+//    m_progLambert.setGeometryColor(glm::vec4(0,1,0,1));
 
     // We have to have a VAO bound in OpenGL 3.2 Core. But if we're not
     // using multiple VAOs, we can just bind one once.
@@ -139,9 +139,8 @@ void MyGL::renderTerrain() {
     // Entity.mcr_position
     int x = 16 * static_cast<int>(glm::floor(m_player.mcr_position.x / 16.f));
     int z = 16 * static_cast<int>(glm::floor(m_player.mcr_position.z / 16.f));
-    m_terrain.draw(x - 256, x + 256, z - 256, z + 256, &m_progFlat);
+    m_terrain.draw(x - 256, x + 256, z - 256, z + 256, &m_progLambert);
 
-//    m_terrain.draw(0, 64, 0, 64, &m_progInstanced);
 }
 
 

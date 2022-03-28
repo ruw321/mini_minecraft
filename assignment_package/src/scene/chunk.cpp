@@ -44,6 +44,7 @@ void Chunk::createVBOdata(){
                             for (int i = 0; i < 4; i++){
                                 posAndColor.push_back(neighborFace.vertices[i].m_pos + currentPos);
                                 posAndColor.push_back(blockColorMp[current]);
+                                posAndColor.push_back(glm::vec4(neighborFace.directionVec, 0));
                             }
                             idx.push_back(currentIdx);
                             idx.push_back(currentIdx + 1);
