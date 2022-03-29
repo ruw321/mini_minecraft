@@ -7,6 +7,7 @@ SOURCES += \
     $$PWD/mainwindow.cpp \
     $$PWD/mygl.cpp \
     $$PWD/scene/biomes.cpp \
+    $$PWD/scene/texture.cpp \
     $$PWD/shaderprogram.cpp \
     $$PWD/drawable.cpp \
     $$PWD/cameracontrolshelp.cpp \
@@ -25,6 +26,7 @@ HEADERS += \
     $$PWD/mainwindow.h \
     $$PWD/mygl.h \
     $$PWD/scene/biomes.h \
+    $$PWD/scene/texture.h \
     $$PWD/shaderprogram.h \
     $$PWD/drawable.h \
     $$PWD/cameracontrolshelp.h \

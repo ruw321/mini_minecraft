@@ -239,7 +239,7 @@ void Terrain::initializeChunk(Chunk *chunk) {
 
 void Terrain::updateTerrian(glm::vec3 p) {
 
-    int r = 2; // 5x5
+    int r = 1; // 5x5
     std::vector<glm::ivec2> currSourrondingZones = getSurroundingZones(p.x, p.z, r);
 
     std::vector<Chunk*> newChunks;
