@@ -5,7 +5,8 @@ struct InputBundle {
     bool wPressed, aPressed, sPressed, dPressed, ePressed, qPressed;
     bool spacePressed;
     float mouseX, mouseY;
-    bool flight_mode;
+    // isOnGround makes sure that the player can only jump once
+    bool flight_mode, isOnGround;
 
     InputBundle()
         : wPressed(false), aPressed(false), sPressed(false),

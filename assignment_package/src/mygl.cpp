@@ -178,7 +178,9 @@ void MyGL::keyPressEvent(QKeyEvent *e) {
     } else if (e->key() == Qt::Key_E) {
         m_inputs.ePressed = true;
     } else if (e->key() == Qt::Key_Space) {
-        m_inputs.spacePressed = true;
+        if (m_inputs.isOnGround) {
+            m_inputs.spacePressed = true;
+        }
     } else if (e->key() == Qt::Key_F) {
         m_inputs.flight_mode = !m_inputs.flight_mode;
     }
@@ -206,6 +208,9 @@ void MyGL::keyReleaseEvent(QKeyEvent *e) {
         case Qt::Key_E:
             m_inputs.ePressed = false;
             break;
+        case Qt::Key_Space:
+            m_inputs.spacePressed = false;
+            break;
     }
 }
 
@@ -218,21 +223,7 @@ void MyGL::mouseMoveEvent(QMouseEvent *e) {
     // move mouse back to center
     moveMouseToCenter();
 
-    // if the above code doesnt work for windows
-    // uncomment the code below
-    //    // for windows
-    //    const float SENSITIVITY = 20.0;
-
-    //    float delta_x = width() * 0.5 - e->pos().x();
-    //    if (delta_x != 0) {
-    //        m_player.rotateOnUpGlobal(delta_x/width() * SENSITIVITY);
-    //    }
-    //    float delta_y = height() * 0.5 - e->pos().y() - 0.5;
-    //    if (delta_y != 0) {
-    //        m_player.rotateOnRightLocal(delta_y/height() * SENSITIVITY);
-    //    }
-
-    //    moveMouseToCenter();
+    // the above code might not work for windows
 }
 
 void MyGL::mousePressEvent(QMouseEvent *e) {

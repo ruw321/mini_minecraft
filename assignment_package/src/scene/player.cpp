@@ -38,6 +38,9 @@ void Player::processInputs(InputBundle &inputs) {
             m_velocity = glm::vec3(0.f);
             m_acceleration = glm::vec3(0.f);
         }
+        if (m_acceleration != glm::vec3(0.f)) {
+            m_acceleration = glm::normalize(m_acceleration);
+        }
     } else {
         if (inputs.wPressed) {
             m_acceleration += glm::normalize(glm::vec3(m_forward.x, 0, m_forward.z));
@@ -56,15 +59,18 @@ void Player::processInputs(InputBundle &inputs) {
             nothingClicked = false;
         }
         if (inputs.spacePressed) {
-            // jumping doesn't work yet
-            std::cout << "jump" << std::endl;
-            m_velocity = 20.f * m_up;
-            nothingClicked = false;
-            std::cout << m_velocity.y << std::endl;
+            if (isOnGround(mcr_terrain, inputs)) {
+                m_velocity.y = 10.f * m_up.y;
+                nothingClicked = false;
+            }
         }
         if (nothingClicked){
-            m_velocity = glm::vec3(0.f);
-            m_acceleration = glm::vec3(0.f);
+            // we don't want to interfere with the y axis
+            // so that the player can complete the motion of jumping
+            m_acceleration.x = 0.f;
+            m_acceleration.z = 0.f;
+            m_velocity.x = 0.f;
+            m_velocity.z = 0.f;
         }
     }
 }
@@ -72,29 +78,25 @@ void Player::processInputs(InputBundle &inputs) {
 // Update the Player's position based on its acceleration
 // and velocity, and also perform collision detection.
 void Player::computePhysics(float dT, const Terrain &terrain, InputBundle &inputs) {
-    // the player's velocity is reduced to less than 100% of its current value every frame (simulates friction + drag) before acceleration is added to it.
+    // the player's velocity is reduced to less than 100% of its current value
+    // every frame (simulates friction + drag) before acceleration is added to it.
     m_velocity *= 0.9f;
-    m_velocity += m_acceleration * dT;
     glm::vec3 gravity = glm::vec3(0.0f, -9.8f, 0.0f);
-    glm::vec3 rayDirection = m_velocity * dT;
-    std::cout << "computePhysics is called" << std::endl;
-
+    glm::vec3 rayDirection = m_velocity + dT * m_acceleration;
+    m_velocity += m_acceleration * dT;
     // only perform collision detection when you are not in flight mode
     if (!inputs.flight_mode) {
         if (!isOnGround(terrain, inputs)) {
-            std::cout << "function is called" << std::endl;
             // drop to the ground
-            m_acceleration = gravity;
-            m_velocity = m_acceleration * dT;
-        } else if (isOnGround(terrain, inputs) && !inputs.spacePressed){
-            std::cout << "not supposed to reach here" << std::endl;
-            m_acceleration[1] = 0.f;
-            m_velocity[1] = 0.f;
+            m_acceleration += gravity;
+        } else if (isOnGround(terrain, inputs)){
+            m_acceleration.y = 0.f;
+            m_velocity.y = glm::max(m_velocity.y, 0.f);
         }
         rayDirection = m_velocity * dT;
         detectCollision(&rayDirection, terrain);
     }
-    std::cout << rayDirection.y << std::endl;
+//    m_velocity += m_acceleration * dT;
     this->moveAlongVector(rayDirection);
 }
 
@@ -105,13 +107,15 @@ bool Player::isOnGround(const Terrain &terrain, InputBundle &inputs) {
     // traverse the four bottom vertices
     for (int x = 0; x < 2; x++) {
         for (int z = 0; z < 2; z++) {
-            glm::vec3 vertexPos = glm::vec3(floor(bottomLeft.x) + x, floor(bottomLeft.y - 0.005f),
+            // the offset for y should be 0.005f, but for some reason it doesnt work
+            // so I had to increase the offset for it to detect that it is on the ground
+            glm::vec3 vertexPos = glm::vec3(floor(bottomLeft.x) + x, floor(bottomLeft.y - 0.1f),
                     floor(bottomLeft.z) + z);
             // as long as one of the vertex is on a block that is not empty
             // player is on the ground
             if (terrain.getBlockAt(vertexPos) != EMPTY) {
+                inputs.isOnGround = true;
                 if (!inputs.spacePressed) {
-                    std::cout << "should reach here" << std::endl;
                     m_acceleration.y = 0.f;
                     m_velocity.y = 0.f;
                 }
@@ -119,6 +123,7 @@ bool Player::isOnGround(const Terrain &terrain, InputBundle &inputs) {
             }
         }
     }
+    inputs.isOnGround = false;
     return false;
 }
 
@@ -161,7 +166,7 @@ bool Player::gridMarch(glm::vec3 rayOrigin, glm::vec3 rayDirection, const Terrai
         // If currCell contains something other than EMPTY, return
         // curr_t
         BlockType cellType = terrain.getBlockAt(currCell.x, currCell.y, currCell.z);
-        if(cellType != EMPTY) {
+        if (cellType != EMPTY) {
             *out_blockHit = currCell;
             *out_dist = glm::min(maxLen, curr_t);
             return true;
@@ -172,21 +177,34 @@ bool Player::gridMarch(glm::vec3 rayOrigin, glm::vec3 rayDirection, const Terrai
     return false;
 }
 
-
 void Player::detectCollision(glm::vec3 *rayDirection, const Terrain &terrain) {
-    glm::vec3 bottomLeftVertex = this->m_position - glm::vec3(0.5f, 0.f, 0.5f);
+    glm::vec3 bottomLeft = this->m_position - glm::vec3(0.5f, 0.f, 0.5f);
     glm::ivec3 out_blockHit = glm::ivec3();
     float out_dist = 0.f;
 
-    for (int x = 0; x <= 1; x++) {
-        for (int z = 0; z >= -1; z--) {
-            for (int y = 0; y <= 2; y++) {
-                glm::vec3 rayOrigin = bottomLeftVertex + glm::vec3(x, y, z);
-                if (gridMarch(rayOrigin, *rayDirection, terrain, &out_dist, &out_blockHit)) {
-                    std::cout << "collided..." << std::endl;
+    for (int x = 0; x < 2; x++) {
+        for (int z = 0; z < 2; z++) {
+            for (int y = 0; y < 3; y++) {
+                // doing them each axis individually in order to move along the wall instead of just halt
+                glm::vec3 rayOrigin = bottomLeft + glm::vec3(x, y, z);
+                glm::vec3 x_ray = glm::vec3(rayDirection->x, 0.f, 0.f);
+                glm::vec3 y_ray = glm::vec3(0.f, rayDirection->y, 0.f);
+                glm::vec3 z_ray = glm::vec3(0.f, 0.f, rayDirection->z);
+                if (gridMarch(rayOrigin, x_ray, terrain, &out_dist, &out_blockHit)) {
+                    // this offset is necessary, but it is not letting the player land after jumping (problem fixed)
                     float distance = glm::min(out_dist - 0.005f, glm::abs(glm::length(this->m_position - glm::vec3(out_blockHit))));
-                    *rayDirection = distance * glm::normalize(*rayDirection);
+                    x_ray = distance * glm::normalize(x_ray);
                 }
+                if (gridMarch(rayOrigin, y_ray, terrain, &out_dist, &out_blockHit)) {
+                    float distance = glm::min(out_dist - 0.005f, glm::abs(glm::length(this->m_position - glm::vec3(out_blockHit))));
+                    y_ray = distance * glm::normalize(y_ray);
+                }
+                if (gridMarch(rayOrigin, z_ray, terrain, &out_dist, &out_blockHit)) {
+                    float distance = glm::min(out_dist - 0.005f, glm::abs(glm::length(this->m_position - glm::vec3(out_blockHit))));
+                    z_ray = distance * glm::normalize(z_ray);
+                }
+                // combine the three axis
+                *rayDirection = glm::vec3(x_ray.x, y_ray.y, z_ray.z);
             }
         }
     }
@@ -211,8 +229,8 @@ void Player::placeBlock(Terrain *terrain) {
     glm::vec3 rayDirection = 3.f * glm::normalize(this->m_forward);
     glm::ivec3 outBlockHit = glm::ivec3();
     float outDist = 0.f;
-    // if there is no block
-    if (!gridMarch(rayOrigin, rayDirection, *terrain, &outDist, &outBlockHit)) {
+    // this makes sure that i can't place a block in the air
+    if (gridMarch(rayOrigin, rayDirection, *terrain, &outDist, &outBlockHit)) {
         outBlockHit = this->m_camera.mcr_position + 3.f * glm::normalize(this->m_forward);
         // now we are placing a stone, we can change it later if we want to
         terrain->setBlockAt(outBlockHit.x, outBlockHit.y, outBlockHit.z, STONE);
