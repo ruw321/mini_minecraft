@@ -94,7 +94,7 @@ const static std::array<BlockFace, 6> adjacentFaces{
     //-Z
     BlockFace(ZNEG, glm::vec3(0, 0, -1),
               VertexData(glm::vec4(1, 0, 0, 1), glm::vec2(0, 0)),
-              VertexData(glm::vec4(0, 0, 1, 1), glm::vec2(BLK_UV, 0)),
+              VertexData(glm::vec4(0, 0, 0, 1), glm::vec2(BLK_UV, 0)),
               VertexData(glm::vec4(0, 1, 0, 1), glm::vec2(BLK_UV, BLK_UV)),
               VertexData(glm::vec4(1, 1, 0, 1), glm::vec2(0, BLK_UV)))
 

@@ -7,12 +7,12 @@ void WorldAxes::createVBOdata()
 {
 
     GLuint idx[6] = {0, 1, 2, 3, 4, 5};
-    glm::vec4 pos[6] = {glm::vec4(32,129,32,1), glm::vec4(40,129,32,1),
-                        glm::vec4(32,129,32,1), glm::vec4(32,137,32,1),
-                        glm::vec4(32,129,32,1), glm::vec4(32,129,40,1)};
-    glm::vec4 col[6] = {glm::vec4(1,0,0,1), glm::vec4(1,0,0,1),
-                        glm::vec4(0,1,0,1), glm::vec4(0,1,0,1),
-                        glm::vec4(0,0,1,1), glm::vec4(0,0,1,1)};
+    glm::vec4 pos[6] = {glm::vec4(32,200,32,1), glm::vec4(40,200,32,1),
+                        glm::vec4(32,200,32,1), glm::vec4(32,208,32,1),
+                        glm::vec4(32,200,32,1), glm::vec4(32,200,40,1)};
+    glm::vec4 col[6] = {glm::vec4(1,0,0,1), glm::vec4(1,0,0,1), // x
+                        glm::vec4(0,1,0,1), glm::vec4(0,1,0,1), // y
+                        glm::vec4(0,0,1,1), glm::vec4(0,0,1,1)}; // z
 
     m_count = 6;
 
