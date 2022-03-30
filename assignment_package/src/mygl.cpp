@@ -10,7 +10,8 @@ MyGL::MyGL(QWidget *parent)
     : OpenGLContext(parent),
       m_worldAxes(this),
       m_progLambert(this), m_progFlat(this), m_progInstanced(this),
-      m_terrain(this), m_player(glm::vec3(48.f, 200.f, 48.f), m_terrain)
+      m_terrain(this), m_player(glm::vec3(48.f, 200.f, 48.f), m_terrain),
+      m_currentMSecsSinceEpoch(QDateTime::currentMSecsSinceEpoch())
 {
     // Connect the timer to a function so that when the timer ticks the function is executed
     connect(&m_timer, SIGNAL(timeout()), this, SLOT(tick()));
@@ -94,6 +95,10 @@ void MyGL::resizeGL(int w, int h) {
 // all per-frame actions here, such as performing physics updates on all
 // entities in the scene.
 void MyGL::tick() {
+    // compute the delta-time
+    float dT = (QDateTime::currentMSecsSinceEpoch() - m_currentMSecsSinceEpoch) / 1000.f;
+    m_player.tick(dT, m_inputs);
+    m_currentMSecsSinceEpoch = QDateTime::currentMSecsSinceEpoch();
     m_terrain.updateTerrian(m_player.mcr_position);
     update(); // Calls paintGL() as part of a larger QOpenGLWidget pipeline
     sendPlayerDataToGUI(); // Updates the info in the secondary window displaying player data
@@ -167,29 +172,71 @@ void MyGL::keyPressEvent(QKeyEvent *e) {
     } else if (e->key() == Qt::Key_Down) {
         m_player.rotateOnRightLocal(amount);
     } else if (e->key() == Qt::Key_W) {
-        m_player.moveForwardLocal(amount);
+        m_inputs.wPressed = true;
     } else if (e->key() == Qt::Key_S) {
-        m_player.moveForwardLocal(-amount);
+        m_inputs.sPressed = true;
     } else if (e->key() == Qt::Key_D) {
-        m_player.moveRightLocal(amount);
+        m_inputs.dPressed = true;
     } else if (e->key() == Qt::Key_A) {
-        m_player.moveRightLocal(-amount);
+        m_inputs.aPressed = true;
     } else if (e->key() == Qt::Key_Q) {
-        m_player.moveUpGlobal(-amount);
+        m_inputs.qPressed = true;
     } else if (e->key() == Qt::Key_E) {
-        m_player.moveUpGlobal(amount);
+        m_inputs.ePressed = true;
+    } else if (e->key() == Qt::Key_Space) {
+        if (m_inputs.isOnGround) {
+            m_inputs.spacePressed = true;
+        }
+    } else if (e->key() == Qt::Key_F) {
+        m_inputs.flight_mode = !m_inputs.flight_mode;
+    }
+}
+
+void MyGL::keyReleaseEvent(QKeyEvent *e) {
+    // not lazy and actually endured the switch statement
+    switch(e->key())
+    {
+        case Qt::Key_W:
+            m_inputs.wPressed = false;
+            break;
+        case Qt::Key_S:
+            m_inputs.sPressed = false;
+            break;
+        case Qt::Key_D:
+            m_inputs.dPressed = false;
+            break;
+        case Qt::Key_A:
+            m_inputs.aPressed = false;
+            break;
+        case Qt::Key_Q:
+            m_inputs.qPressed = false;
+            break;
+        case Qt::Key_E:
+            m_inputs.ePressed = false;
+            break;
+        case Qt::Key_Space:
+            m_inputs.spacePressed = false;
+            break;
     }
 }
 
 void MyGL::mouseMoveEvent(QMouseEvent *e) {
     // TODO
-    float dx = (width() * 0.5 - e->pos().x()) / width();
-    float dy = (height() * 0.5 - e->pos().y()) / height();
-    m_player.rotateOnUpGlobal(dx * 360 * 0.1f);
-    m_player.rotateOnRightLocal(dy * 360 * 0.1f);
+    QPoint lastPosition = QPoint(width() / 2.f, height() / 2.f);
+    float delta_x = GLfloat(lastPosition.x() - e->pos().x()) / width();
+    float delta_y = GLfloat(lastPosition.y() - e->pos().y()) / height();
+    m_player.rotateOnUpGlobal(delta_x * 360 * 0.05f);
+    m_player.rotateOnRightLocal(delta_y * 360 * 0.05f);
+    // move mouse back to center
     moveMouseToCenter();
 }
 
 void MyGL::mousePressEvent(QMouseEvent *e) {
     // TODO
+//    if (e->button() == Qt::LeftButton) {
+//        m_player.removeBlock(&m_terrain);
+//    } else if (e->button() == Qt::RightButton) {
+//        m_player.placeBlock(&m_terrain);
+//    }
 }
+
