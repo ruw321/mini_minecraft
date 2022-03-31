@@ -234,10 +234,10 @@ void MyGL::mouseMoveEvent(QMouseEvent *e) {
 
 void MyGL::mousePressEvent(QMouseEvent *e) {
     // TODO
-//    if (e->button() == Qt::LeftButton) {
-//        m_player.removeBlock(&m_terrain);
-//    } else if (e->button() == Qt::RightButton) {
-//        m_player.placeBlock(&m_terrain);
-//    }
+    if (e->button() == Qt::LeftButton) {
+        m_player.removeBlock(&m_terrain);
+    } else if (e->button() == Qt::RightButton) {
+        m_player.placeBlock(&m_terrain);
+    }
 }
 

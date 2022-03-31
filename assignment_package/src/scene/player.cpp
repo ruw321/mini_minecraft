@@ -219,8 +219,13 @@ void Player::removeBlock(Terrain *terrain) {
     float outDist = 0.f;
     // if we found a block
     if (gridMarch(rayOrigin, rayDirection, *terrain, &outDist, &outBlockHit)) {
+
         terrain->setBlockAt(outBlockHit.x, outBlockHit.y, outBlockHit.z, EMPTY);
+        uPtr<Chunk> &chunkToUpdate = terrain->getChunkAt(outBlockHit.x, outBlockHit.z);
+        chunkToUpdate->createVBOdata();
+        chunkToUpdate->sendVBOdata();
     }
+
 }
 
 void Player::placeBlock(Terrain *terrain) {
@@ -231,9 +236,13 @@ void Player::placeBlock(Terrain *terrain) {
     float outDist = 0.f;
     // this makes sure that i can't place a block in the air
     if (gridMarch(rayOrigin, rayDirection, *terrain, &outDist, &outBlockHit)) {
+
         outBlockHit = this->m_camera.mcr_position + 3.f * glm::normalize(this->m_forward);
         // now we are placing a stone, we can change it later if we want to
         terrain->setBlockAt(outBlockHit.x, outBlockHit.y, outBlockHit.z, STONE);
+        uPtr<Chunk> &chunkToUpdate = terrain->getChunkAt(outBlockHit.x, outBlockHit.z);
+        chunkToUpdate->createVBOdata();
+        chunkToUpdate->sendVBOdata();
     }
 }
 

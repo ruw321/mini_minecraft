@@ -73,9 +73,6 @@ void Chunk::createVBOdata() {
 
     this->m_VBOdata.idx = idx;
     this->m_VBOdata.data = VBOdata;
-
-
-
 }
 
 void Chunk::sendVBOdata() {

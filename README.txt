@@ -1,6 +1,6 @@
 Milestone 1:
 
-Procedural Terrain
+Procedural Terrain (Zhiyuan Liang)
 To achieve the realistic terrian effect. I tried different combinations of noise and tuned the parameters and seeds. I tested the noise effect in HW5 post-process shader.
 The noise I tried:
 1. FBM only
@@ -16,3 +16,16 @@ After tuning the parameter, I found the Simplex noise with Perlin noise warp had
 
 I also designed the API for the additional biomes for milestone 3.
 I also implemented part of multi-thread of milestone 2 because I can not stand with the torture of slow rendering speed.
+
+Game Engine Tick Function and Player Physics (Ruifan Wang)
+    - Jumping
+        - to avoid click space before it lands, I had to add another global variable to inputs to store whether it is on ground or not
+        - to avoid holding space and flying up, I added a condition that checks if I am on ground or not before jumping
+    - Collision detection
+        - intially I implemented the way that the player's movement will come to a complete halt when it collides
+        - eventually I did the same thing but one axis at the time to allow smoother collision such as walking along the wall
+    - Placing block
+        - intially I made it that it could place a block only if the space was empty, but I had hard time placing blocks this way
+        - then I realized that I should check if gridMarch returns true, and then players wouldn't be able to place block in the air
+    - Velocity and acceleration
+        - just the overall tuning of the velocity and acceleration is definitely a pain in the butt
