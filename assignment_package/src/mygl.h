@@ -29,6 +29,8 @@ private:
     Player m_player; // The entity controlled by the user. Contains a camera to display what it sees as well.
     InputBundle m_inputs; // A collection of variables to be updated in keyPressEvent, mouseMoveEvent, mousePressEvent, etc.
 
+    long long m_currentMSecsSinceEpoch; // Store the previous frame's currentMSecsSinceEpoch in MyGL
+
     QTimer m_timer; // Timer linked to tick(). Fires approximately 60 times per second.
 
     void moveMouseToCenter(); // Forces the mouse position to the screen's center. You should call this
@@ -61,6 +63,7 @@ protected:
     // Automatically invoked when the user
     // presses a key on the keyboard
     void keyPressEvent(QKeyEvent *e);
+    void keyReleaseEvent(QKeyEvent *e);
     // Automatically invoked when the user
     // moves the mouse
     void mouseMoveEvent(QMouseEvent *e);

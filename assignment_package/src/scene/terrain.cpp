@@ -4,11 +4,14 @@
 #include <iostream>
 
 Terrain::Terrain(OpenGLContext *context)
-    : m_chunks(), m_generatedTerrain(), m_geomCube(context), mp_context(context)
+    : m_chunks(),
+      m_generatedTerrain(),
+//      m_geomCube(context),
+      mp_context(context)
 {}
 
 Terrain::~Terrain() {
-    m_geomCube.destroyVBOdata();
+//    m_geomCube.destroyVBOdata();
 }
 
 // Combine two 32-bit ints into one 64-bit int
@@ -195,75 +198,17 @@ void Terrain::draw(int minX, int maxX, int minZ, int maxZ, ShaderProgram *shader
             if (hasChunkAt(x, z)) {
                 const uPtr<Chunk> &chunk = getChunkAt(x, z);
 
-                chunk->createVBOdata();
+
                 shaderProgram->setModelMatrix(glm::translate(glm::mat4(1.f), glm::vec3(x, 0.f, z)));
                 shaderProgram->drawInterleave(*chunk);
             }
         }
     }
 
-
-    /*
-    m_geomCube.clearOffsetBuf();
-    m_geomCube.clearColorBuf();
-
-    std::vector<glm::vec3> offsets, colors;
-
-    for(int x = minX; x < maxX; x += 16) {
-        for(int z = minZ; z < maxZ; z += 16) {
-            if (hasChunkAt(x, z)) {
-                const uPtr<Chunk> &chunk = getChunkAt(x, z);
-                // the base code draws chunks by iterating each block
-                for(int i = 0; i < 16; ++i) {
-                    for(int j = 0; j < 256; ++j) {
-                        for(int k = 0; k < 16; ++k) {
-                            enum BlockType t = chunk->getBlockAt(i, j, k);
-
-                            if(t != EMPTY) {
-                                offsets.push_back(glm::vec3(i+x, j, k+z));
-                                switch(t) {
-                                    case GRASS:
-                                        colors.push_back(glm::vec3(95.f, 159.f, 53.f) / 255.f);
-                                        break;
-                                    case DIRT:
-                                        colors.push_back(glm::vec3(121.f, 85.f, 58.f) / 255.f);
-                                        break;
-                                    case STONE:
-                                        colors.push_back(glm::vec3(0.5f));
-                                        break;
-                                    case WATER:
-                                        colors.push_back(glm::vec3(0.f, 0.f, 0.75f));
-                                        break;
-                                    case SNOW:
-                                        colors.push_back(glm::vec3(1.f, 1.f, 1.f));
-                                        break;
-                                    case SAND:
-                                        colors.push_back(glm::vec3(1.f, 0.95f, 0.9f));
-                                        break;
-                                    default:
-                                        // Other block types are not yet handled, so we default to debug purple
-                                        colors.push_back(glm::vec3(1.f, 0.f, 1.f));
-                                        break;
-                                }
-                            }
-                        }
-                    }
-                }
-
-            }
-        }
-    }
-
-    m_geomCube.createInstancedVBOdata(offsets, colors);
-    shaderProgram->drawInstanced(m_geomCube);
-
-    */
 }
 
 void Terrain::CreateTestScene()
 {
-    // TODO: DELETE THIS LINE WHEN YOU DELETE m_geomCube!
-    m_geomCube.createVBOdata();
 
 }
 
@@ -294,7 +239,7 @@ void Terrain::initializeChunk(Chunk *chunk) {
 
 void Terrain::updateTerrian(glm::vec3 p) {
 
-    int r = 0; // 5x5
+    int r = 2; // 5x5
     std::vector<glm::ivec2> currSourrondingZones = getSurroundingZones(p.x, p.z, r);
 
     std::vector<Chunk*> newChunks;
@@ -325,15 +270,32 @@ void Terrain::updateTerrian(glm::vec3 p) {
         this->BlockTypeWorkers.push_back(std::thread(&Terrain::BlockTypeWorker, this, chunk->m_pos));
     }
 
-    for (auto &thread : this->BlockTypeWorkers) {
-        if(thread.joinable()) {
+    for (std::thread &thread : this->BlockTypeWorkers) {
+//        if(thread.joinable()) {
             thread.join();
-        }
+//        }
     }
 
     this->BlockTypeWorkers.clear();
 
+    for (Chunk *chunk : newChunks) {
+        this->VBOWorkers.push_back(std::thread(&Terrain::VBOWorker, this, chunk));
+    }
+
+    for (std::thread &thread : this->VBOWorkers) {
+//        if(thread.joinable()) {
+            thread.join();
+//        }
+    }
+
+    for (Chunk *chunk : newChunks) {
+        chunk->sendVBOdata();
+    }
+
+    this->VBOWorkers.clear();
+
 }
+
 
 void Terrain::fillColumn(int x, int z) {
     int maxHeight = mountain(glm::vec2(x,z));
@@ -403,23 +365,15 @@ void Terrain::BlockTypeWorker(glm::ivec2 m_pos)
     int chunk_x = m_pos[0];
     int chunk_z = m_pos[1];
 
-//    std::cout << "x" << chunk->m_pos[0] << "z" << chunk->m_pos[1] << std::endl;
-
     for (int x = chunk_x; x < chunk_x + 16; ++x) {
         for (int z = chunk_z; z < chunk_z + 16; ++z) {
             fillColumn(x, z);
         }
     }
 
-    // createBlocks(chunkPos.x, chunkPos.y, chunk.get());
-
-    BlockTypeMutex.lock();
-
-
-    // BlockTypeChunks[toKey(chunk->getChunkPos().x, chunk->getChunkPos().y)] = move(chunk);
-
-
-    BlockTypeMutex.unlock();
 }
 
+void Terrain::VBOWorker(Chunk *chunk) {
+    chunk->createVBOdata();
 
+}

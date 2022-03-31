@@ -40,7 +40,7 @@ public:
     // Draw the given object to our screen using this ShaderProgram's shaders
     void draw(Drawable &d);
 
-    void drawInterleave(Drawable &d);
+//    void drawInterleave(Drawable &d);
     // Draw the given object to our screen multiple times using instanced rendering
     void drawInstanced(InstancedDrawable &d);
     // Utility function used in create()
