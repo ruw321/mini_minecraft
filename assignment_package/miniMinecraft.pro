@@ -20,7 +20,9 @@ FORMS += forms/mainwindow.ui \
     forms/cameracontrolshelp.ui \
     forms/playerinfo.ui
 
-RESOURCES += glsl.qrc
+RESOURCES += glsl.qrc \
+    texture.qrc
+RESOURCES += texture.qrc
 
 *-clang*|*-g++* {
     message("Enabling additional warnings")

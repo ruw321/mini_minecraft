@@ -7,6 +7,7 @@
 #include <unordered_set>
 #include "shaderprogram.h"
 #include "cube.h"
+#include "texture.h"
 
 #include <thread>
 #include <mutex>
@@ -57,6 +58,8 @@ private:
 //    Cube m_geomCube;
 
     OpenGLContext* mp_context;
+
+
 
 public:
     Terrain(OpenGLContext *context);

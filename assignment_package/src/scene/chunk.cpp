@@ -50,7 +50,11 @@ void Chunk::createVBOdata() {
                             for (int i = 0; i < 4; i++){
 
                                 VBOdata.push_back(neighborFace.vertices[i].m_pos + currentPos);
-                                VBOdata.push_back(blockColorMp[current]);
+                                VBOdata.push_back(glm::vec4(neighborFace.vertices[i].m_uv +
+                                                            blockFaceUV[current][neighborFace.direction], 0, 0));
+//                                std::cout<<(neighborFace.vertices[i].m_uv + blockFaceUV[current][neighborFace.direction])[0]
+//                                        <<" "<<(neighborFace.vertices[i].m_uv + blockFaceUV[current][neighborFace.direction])[1]
+//                                        <<std::endl;
                                 VBOdata.push_back(glm::vec4(neighborFace.directionVec, 0));
 
                             }

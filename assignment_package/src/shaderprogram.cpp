@@ -4,12 +4,14 @@
 #include <QTextStream>
 #include <QDebug>
 #include <stdexcept>
+#include <iostream>
 
 
 ShaderProgram::ShaderProgram(OpenGLContext *context)
     : vertShader(), fragShader(), prog(),
-      attrPos(-1), attrNor(-1), attrCol(-1),
+      attrPos(-1), attrNor(-1), attrCol(-1), attrUV(-1),
       unifModel(-1), unifModelInvTr(-1), unifViewProj(-1), unifColor(-1),
+      unif_sampler2D(-1),
       context(context)
 {}
 
@@ -66,11 +68,13 @@ void ShaderProgram::create(const char *vertfile, const char *fragfile)
     attrCol = context->glGetAttribLocation(prog, "vs_Col");
     if(attrCol == -1) attrCol = context->glGetAttribLocation(prog, "vs_ColInstanced");
     attrPosOffset = context->glGetAttribLocation(prog, "vs_OffsetInstanced");
+    attrUV = context->glGetAttribLocation(prog, "vs_UV");
 
     unifModel      = context->glGetUniformLocation(prog, "u_Model");
     unifModelInvTr = context->glGetUniformLocation(prog, "u_ModelInvTr");
     unifViewProj   = context->glGetUniformLocation(prog, "u_ViewProj");
     unifColor      = context->glGetUniformLocation(prog, "u_Color");
+    unif_sampler2D = context->glGetUniformLocation(prog, "u_texture");
 }
 
 void ShaderProgram::useMe()
@@ -313,12 +317,16 @@ void ShaderProgram::printLinkInfoLog(int prog)
 }
 
 
-void ShaderProgram::drawInterleave(Drawable &d)
+void ShaderProgram::drawInterleave(Drawable &d, int texture_slot = 0)
 {
     useMe();
 
     if (d.elemCount() < 0){
         throw std::out_of_range("Attempting to draw a drawable with m_count of " + std::to_string(d.elemCount()) + "!");
+    }
+    if (unif_sampler2D != -1){
+        context->glUniform1i(unif_sampler2D, texture_slot);
+//        std::cout<<"slotinput"<<std::endl;
     }
 
     if (attrPos != -1 && d.bindInterleave()){
@@ -349,4 +357,38 @@ void ShaderProgram::drawInterleave(Drawable &d)
     if (attrCol != -1) context->glDisableVertexAttribArray(attrCol);
     context->printGLErrorLog();
 
+}
+
+void ShaderProgram::drawQuad(Drawable &d){
+    useMe();
+
+    if (d.elemCount() < 0){
+        throw std::out_of_range("Attempting to draw a drawable with m_count of " + std::to_string(d.elemCount()) + "!");
+    }
+
+    if(unif_sampler2D != -1){
+        context->glUniform1i(unif_sampler2D, 1);
+    }
+
+    if (attrPos != -1 && d.bindInterleave()){
+        context->glEnableVertexAttribArray(attrPos);
+        context->glVertexAttribPointer(attrPos,  4, GL_FLOAT,
+                                       false, 3 * sizeof(glm::vec4),
+                                       (void*)0);
+    }
+
+    if (attrCol != -1 && d.bindInterleave()){
+        context->glEnableVertexAttribArray(attrCol);
+        context->glVertexAttribPointer(attrCol, 4, GL_FLOAT,
+                                       false, 3 * sizeof(glm::vec4),
+                                       (void*)sizeof(glm::vec4));
+    }
+
+    d.bindIdx();
+    context->glDrawElements(d.drawMode(), d.elemCount(), GL_UNSIGNED_INT, 0);
+
+    if (attrPos != -1) context->glDisableVertexAttribArray(attrPos);
+    if (attrCol != -1) context->glDisableVertexAttribArray(attrCol);
+
+    context->printGLErrorLog();
 }

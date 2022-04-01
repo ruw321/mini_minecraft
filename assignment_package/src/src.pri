@@ -6,6 +6,7 @@ SOURCES += \
     $$PWD/main.cpp \
     $$PWD/mainwindow.cpp \
     $$PWD/mygl.cpp \
+    $$PWD/quad.cpp \
     $$PWD/scene/biomes.cpp \
     $$PWD/scene/texture.cpp \
     $$PWD/shaderprogram.cpp \
@@ -19,12 +20,14 @@ SOURCES += \
     $$PWD/scene/player.cpp \
     $$PWD/scene/camera.cpp \
     $$PWD/playerinfo.cpp \
-    $$PWD/scene/chunk.cpp
+    $$PWD/scene/chunk.cpp \
+    $$PWD/framebuffer.cpp
 
 HEADERS += \
     $$PWD/la.h \
     $$PWD/mainwindow.h \
     $$PWD/mygl.h \
+    $$PWD/quad.h \
     $$PWD/scene/biomes.h \
     $$PWD/scene/texture.h \
     $$PWD/shaderprogram.h \
@@ -40,4 +43,5 @@ HEADERS += \
     $$PWD/scene/player.h \
     $$PWD/scene/camera.h \
     $$PWD/playerinfo.h \
-    $$PWD/scene/chunk.h
+    $$PWD/scene/chunk.h \
+    $$PWD/framebuffer.h

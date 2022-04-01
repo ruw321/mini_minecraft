@@ -7,6 +7,8 @@
 #include "scene/camera.h"
 #include "scene/terrain.h"
 #include "scene/player.h"
+#include "framebuffer.h"
+#include "quad.h"
 
 #include <QOpenGLVertexArrayObject>
 #include <QOpenGLShaderProgram>
@@ -28,6 +30,10 @@ private:
     Terrain m_terrain; // All of the Chunks that currently comprise the world.
     Player m_player; // The entity controlled by the user. Contains a camera to display what it sees as well.
     InputBundle m_inputs; // A collection of variables to be updated in keyPressEvent, mouseMoveEvent, mousePressEvent, etc.
+    FrameBuffer m_frameBuffer;
+    Quad m_quad;
+    Texture m_texture;
+    Texture m_textureNormal;
 
     QTimer m_timer; // Timer linked to tick(). Fires approximately 60 times per second.
 

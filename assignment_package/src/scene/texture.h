@@ -11,7 +11,7 @@ class Texture
 public:
     OpenGLContext* m_context;
     GLuint m_textureHandle;
-    uPtr<QImage> m_textureImage;
+    std::shared_ptr<QImage> m_textureImage;
 
     Texture(OpenGLContext* context);
     ~Texture();

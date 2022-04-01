@@ -8,7 +8,9 @@
 
 MyGL::MyGL(QWidget *parent)
     : OpenGLContext(parent),
-      m_worldAxes(this),
+      m_worldAxes(this), m_quad(this), m_texture(this),
+      m_textureNormal(this),
+      m_frameBuffer(this, this->width() * this->devicePixelRatio(), this->height() * this->devicePixelRatio(), this->devicePixelRatio()),
       m_progLambert(this), m_progFlat(this), m_progInstanced(this),
       m_terrain(this), m_player(glm::vec3(48.f, 200.f, 48.f), m_terrain)
 {
@@ -43,9 +45,13 @@ void MyGL::initializeGL()
     // Set a few settings/modes in OpenGL rendering
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_LINE_SMOOTH);
+//    glDepthFunc(GL_LEQUAL);
     glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
     // Set the color with which the screen is filled at the start of each render call.
     glClearColor(0.37f, 0.74f, 1.0f, 1);
+
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     printGLErrorLog();
 
@@ -53,7 +59,9 @@ void MyGL::initializeGL()
     glGenVertexArrays(1, &vao);
 
     //Create the instance of the world axes
+    m_quad.createVBOdata();
     m_worldAxes.createVBOdata();
+    m_frameBuffer.create();
 
     // Create and set up the diffuse shader
     m_progLambert.create(":/glsl/lambert.vert.glsl", ":/glsl/lambert.frag.glsl");
@@ -70,6 +78,13 @@ void MyGL::initializeGL()
     // We have to have a VAO bound in OpenGL 3.2 Core. But if we're not
     // using multiple VAOs, we can just bind one once.
     glBindVertexArray(vao);
+    m_texture.create(":/minecraft_textures_all/minecraft_textures_all.png");
+    m_texture.load(0);
+    m_texture.bind(0);
+
+    m_textureNormal.create(":/minecraft_textures_all/minecraft_normals_all.png");
+    m_textureNormal.load(1);
+    m_textureNormal.bind(1);
 
 //    m_terrain.CreateTestScene();
 }
@@ -85,6 +100,9 @@ void MyGL::resizeGL(int w, int h) {
     m_progLambert.setViewProjMatrix(viewproj);
     m_progFlat.setViewProjMatrix(viewproj);
 
+    m_frameBuffer.resize(this->width(), this->height(), this->devicePixelRatio());
+    m_frameBuffer.destroy();
+    m_frameBuffer.create();
     printGLErrorLog();
 }
 
@@ -140,6 +158,8 @@ void MyGL::renderTerrain() {
     int x = 16 * static_cast<int>(glm::floor(m_player.mcr_position.x / 16.f));
     int z = 16 * static_cast<int>(glm::floor(m_player.mcr_position.z / 16.f));
 
+    m_texture.bind(0);
+    m_textureNormal.bind(1);
     m_terrain.draw(x - 256, x + 256, z - 256, z + 256, &m_progLambert);
 
 
