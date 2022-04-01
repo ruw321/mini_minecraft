@@ -19,11 +19,13 @@ public:
     int attrNor; // A handle for the "in" vec4 representing vertex normal in the vertex shader
     int attrCol; // A handle for the "in" vec4 representing vertex color in the vertex shader
     int attrPosOffset; // A handle for a vec3 used only in the instanced rendering shader
+    int attrUV;
 
     int unifModel; // A handle for the "uniform" mat4 representing model matrix in the vertex shader
     int unifModelInvTr; // A handle for the "uniform" mat4 representing inverse transpose of the model matrix in the vertex shader
     int unifViewProj; // A handle for the "uniform" mat4 representing combined projection and view matrices in the vertex shader
     int unifColor; // A handle for the "uniform" vec4 representing color of geometry in the vertex shader
+    int unif_sampler2D;
 
 public:
     ShaderProgram(OpenGLContext* context);
@@ -43,6 +45,8 @@ public:
 //    void drawInterleave(Drawable &d);
     // Draw the given object to our screen multiple times using instanced rendering
     void drawInstanced(InstancedDrawable &d);
+
+    void drawQuad(Drawable &d);
     // Utility function used in create()
     char* textFileRead(const char*);
     // Utility function that prints any shader compilation errors to the console
@@ -52,7 +56,7 @@ public:
 
     QString qTextFileRead(const char*);
 
-    void drawInterleave(Drawable &d);
+    void drawInterleave(Drawable &d, int texture_slot);
 
 
 

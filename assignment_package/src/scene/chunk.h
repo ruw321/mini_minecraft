@@ -53,9 +53,9 @@ struct BlockFace{
     {}
 };
 
-#define BLK_UVX * 0.03125
-#define BLK_UVY * 0.03125
-#define BLK_UV 0.03125
+#define BLK_UVX * 0.0625
+#define BLK_UVY * 0.0625
+#define BLK_UV 0.0625
 
 const static std::array<BlockFace, 6> adjacentFaces{
     //+X
@@ -99,6 +99,67 @@ const static std::array<BlockFace, 6> adjacentFaces{
               VertexData(glm::vec4(1, 1, 0, 1), glm::vec2(0, BLK_UV)))
 
 
+
+};
+
+static std::unordered_map<BlockType,
+std::unordered_map<Direction, glm::vec2, EnumHash>, EnumHash> blockFaceUV{
+    {GRASS, std::unordered_map<Direction, glm::vec2, EnumHash>{
+            {XPOS, glm::vec2(3.f BLK_UVX, 15.f BLK_UVY)},
+            {XNEG, glm::vec2(3.f BLK_UVX, 15.f BLK_UVY)},
+            {YPOS, glm::vec2(8.f BLK_UVX, 13.f BLK_UVY)},
+            {YNEG, glm::vec2(2.f BLK_UVX, 15.f BLK_UVY)},
+            {ZPOS, glm::vec2(3.f BLK_UVX, 15.f BLK_UVY)},
+            {ZNEG, glm::vec2(3.f BLK_UVX, 15.f BLK_UVY)}
+        }},
+//    {GRASS, std::unordered_map<Direction, glm::vec2, EnumHash>{
+//            {XPOS, glm::vec2(1.f, 1.f)},
+//            {XNEG, glm::vec2(1.f, 1.f)},
+//            {YPOS, glm::vec2(1.f, 1.f)},
+//            {YNEG, glm::vec2(1.f, 1.f)},
+//            {ZPOS, glm::vec2(1.f, 1.f)},
+//            {ZNEG, glm::vec2(1.f, 1.f)}
+//        }},
+    {DIRT, std::unordered_map<Direction, glm::vec2, EnumHash>{
+            {XPOS, glm::vec2(2.f BLK_UVX, 15.f BLK_UVY)},
+            {XNEG, glm::vec2(2.f BLK_UVX, 15.f BLK_UVY)},
+            {YPOS, glm::vec2(2.f BLK_UVX, 15.f BLK_UVY)},
+            {YNEG, glm::vec2(2.f BLK_UVX, 15.f BLK_UVY)},
+            {ZPOS, glm::vec2(2.f BLK_UVX, 15.f BLK_UVY)},
+            {ZNEG, glm::vec2(2.f BLK_UVX, 15.f BLK_UVY)}
+        }},
+    {STONE, std::unordered_map<Direction, glm::vec2, EnumHash>{
+            {XPOS, glm::vec2(1.f BLK_UVX, 15.f BLK_UVY)},
+            {XNEG, glm::vec2(1.f BLK_UVX, 15.f BLK_UVY)},
+            {YPOS, glm::vec2(1.f BLK_UVX, 15.f BLK_UVY)},
+            {YNEG, glm::vec2(1.f BLK_UVX, 15.f BLK_UVY)},
+            {ZPOS, glm::vec2(1.f BLK_UVX, 15.f BLK_UVY)},
+            {ZNEG, glm::vec2(1.f BLK_UVX, 15.f BLK_UVY)}
+        }},
+    {WATER, std::unordered_map<Direction, glm::vec2, EnumHash>{
+            {XPOS, glm::vec2(13.f BLK_UVX, 3.f BLK_UVY)},
+            {XNEG, glm::vec2(13.f BLK_UVX, 3.f BLK_UVY)},
+            {YPOS, glm::vec2(13.f BLK_UVX, 3.f BLK_UVY)},
+            {YNEG, glm::vec2(13.f BLK_UVX, 3.f BLK_UVY)},
+            {ZPOS, glm::vec2(13.f BLK_UVX, 3.f BLK_UVY)},
+            {ZNEG, glm::vec2(13.f BLK_UVX, 3.f BLK_UVY)}
+        }},
+    {SNOW, std::unordered_map<Direction, glm::vec2, EnumHash>{
+            {XPOS, glm::vec2(4.f BLK_UVX, 11.f BLK_UVY)},
+            {XNEG, glm::vec2(4.f BLK_UVX, 11.f BLK_UVY)},
+            {YPOS, glm::vec2(2.f BLK_UVX, 11.f BLK_UVY)},
+            {YNEG, glm::vec2(2.f BLK_UVX, 15.f BLK_UVY)},
+            {ZPOS, glm::vec2(4.f BLK_UVX, 11.f BLK_UVY)},
+            {ZNEG, glm::vec2(4.f BLK_UVX, 11.f BLK_UVY)}
+        }},
+    {SAND, std::unordered_map<Direction, glm::vec2, EnumHash>{
+            {XPOS, glm::vec2(2.f BLK_UVX, 14.f BLK_UVY)},
+            {XNEG, glm::vec2(2.f BLK_UVX, 14.f BLK_UVY)},
+            {YPOS, glm::vec2(2.f BLK_UVX, 14.f BLK_UVY)},
+            {YNEG, glm::vec2(2.f BLK_UVX, 14.f BLK_UVY)},
+            {ZPOS, glm::vec2(2.f BLK_UVX, 14.f BLK_UVY)},
+            {ZNEG, glm::vec2(2.f BLK_UVX, 14.f BLK_UVY)}
+        }}
 
 };
 

@@ -200,7 +200,7 @@ void Terrain::draw(int minX, int maxX, int minZ, int maxZ, ShaderProgram *shader
 
 
                 shaderProgram->setModelMatrix(glm::translate(glm::mat4(1.f), glm::vec3(x, 0.f, z)));
-                shaderProgram->drawInterleave(*chunk);
+                shaderProgram->drawInterleave(*chunk, 0);
             }
         }
     }
@@ -239,7 +239,7 @@ void Terrain::initializeChunk(Chunk *chunk) {
 
 void Terrain::updateTerrian(glm::vec3 p) {
 
-    int r = 2; // 5x5
+    int r = 1; // 5x5
     std::vector<glm::ivec2> currSourrondingZones = getSurroundingZones(p.x, p.z, r);
 
     std::vector<Chunk*> newChunks;
@@ -329,29 +329,30 @@ std::vector<glm::ivec2> Terrain::getSurroundingZones(int x, int z, int r)
 }
 
 BlockType Terrain::BlockType(int height, int maxHeight, enum BiomeType biome) {
-    if (height <= 128) {
-        return STONE;
-    }
-    else {
-        if (maxHeight <= 145) {
-            if (height == maxHeight) {
-                return GRASS;
-            } else {
-                return DIRT;
-            }
-        }
-        else {
-            if (maxHeight <= 170) {
-                return STONE;
-            } else {
-                if (height == maxHeight) {
-                    return SNOW;
-                } else {
-                    return STONE;
-                }
-            }
-        }
-    }
+//    if (height <= 128) {
+//        return STONE;
+//    }
+//    else {
+//        if (maxHeight <= 145) {
+//            if (height == maxHeight) {
+//                return GRASS;
+//            } else {
+//                return DIRT;
+//            }
+//        }
+//        else {
+//            if (maxHeight <= 170) {
+//                return STONE;
+//            } else {
+//                if (height == maxHeight) {
+//                    return SNOW;
+//                } else {
+//                    return STONE;
+//                }
+//            }
+//        }
+//    }
+    return GRASS;
 }
 
 
