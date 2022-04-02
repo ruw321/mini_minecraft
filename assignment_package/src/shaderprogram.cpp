@@ -75,6 +75,7 @@ void ShaderProgram::create(const char *vertfile, const char *fragfile)
     unifViewProj   = context->glGetUniformLocation(prog, "u_ViewProj");
     unifColor      = context->glGetUniformLocation(prog, "u_Color");
     unif_sampler2D = context->glGetUniformLocation(prog, "u_texture");
+    unif_normSampler2D = context->glGetUniformLocation(prog, "u_normTexture");
 }
 
 void ShaderProgram::useMe()
@@ -327,6 +328,9 @@ void ShaderProgram::drawInterleave(Drawable &d, int texture_slot = 0)
     if (unif_sampler2D != -1){
         context->glUniform1i(unif_sampler2D, texture_slot);
 //        std::cout<<"slotinput"<<std::endl;
+    }
+    if (unif_normSampler2D != -1){
+        context->glUniform1i(unif_normSampler2D, 1);
     }
 
     if (attrPos != -1 && d.bindInterleave()){
