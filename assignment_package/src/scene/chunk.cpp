@@ -35,19 +35,25 @@ void Chunk::createVBOdata() {
     for (int z = 0; z < 16; z++){
         for (int y = 0; y < 256; y++){
             for (int x = 0; x < 16; x++){
+
                 BlockType current = getBlockAt(x, y, z);
                 glm::vec4 currentPos = glm::vec4(x, y, z, 0);
                 if (current != EMPTY){
+
                     for (BlockFace neighborFace : adjacentFaces){
 
                         glm::vec3 neighborPos = neighborFace.directionVec
                                 + glm::vec3(x, y, z);
-
+//                        std::cout<<getBlockAt(0, 0, 0)<<std::endl;
                         BlockType neighborType = getBlockAt(int(neighborPos.x),
                                                             int(neighborPos.y),
                                                             int(neighborPos.z));
                         if (neighborType == EMPTY){
+                            if (current == WATER && neighborFace.direction != YPOS){
+                                continue;
+                            }
                             for (int i = 0; i < 4; i++){
+//
 
                                 VBOdata.push_back(neighborFace.vertices[i].m_pos + currentPos);
                                 VBOdata.push_back(glm::vec4(neighborFace.vertices[i].m_uv +
@@ -55,7 +61,12 @@ void Chunk::createVBOdata() {
 //                                std::cout<<(neighborFace.vertices[i].m_uv + blockFaceUV[current][neighborFace.direction])[0]
 //                                        <<" "<<(neighborFace.vertices[i].m_uv + blockFaceUV[current][neighborFace.direction])[1]
 //                                        <<std::endl;
-                                VBOdata.push_back(glm::vec4(neighborFace.directionVec, 0));
+                                if (transparentType.find(current) != transparentType.end()){
+                                    VBOdata.push_back(glm::vec4(neighborFace.directionVec, 1));
+                                }else{
+                                    VBOdata.push_back(glm::vec4(neighborFace.vertices[i].m_uv +
+                                                                blockFaceUV[current][neighborFace.direction], 0, 0.5));
+                                }
 
                             }
                             idx.push_back(currentIdx);
@@ -68,6 +79,7 @@ void Chunk::createVBOdata() {
                         }
 
                     }
+
                 }
             }
         }

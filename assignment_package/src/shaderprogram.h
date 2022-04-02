@@ -26,6 +26,7 @@ public:
     int unifViewProj; // A handle for the "uniform" mat4 representing combined projection and view matrices in the vertex shader
     int unifColor; // A handle for the "uniform" vec4 representing color of geometry in the vertex shader
     int unif_sampler2D;
+    int unif_normSampler2D;
 
 public:
     ShaderProgram(OpenGLContext* context);
@@ -57,6 +58,7 @@ public:
     QString qTextFileRead(const char*);
 
     void drawInterleave(Drawable &d, int texture_slot);
+
 
 
 

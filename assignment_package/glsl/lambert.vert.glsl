@@ -51,7 +51,10 @@ void main()
                                                             // model matrix. This is necessary to ensure the normals remain
                                                             // perpendicular to the surface after the surface is transformed by
                                                             // the model matrix.
-
+//    fs_Nor = vs_Nor;
+    if (vs_Nor.w == 0.5){
+        fs_Nor = vs_Nor;
+    }
 
     vec4 modelposition = u_Model * vs_Pos;   // Temporarily store the transformed vertex positions for use below
 

@@ -5,6 +5,7 @@
 #include <unordered_map>
 #include <cstddef>
 #include "drawable.h"
+#include <set>
 
 
 //using namespace std;
@@ -102,6 +103,10 @@ const static std::array<BlockFace, 6> adjacentFaces{
 
 };
 
+static std::set<BlockType> transparentType{
+    WATER
+};
+
 static std::unordered_map<BlockType,
 std::unordered_map<Direction, glm::vec2, EnumHash>, EnumHash> blockFaceUV{
     {GRASS, std::unordered_map<Direction, glm::vec2, EnumHash>{
@@ -177,6 +182,7 @@ struct ChunkVBOData
     std::vector<GLuint> idx;
     std::vector<glm::vec4> data;
 };
+
 
 class Chunk : public Drawable{
 private:
