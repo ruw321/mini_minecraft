@@ -197,10 +197,18 @@ void Terrain::draw(int minX, int maxX, int minZ, int maxZ, ShaderProgram *shader
         for(int z = minZ; z < maxZ; z += 16) {
             if (hasChunkAt(x, z)) {
                 const uPtr<Chunk> &chunk = getChunkAt(x, z);
-
-
                 shaderProgram->setModelMatrix(glm::translate(glm::mat4(1.f), glm::vec3(x, 0.f, z)));
                 shaderProgram->drawInterleave(*chunk, 0);
+            }
+        }
+    }
+
+    for(int x = minX; x < maxX; x += 16) {
+        for(int z = minZ; z < maxZ; z += 16) {
+            if (hasChunkAt(x, z)) {
+                const uPtr<Chunk> &chunk = getChunkAt(x, z);
+                shaderProgram->setModelMatrix(glm::translate(glm::mat4(1.f), glm::vec3(x, 0.f, z)));
+                shaderProgram->drawInterleave_transparent(*chunk, 0);
             }
         }
     }
@@ -299,10 +307,11 @@ void Terrain::updateTerrian(glm::vec3 p) {
 
 void Terrain::fillColumn(int x, int z) {
     int maxHeight = mountain(glm::vec2(x,z));
+
     for (int k = 0; k <= maxHeight; k++) {
         setBlockAt(x, k, z, BlockType(k, maxHeight, GRASSLAND));
     }
-    for (int k = maxHeight + 1; k < 138; k++) {
+    for (int k = maxHeight+1; k < 138; k++) {
         setBlockAt(x, k, z, WATER);
     }
 }
@@ -329,30 +338,29 @@ std::vector<glm::ivec2> Terrain::getSurroundingZones(int x, int z, int r)
 }
 
 BlockType Terrain::BlockType(int height, int maxHeight, enum BiomeType biome) {
-//    if (height <= 128) {
-//        return STONE;
-//    }
-//    else {
-//        if (maxHeight <= 145) {
-//            if (height == maxHeight) {
-//                return GRASS;
-//            } else {
-//                return DIRT;
-//            }
-//        }
-//        else {
-//            if (maxHeight <= 170) {
-//                return STONE;
-//            } else {
-//                if (height == maxHeight) {
-//                    return SNOW;
-//                } else {
-//                    return STONE;
-//                }
-//            }
-//        }
-//    }
-    return GRASS;
+    if (height <= 128) {
+        return STONE;
+    }
+    else {
+        if (maxHeight <= 145) {
+            if (height == maxHeight) {
+                return GRASS;
+            } else {
+                return DIRT;
+            }
+        }
+        else {
+            if (maxHeight <= 170) {
+                return STONE;
+            } else {
+                if (height == maxHeight) {
+                    return SNOW;
+                } else {
+                    return STONE;
+                }
+            }
+        }
+    }
 }
 
 
