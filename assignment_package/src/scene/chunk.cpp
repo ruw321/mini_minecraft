@@ -18,6 +18,9 @@ void Chunk::createVBOdata() {
     std::vector<glm::vec4> VBOdata;
     std::vector<GLuint> idx;
 
+    std::vector<glm::vec4> VBOdata_transparent;
+    std::vector<GLuint> idx_transparent;
+
     std::unordered_map<BlockType, glm::vec4> blockColorMp = {
 
         {GRASS, glm::vec4(95.f, 159.f, 53.f, 0) / 255.f},
@@ -39,33 +42,68 @@ void Chunk::createVBOdata() {
                 glm::vec4 currentPos = glm::vec4(x, y, z, 0);
                 if (current != EMPTY){
                     for (BlockFace neighborFace : adjacentFaces){
-
+                        if (current == WATER) {
+                            if (neighborFace.directionVec == glm::vec3(1, 0, 0)){
+                                continue;
+                            }
+                            if (neighborFace.directionVec == glm::vec3(-1, 0, 0)){
+                                continue;
+                            }
+                            if (neighborFace.directionVec == glm::vec3(0, -1, 0)){
+                                continue;
+                            }
+                            if (neighborFace.directionVec == glm::vec3(0, 0, 1)){
+                                continue;
+                            }
+                            if (neighborFace.directionVec == glm::vec3(0, 0, -1)){
+                                continue;
+                            }
+                        }
                         glm::vec3 neighborPos = neighborFace.directionVec
                                 + glm::vec3(x, y, z);
 
                         BlockType neighborType = getBlockAt(int(neighborPos.x),
                                                             int(neighborPos.y),
                                                             int(neighborPos.z));
-                        if (neighborType == EMPTY){
-                            for (int i = 0; i < 4; i++){
+                        if (current != WATER) {
+                            if (neighborType == EMPTY || neighborType == WATER){
+                                for (int i = 0; i < 4; i++){
 
-                                VBOdata.push_back(neighborFace.vertices[i].m_pos + currentPos);
-                                VBOdata.push_back(glm::vec4(neighborFace.vertices[i].m_uv +
-                                                            blockFaceUV[current][neighborFace.direction], 0, 0));
-//                                std::cout<<(neighborFace.vertices[i].m_uv + blockFaceUV[current][neighborFace.direction])[0]
-//                                        <<" "<<(neighborFace.vertices[i].m_uv + blockFaceUV[current][neighborFace.direction])[1]
-//                                        <<std::endl;
-                                VBOdata.push_back(glm::vec4(neighborFace.directionVec, 0));
+                                    VBOdata.push_back(neighborFace.vertices[i].m_pos + currentPos);
+                                    VBOdata.push_back(glm::vec4(neighborFace.vertices[i].m_uv +
+                                                                blockFaceUV[current][neighborFace.direction], 0, 0));
 
+                                    VBOdata.push_back(glm::vec4(neighborFace.directionVec, 0));
+
+                                }
+                                idx.push_back(currentIdx);
+                                idx.push_back(currentIdx + 1);
+                                idx.push_back(currentIdx + 2);
+                                idx.push_back(currentIdx);
+                                idx.push_back(currentIdx + 2);
+                                idx.push_back(currentIdx + 3);
+                                currentIdx += 4;
                             }
-                            idx.push_back(currentIdx);
-                            idx.push_back(currentIdx + 1);
-                            idx.push_back(currentIdx + 2);
-                            idx.push_back(currentIdx);
-                            idx.push_back(currentIdx + 2);
-                            idx.push_back(currentIdx + 3);
-                            currentIdx += 4;
-                        }
+                       }
+                       else { // Water
+                            if (neighborType == EMPTY){
+                                for (int i = 0; i < 4; i++){
+
+                                    VBOdata_transparent.push_back(neighborFace.vertices[i].m_pos + currentPos);
+                                    VBOdata_transparent.push_back(glm::vec4(neighborFace.vertices[i].m_uv +
+                                                                blockFaceUV[current][neighborFace.direction], 0, 0));
+                                    VBOdata_transparent.push_back(glm::vec4(neighborFace.directionVec, 0));
+
+                                }
+                                idx_transparent.push_back(currentIdx);
+                                idx_transparent.push_back(currentIdx + 1);
+                                idx_transparent.push_back(currentIdx + 2);
+                                idx_transparent.push_back(currentIdx);
+                                idx_transparent.push_back(currentIdx + 2);
+                                idx_transparent.push_back(currentIdx + 3);
+                                currentIdx += 4;
+                            }
+                       }
 
                     }
                 }
@@ -74,9 +112,13 @@ void Chunk::createVBOdata() {
     }
 
     this->m_count = idx.size();
+    this->m_count_transparent = idx_transparent.size();
 
     this->m_VBOdata.idx = idx;
     this->m_VBOdata.data = VBOdata;
+
+    this->m_VBOdata_transparent.idx = idx_transparent;
+    this->m_VBOdata_transparent.data = VBOdata_transparent;
 }
 
 void Chunk::sendVBOdata() {
@@ -93,9 +135,24 @@ void Chunk::sendVBOdata() {
     generateInterleave();
     bindInterleave();
     mp_context->glBufferData(GL_ARRAY_BUFFER,
-
                              this->m_VBOdata.data.size() * sizeof (glm::vec4),
                              this->m_VBOdata.data.data(),
+                             GL_STATIC_DRAW);
+
+
+
+    generateIdx_transparent();
+    bindIdx_transparent();
+    mp_context->glBufferData(GL_ELEMENT_ARRAY_BUFFER,
+                             this->m_VBOdata_transparent.idx.size() * sizeof (GLuint),
+                             this->m_VBOdata.idx.data(),
+                             GL_STATIC_DRAW);
+
+    generateInterleave_transparent();
+    bindInterleave_transparent();
+    mp_context->glBufferData(GL_ARRAY_BUFFER,
+                             this->m_VBOdata_transparent.data.size() * sizeof (glm::vec4),
+                             this->m_VBOdata_transparent.data.data(),
                              GL_STATIC_DRAW);
 
 }
