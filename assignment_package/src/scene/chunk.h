@@ -16,7 +16,7 @@
 // block types, but in the scope of this project we'll never get anywhere near that many.
 enum BlockType : unsigned char
 {
-    EMPTY, GRASS, DIRT, STONE, WATER, SNOW, SAND
+    EMPTY, GRASS, DIRT, STONE, WATER, SNOW, SAND, LAVA
 };
 
 // The six cardinal directions in 3D space
@@ -117,14 +117,6 @@ std::unordered_map<Direction, glm::vec2, EnumHash>, EnumHash> blockFaceUV{
             {ZPOS, glm::vec2(3.f BLK_UVX, 15.f BLK_UVY)},
             {ZNEG, glm::vec2(3.f BLK_UVX, 15.f BLK_UVY)}
         }},
-//    {GRASS, std::unordered_map<Direction, glm::vec2, EnumHash>{
-//            {XPOS, glm::vec2(1.f, 1.f)},
-//            {XNEG, glm::vec2(1.f, 1.f)},
-//            {YPOS, glm::vec2(1.f, 1.f)},
-//            {YNEG, glm::vec2(1.f, 1.f)},
-//            {ZPOS, glm::vec2(1.f, 1.f)},
-//            {ZNEG, glm::vec2(1.f, 1.f)}
-//        }},
     {DIRT, std::unordered_map<Direction, glm::vec2, EnumHash>{
             {XPOS, glm::vec2(2.f BLK_UVX, 15.f BLK_UVY)},
             {XNEG, glm::vec2(2.f BLK_UVX, 15.f BLK_UVY)},
@@ -165,6 +157,14 @@ std::unordered_map<Direction, glm::vec2, EnumHash>, EnumHash> blockFaceUV{
             {YNEG, glm::vec2(2.f BLK_UVX, 14.f BLK_UVY)},
             {ZPOS, glm::vec2(2.f BLK_UVX, 14.f BLK_UVY)},
             {ZNEG, glm::vec2(2.f BLK_UVX, 14.f BLK_UVY)}
+        }},
+    {LAVA, std::unordered_map<Direction, glm::vec2, EnumHash>{
+            {XPOS, glm::vec2(13.f BLK_UVX, 2.f BLK_UVY)},
+            {XNEG, glm::vec2(13.f BLK_UVX, 2.f BLK_UVY)},
+            {YPOS, glm::vec2(13.f BLK_UVX, 2.f BLK_UVY)},
+            {YNEG, glm::vec2(13.f BLK_UVX, 2.f BLK_UVY)},
+            {ZPOS, glm::vec2(13.f BLK_UVX, 2.f BLK_UVY)},
+            {ZNEG, glm::vec2(13.f BLK_UVX, 2.f BLK_UVY)}
         }}
 
 };
