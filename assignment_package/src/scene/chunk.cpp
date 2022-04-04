@@ -45,7 +45,7 @@ void Chunk::createVBOdata() {
                 if (current != EMPTY){
 
                     for (BlockFace neighborFace : adjacentFaces){
-                        if (current == WATER) {
+                        if (transparentType.find(current) != transparentType.end()) {
                             if (neighborFace.directionVec == glm::vec3(1, 0, 0)){
                                 continue;
                             }
