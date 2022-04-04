@@ -82,9 +82,10 @@ void main()
             diffuseColor = texture(u_texture, fs_UV);
             diffuseColor = diffuseColor * (0.5 * fbm(fs_Pos.xyz) + 0.5);
             vec4 my_Nor = texture(u_normTexture, fs_UV);
-            diffuseTerm = dot(normalize(my_Nor), normalize(fs_LightVec));
+            diffuseTerm = dot(normalize(fs_Nor + my_Nor), normalize(fs_LightVec));
         }else{
-            diffuseColor = texture(u_texture, vec2(fs_UV.x, fs_UV.y));
+
+            diffuseColor = texture(u_texture, vec2(fs_UV.x + (u_Time % 100) * 0.01 * 0.0625, fs_UV.y));
             diffuseColor = diffuseColor * (0.5 * fbm(fs_Pos.xyz) + 0.5);
             diffuseTerm = dot(normalize(fs_Nor), normalize(fs_LightVec));
         }

@@ -69,7 +69,7 @@ void Chunk::createVBOdata() {
                                                             int(neighborPos.y),
                                                             int(neighborPos.z));
 
-                        if (current != WATER) {
+                        if (transparentType.find(current) == transparentType.end()) {
                             if (neighborType == EMPTY || neighborType == WATER){
                                 for (int i = 0; i < 4; i++){
 
