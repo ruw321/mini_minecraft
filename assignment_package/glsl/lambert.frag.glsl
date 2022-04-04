@@ -14,6 +14,7 @@
 uniform vec4 u_Color; // The color with which to render this instance of geometry.
 uniform sampler2D u_texture;
 uniform sampler2D u_normTexture;
+uniform int u_Time;
 // These are the interpolated values out of the rasterizer, so you can't know
 // their specific values without knowing the vertices that contributed to them
 in vec4 fs_Pos;
@@ -73,15 +74,18 @@ float fbm(vec3 p) {
 void main()
 {
     // Material base color (before shading)
-        vec4 diffuseColor = texture(u_texture, fs_UV);
-        diffuseColor = diffuseColor * (0.5 * fbm(fs_Pos.xyz) + 0.5);
+        vec4 diffuseColor = vec4(0);
+
 
         float diffuseTerm = 0;
         if (fs_Nor.w == 0.5){
+            diffuseColor = texture(u_texture, fs_UV);
+            diffuseColor = diffuseColor * (0.5 * fbm(fs_Pos.xyz) + 0.5);
             vec4 my_Nor = texture(u_normTexture, fs_UV);
             diffuseTerm = dot(normalize(my_Nor), normalize(fs_LightVec));
         }else{
-        // Calculate the diffuse term for Lambert shading
+            diffuseColor = texture(u_texture, vec2(fs_UV.x, fs_UV.y));
+            diffuseColor = diffuseColor * (0.5 * fbm(fs_Pos.xyz) + 0.5);
             diffuseTerm = dot(normalize(fs_Nor), normalize(fs_LightVec));
         }
         // Avoid negative lighting values

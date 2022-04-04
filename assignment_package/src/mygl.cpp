@@ -9,7 +9,7 @@
 MyGL::MyGL(QWidget *parent)
     : OpenGLContext(parent),
       m_worldAxes(this), m_quad(this), m_texture(this),
-      m_textureNormal(this),
+      m_textureNormal(this), m_time(0),
       m_frameBuffer(this, this->width() * this->devicePixelRatio(), this->height() * this->devicePixelRatio(), this->devicePixelRatio()),
       m_progLambert(this), m_progFlat(this), m_progInstanced(this),
       m_terrain(this), m_player(glm::vec3(48.f, 210.f, 48.f), m_terrain),
@@ -143,6 +143,7 @@ void MyGL::paintGL() {
 
     m_progFlat.setViewProjMatrix(m_player.mcr_camera.getViewProj());
     m_progLambert.setViewProjMatrix(m_player.mcr_camera.getViewProj());
+    m_progLambert.setTime((m_time++) % 100);
     m_progInstanced.setViewProjMatrix(m_player.mcr_camera.getViewProj());
 
     renderTerrain();

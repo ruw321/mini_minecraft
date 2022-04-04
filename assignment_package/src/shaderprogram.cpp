@@ -11,7 +11,7 @@ ShaderProgram::ShaderProgram(OpenGLContext *context)
     : vertShader(), fragShader(), prog(),
       attrPos(-1), attrNor(-1), attrCol(-1), attrUV(-1),
       unifModel(-1), unifModelInvTr(-1), unifViewProj(-1), unifColor(-1),
-      unif_sampler2D(-1),
+      unif_sampler2D(-1), unif_time(-1),
       context(context)
 {}
 
@@ -76,6 +76,7 @@ void ShaderProgram::create(const char *vertfile, const char *fragfile)
     unifColor      = context->glGetUniformLocation(prog, "u_Color");
     unif_sampler2D = context->glGetUniformLocation(prog, "u_texture");
     unif_normSampler2D = context->glGetUniformLocation(prog, "u_normTexture");
+    unif_time = context->glGetUniformLocation(prog, "u_Time");
 }
 
 void ShaderProgram::useMe()
@@ -314,6 +315,13 @@ void ShaderProgram::printLinkInfoLog(int prog)
         context->glGetProgramInfoLog(prog, infoLogLen, &charsWritten, infoLog);
         qDebug() << "LinkInfoLog:" << "\n" << infoLog << "\n";
         delete [] infoLog;
+    }
+}
+
+void ShaderProgram::setTime(int t){
+    if (unif_time != -1){
+        useMe();
+        context->glUniform1i(unif_time, t);
     }
 }
 

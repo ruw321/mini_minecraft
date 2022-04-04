@@ -27,6 +27,7 @@ public:
     int unifColor; // A handle for the "uniform" vec4 representing color of geometry in the vertex shader
     int unif_sampler2D;
     int unif_normSampler2D;
+    int unif_time;
 
 public:
     ShaderProgram(OpenGLContext* context);
@@ -54,6 +55,8 @@ public:
     void printShaderInfoLog(int shader);
     // Utility function that prints any shader linking errors to the console
     void printLinkInfoLog(int prog);
+
+    void setTime(int t);
 
     QString qTextFileRead(const char*);
 

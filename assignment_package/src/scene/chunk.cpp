@@ -77,7 +77,7 @@ void Chunk::createVBOdata() {
                                     VBOdata.push_back(glm::vec4(neighborFace.vertices[i].m_uv +
                                                                 blockFaceUV[current][neighborFace.direction], 0, 0));
 
-                                    VBOdata.push_back(glm::vec4(neighborFace.directionVec, 0));
+                                    VBOdata.push_back(glm::vec4(neighborFace.directionVec, 0.5));
 
                                 }
                                 idx.push_back(currentIdx);
