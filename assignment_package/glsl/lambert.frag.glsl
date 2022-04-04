@@ -80,17 +80,18 @@ void main()
         float diffuseTerm = 0;
         if (fs_Nor.w == 0.5){
             diffuseColor = texture(u_texture, fs_UV);
-            diffuseColor = diffuseColor * (0.5 * fbm(fs_Pos.xyz) + 0.5);
             vec4 my_Nor = texture(u_normTexture, fs_UV);
             diffuseTerm = dot(normalize(fs_Nor + my_Nor), normalize(fs_LightVec));
-        }else{
+        }
+        else{
 
             diffuseColor = texture(u_texture, vec2(fs_UV.x + (u_Time % 100) * 0.01 * 0.0625, fs_UV.y));
-            diffuseColor = diffuseColor * (0.5 * fbm(fs_Pos.xyz) + 0.5);
             diffuseTerm = dot(normalize(fs_Nor), normalize(fs_LightVec));
         }
         // Avoid negative lighting values
         diffuseTerm = clamp(diffuseTerm, 0, 1);
+
+        diffuseColor.rgb = diffuseColor.rgb * (0.5 * fbm(fs_Pos.xyz) + 0.5); // make each block different
 
         float ambientTerm = 0.2;
 

@@ -8,11 +8,18 @@
 
 MyGL::MyGL(QWidget *parent)
     : OpenGLContext(parent),
-      m_worldAxes(this), m_quad(this), m_texture(this),
-      m_textureNormal(this), m_time(0),
-      m_frameBuffer(this, this->width() * this->devicePixelRatio(), this->height() * this->devicePixelRatio(), this->devicePixelRatio()),
-      m_progLambert(this), m_progFlat(this), m_progInstanced(this),
-      m_terrain(this), m_player(glm::vec3(48.f, 210.f, 48.f), m_terrain),
+      m_worldAxes(this),
+      m_progLambert(this),
+      m_progFlat(this),
+      m_progInstanced(this),
+      m_postprog(this),
+      m_terrain(this),
+      m_player(glm::vec3(48.f, 210.f, 48.f), m_terrain),
+      m_frameBuffer(this, this->width()*this->devicePixelRatio(), this->height()*this->devicePixelRatio(), this->devicePixelRatio()),
+      m_quad(this),
+      m_texture(this),
+      m_textureNormal(this),
+      m_time(0),
       m_currentMSecsSinceEpoch(QDateTime::currentMSecsSinceEpoch())
 {
     // Connect the timer to a function so that when the timer ticks the function is executed
@@ -61,8 +68,11 @@ void MyGL::initializeGL()
 
     //Create the instance of the world axes
     m_quad.createVBOdata();
-    m_worldAxes.createVBOdata();
+//    m_worldAxes.createVBOdata();
     m_frameBuffer.create();
+    m_frameBuffer.bindFrameBuffer();
+
+    m_postprog.create(":/glsl/post.vert.glsl", ":/glsl/post.frag.glsl");
 
     // Create and set up the diffuse shader
     m_progLambert.create(":/glsl/lambert.vert.glsl", ":/glsl/lambert.frag.glsl");
@@ -101,7 +111,7 @@ void MyGL::resizeGL(int w, int h) {
     m_progLambert.setViewProjMatrix(viewproj);
     m_progFlat.setViewProjMatrix(viewproj);
 
-    m_frameBuffer.resize(this->width(), this->height(), this->devicePixelRatio());
+    m_frameBuffer.resize(w * this->devicePixelRatio(), this->height() * this->devicePixelRatio(), this->devicePixelRatio());
     m_frameBuffer.destroy();
     m_frameBuffer.create();
     printGLErrorLog();
@@ -138,23 +148,44 @@ void MyGL::sendPlayerDataToGUI() const {
 // MyGL's constructor links update() to a timer that fires 60 times per second,
 // so paintGL() called at a rate of 60 frames per second.
 void MyGL::paintGL() {
+
+    m_time++;
+
+    m_frameBuffer.bindFrameBuffer();
+
+    glViewport(0, 0, this->width()* this->devicePixelRatio(), this->height() *this->devicePixelRatio());
+
+
     // Clear the screen so that we only see newly drawn images
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     m_progFlat.setViewProjMatrix(m_player.mcr_camera.getViewProj());
     m_progLambert.setViewProjMatrix(m_player.mcr_camera.getViewProj());
-    m_progLambert.setTime((m_time++) % 100);
+    m_progLambert.setTime(m_time);
     m_progInstanced.setViewProjMatrix(m_player.mcr_camera.getViewProj());
 
+//    std::cout << m_time << std::endl;
+    m_postprog.setTime(m_time);
     renderTerrain();
+    glBindFramebuffer(GL_FRAMEBUFFER, this->defaultFramebufferObject());
 
-    // draw the world axes
-    glDisable(GL_DEPTH_TEST);
-    m_progFlat.setModelMatrix(glm::mat4());
-    m_progFlat.setViewProjMatrix(m_player.mcr_camera.getViewProj());
 
-    m_progFlat.draw(m_worldAxes);
-    glEnable(GL_DEPTH_TEST);
+    glViewport(0, 0, this->width()* this->devicePixelRatio(), this->height() *this->devicePixelRatio());
+
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    m_frameBuffer.bindToTextureSlot(1);
+    m_postprog.setPostType(1);
+    m_postprog.drawQuad(m_quad);
+
+
+
+//  // draw the world axes
+//    glDisable(GL_DEPTH_TEST);
+//    m_progFlat.setModelMatrix(glm::mat4());
+//    m_progFlat.setViewProjMatrix(m_player.mcr_camera.getViewProj());
+
+//    m_progFlat.draw(m_worldAxes);
+//    glEnable(GL_DEPTH_TEST);
 }
 
 // TODO: Change this so it renders the nine zones of generated
