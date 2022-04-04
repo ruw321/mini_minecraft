@@ -35,6 +35,7 @@ void Chunk::createVBOdata() {
     //front 1, back 2, left 3, right 4, up 5, down 6
 //    std::vector<std::pair<int, int>> blockFaceNeedRender;
     int currentIdx = 0;
+    int currentIdx_transparent = 0;
     for (int z = 0; z < 16; z++){
         for (int y = 0; y < 256; y++){
             for (int x = 0; x < 16; x++){
@@ -89,7 +90,7 @@ void Chunk::createVBOdata() {
 
                             }
                        }
-                       else { // Water
+                       else  { // Water
                             if (neighborType == EMPTY){
                                 for (int i = 0; i < 4; i++){
 
@@ -99,13 +100,13 @@ void Chunk::createVBOdata() {
                                     VBOdata_transparent.push_back(glm::vec4(neighborFace.directionVec, 0));
 
                                 }
-                                idx_transparent.push_back(currentIdx);
-                                idx_transparent.push_back(currentIdx + 1);
-                                idx_transparent.push_back(currentIdx + 2);
-                                idx_transparent.push_back(currentIdx);
-                                idx_transparent.push_back(currentIdx + 2);
-                                idx_transparent.push_back(currentIdx + 3);
-                                currentIdx += 4;
+                                idx_transparent.push_back(currentIdx_transparent);
+                                idx_transparent.push_back(currentIdx_transparent + 1);
+                                idx_transparent.push_back(currentIdx_transparent + 2);
+                                idx_transparent.push_back(currentIdx_transparent);
+                                idx_transparent.push_back(currentIdx_transparent + 2);
+                                idx_transparent.push_back(currentIdx_transparent + 3);
+                                currentIdx_transparent += 4;
                             }
                        }
 
@@ -150,7 +151,7 @@ void Chunk::sendVBOdata() {
     bindIdx_transparent();
     mp_context->glBufferData(GL_ELEMENT_ARRAY_BUFFER,
                              this->m_VBOdata_transparent.idx.size() * sizeof (GLuint),
-                             this->m_VBOdata.idx.data(),
+                             this->m_VBOdata_transparent.idx.data(),
                              GL_STATIC_DRAW);
 
     generateInterleave_transparent();

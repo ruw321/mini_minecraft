@@ -371,7 +371,6 @@ void ShaderProgram::drawInterleave_transparent(Drawable &d, int texture_slot = 0
     }
     if (unif_sampler2D != -1){
         context->glUniform1i(unif_sampler2D, texture_slot);
-//        std::cout<<"slotinput"<<std::endl;
     }
 
     if (attrPos != -1 && d.bindInterleave_transparent()){
