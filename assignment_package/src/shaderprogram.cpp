@@ -360,7 +360,47 @@ void ShaderProgram::drawInterleave(Drawable &d, int texture_slot = 0)
     if (attrNor != -1) context->glDisableVertexAttribArray(attrNor);
     if (attrCol != -1) context->glDisableVertexAttribArray(attrCol);
     context->printGLErrorLog();
+}
 
+void ShaderProgram::drawInterleave_transparent(Drawable &d, int texture_slot = 0)
+{
+    useMe();
+
+    if (d.elemCount_transparent() < 0){
+        throw std::out_of_range("Attempting to draw a drawable with m_count of " + std::to_string(d.elemCount()) + "!");
+    }
+    if (unif_sampler2D != -1){
+        context->glUniform1i(unif_sampler2D, texture_slot);
+//        std::cout<<"slotinput"<<std::endl;
+    }
+
+    if (attrPos != -1 && d.bindInterleave_transparent()){
+        context->glEnableVertexAttribArray(attrPos);
+        context->glVertexAttribPointer(attrPos,  4, GL_FLOAT,
+                                       false, 3 * sizeof(glm::vec4),
+                                       (void*)0);
+    }
+
+    if (attrCol != -1 && d.bindInterleave_transparent()){
+        context->glEnableVertexAttribArray(attrCol);
+        context->glVertexAttribPointer(attrCol, 4, GL_FLOAT,
+                                       false, 3 * sizeof(glm::vec4),
+                                       (void*)sizeof(glm::vec4));
+    }
+
+    if (attrNor != -1 && d.bindInterleave_transparent()){
+        context->glEnableVertexAttribArray(attrNor);
+        context->glVertexAttribPointer(attrNor, 4, GL_FLOAT,
+                                       false, 3 * sizeof(glm::vec4),
+                                       (void*)(sizeof(glm::vec4) * 2));
+    }
+
+    d.bindIdx_transparent();
+    context->glDrawElements(d.drawMode(), d.elemCount_transparent(), GL_UNSIGNED_INT, 0);
+    if (attrPos != -1) context->glDisableVertexAttribArray(attrPos);
+    if (attrNor != -1) context->glDisableVertexAttribArray(attrNor);
+    if (attrCol != -1) context->glDisableVertexAttribArray(attrCol);
+    context->printGLErrorLog();
 }
 
 void ShaderProgram::drawQuad(Drawable &d){

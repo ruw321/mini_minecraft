@@ -1,0 +1,7 @@
+2022.3.28:
+https://www.google.com/search?q=using+const+unordered+map+c%2B%2B&sxsrf=APq-WBsrTvvlOA5jWCuUYqTm2u_nUDg6Xg%3A1648694866267&ei=UhZFYuj7D8ewytMPjNS7-As&ved=0ahUKEwjo7OL-qu_2AhVHmHIEHQzqDr8Q4dUDCA4&uact=5&oq=using+const+unordered+map+c%2B%2B&gs_lcp=Cgxnd3Mtd2l6LXNlcnAQAzoGCAAQBxAeOgsIABCxAxCDARCRAjoECAAQDToICAAQBxAKEB46CAgAEAcQBRAeOgYIABAFEB46BggAEAgQHjoICAAQDRAFEB46CAgAEAgQDRAeOgUIABCGA0oECEEYAEoECEYYAFAAWKssYOkuaABwAXgAgAHWAYgBgxWSAQcxMi4xMi4xmAEAoAEBwAEB&sclient=gws-wiz-serp
+https://stackoverflow.com/questions/13354394/reading-object-from-const-unordered-map
+https://www.google.com/search?q=no+viable+overloaded+%27%5B%5D%27+for+unordered+map+c%2B%2B&sxsrf=APq-WBvfjQlPPdANS4yMdPCorfjsoE-_eQ%3A1648694614781&ei=VhVFYqmrL_KD_QbZvb7IDQ&ved=0ahUKEwipru2Gqu_2AhXyQd8KHdmeD9kQ4dUDCA4&uact=5&oq=no+viable+overloaded+%27%5B%5D%27+for+unordered+map+c%2B%2B&gs_lcp=Cgxnd3Mtd2l6LXNlcnAQAzoGCAAQBxAeOggIABAIEAcQHjoECAAQHjoGCAAQBRAeOgYIABAIEB46BQgAEIYDOgUIABCABDoFCAAQogRKBAhBGABKBAhGGABQAFi4fmDdgAFoAHABeAGAAYkEiAH4I5IBCzE2LjExLjUuNS0xmAEAoAEBwAEB&sclient=gws-wiz-serp
+
+2022.3.29:
+https://stackoverflow.com/questions/4296276/c-cannot-declare-field-to-be-of-abstract-type

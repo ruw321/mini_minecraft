@@ -149,13 +149,14 @@ std::unordered_map<Direction, glm::vec2, EnumHash>, EnumHash> blockFaceUV{
             {ZPOS, glm::vec2(13.f BLK_UVX, 3.f BLK_UVY)},
             {ZNEG, glm::vec2(13.f BLK_UVX, 3.f BLK_UVY)}
         }},
+
     {SNOW, std::unordered_map<Direction, glm::vec2, EnumHash>{
-            {XPOS, glm::vec2(4.f BLK_UVX, 11.f BLK_UVY)},
-            {XNEG, glm::vec2(4.f BLK_UVX, 11.f BLK_UVY)},
+            {XPOS, glm::vec2(2.f BLK_UVX, 11.f BLK_UVY)},
+            {XNEG, glm::vec2(2.f BLK_UVX, 11.f BLK_UVY)},
             {YPOS, glm::vec2(2.f BLK_UVX, 11.f BLK_UVY)},
-            {YNEG, glm::vec2(2.f BLK_UVX, 15.f BLK_UVY)},
-            {ZPOS, glm::vec2(4.f BLK_UVX, 11.f BLK_UVY)},
-            {ZNEG, glm::vec2(4.f BLK_UVX, 11.f BLK_UVY)}
+            {YNEG, glm::vec2(2.f BLK_UVX, 11.f BLK_UVY)},
+            {ZPOS, glm::vec2(2.f BLK_UVX, 11.f BLK_UVY)},
+            {ZNEG, glm::vec2(2.f BLK_UVX, 11.f BLK_UVY)}
         }},
     {SAND, std::unordered_map<Direction, glm::vec2, EnumHash>{
             {XPOS, glm::vec2(2.f BLK_UVX, 14.f BLK_UVY)},
@@ -214,4 +215,5 @@ public:
     */
     glm::ivec2 m_pos;
     ChunkVBOData m_VBOdata;
+    ChunkVBOData m_VBOdata_transparent;
 };

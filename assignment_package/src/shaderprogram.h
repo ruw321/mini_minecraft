@@ -59,6 +59,8 @@ public:
 
     void drawInterleave(Drawable &d, int texture_slot);
 
+    void drawInterleave_transparent(Drawable &d, int texture_slot);
+
 
 
 
