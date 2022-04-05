@@ -11,7 +11,7 @@ ShaderProgram::ShaderProgram(OpenGLContext *context)
     : vertShader(), fragShader(), prog(),
       attrPos(-1), attrNor(-1), attrCol(-1), attrUV(-1),
       unifModel(-1), unifModelInvTr(-1), unifViewProj(-1), unifColor(-1),
-      unif_sampler2D(-1), unif_time(-1),
+      unif_sampler2D(-1), unif_time(-1), unif_textureBetter(-1),
       context(context)
 {}
 
@@ -76,6 +76,7 @@ void ShaderProgram::create(const char *vertfile, const char *fragfile)
     unifColor      = context->glGetUniformLocation(prog, "u_Color");
     unif_sampler2D = context->glGetUniformLocation(prog, "u_texture");
     unif_normSampler2D = context->glGetUniformLocation(prog, "u_normTexture");
+    unif_textureBetter = context->glGetUniformLocation(prog, "u_textureBetter");
     unif_time = context->glGetUniformLocation(prog, "u_Time");
 }
 
@@ -337,6 +338,9 @@ void ShaderProgram::drawInterleave(Drawable &d, int texture_slot = 0)
         context->glUniform1i(unif_sampler2D, texture_slot);
 //        std::cout<<"slotinput"<<std::endl;
     }
+    if (unif_textureBetter != -1){
+        context->glUniform1i(unif_textureBetter, 2);
+    }
     if (unif_normSampler2D != -1){
         context->glUniform1i(unif_normSampler2D, 1);
     }
@@ -379,6 +383,9 @@ void ShaderProgram::drawInterleave_transparent(Drawable &d, int texture_slot = 0
     }
     if (unif_sampler2D != -1){
         context->glUniform1i(unif_sampler2D, texture_slot);
+    }
+    if (unif_textureBetter != -1){
+        context->glUniform1i(unif_textureBetter, 2);
     }
 
     if (attrPos != -1 && d.bindInterleave_transparent()){

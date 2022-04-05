@@ -27,6 +27,7 @@ public:
     int unifColor; // A handle for the "uniform" vec4 representing color of geometry in the vertex shader
     int unif_sampler2D;
     int unif_normSampler2D;
+    int unif_textureBetter;
     int unif_time;
 
 public:
