@@ -12,6 +12,7 @@ ShaderProgram::ShaderProgram(OpenGLContext *context)
       attrPos(-1), attrNor(-1), attrCol(-1), attrUV(-1),
       unifModel(-1), unifModelInvTr(-1), unifViewProj(-1), unifColor(-1),
       unif_sampler2D(-1), unif_time(-1), unif_textureBetter(-1),
+      unif_camPos(-1),
       context(context)
 {}
 
@@ -78,6 +79,7 @@ void ShaderProgram::create(const char *vertfile, const char *fragfile)
     unif_normSampler2D = context->glGetUniformLocation(prog, "u_normTexture");
     unif_textureBetter = context->glGetUniformLocation(prog, "u_textureBetter");
     unif_time = context->glGetUniformLocation(prog, "u_Time");
+    unif_camPos = context->glGetUniformLocation(prog, "u_camPos");
 }
 
 void ShaderProgram::useMe()
@@ -323,6 +325,16 @@ void ShaderProgram::setTime(int t){
     if (unif_time != -1){
         useMe();
         context->glUniform1i(unif_time, t);
+    }
+}
+
+void ShaderProgram::setCamPos(glm::vec4 pos){
+
+
+    if(unif_camPos != -1)
+    {
+        useMe();
+        context->glUniform4fv(unif_camPos, 1, &pos[0]);
     }
 }
 

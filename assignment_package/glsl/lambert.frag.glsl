@@ -16,6 +16,7 @@ uniform sampler2D u_texture;
 uniform sampler2D u_normTexture;
 uniform sampler2D u_textureBetter;
 uniform int u_Time;
+uniform vec4 u_camPos;
 // These are the interpolated values out of the rasterizer, so you can't know
 // their specific values without knowing the vertices that contributed to them
 in vec4 fs_Pos;
@@ -26,6 +27,8 @@ in vec4 fs_Col;
 
 out vec4 out_Col; // This is the final output color that you will see on your
                   // screen for the pixel that is currently being processed.
+
+const vec4 fogColor = vec4(0.8, 0.9, 1, 0.1);
 
 float random1(vec3 p) {
     return fract(sin(dot(p,vec3(127.1, 311.7, 191.999)))
@@ -72,6 +75,18 @@ float fbm(vec3 p) {
     return sum;
 }
 
+//https://vicrucann.github.io/tutorials/osg-shader-fog/
+float getFogFactor(float d){
+    float fogMax = 20.f;
+    float fogMin = 10.f;
+
+    if (d >= fogMax)
+        return 1;
+    if (d <= fogMin)
+        return 0;
+    return 1 - (fogMax - d) / (fogMax - fogMin);
+}
+
 void main()
 {
     // Material base color (before shading)
@@ -110,8 +125,10 @@ void main()
                                                             //lit by our point light are not completely black.
 
         // Compute final shaded color
+        float d = distance(u_camPos, fs_Pos);
+        float fogAlpha = smoothstep(30.f, 200.f, d);
 
-        out_Col = vec4(diffuseColor.rgb * lightIntensity, diffuseColor.a);
+        out_Col = mix(vec4(diffuseColor.rgb * lightIntensity, diffuseColor.a), fogColor, fogAlpha);
 
 //        out_Col = diffuseColor;
 }

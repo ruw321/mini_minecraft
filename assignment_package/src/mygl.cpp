@@ -148,6 +148,7 @@ void MyGL::paintGL() {
     m_progFlat.setViewProjMatrix(m_player.mcr_camera.getViewProj());
     m_progLambert.setViewProjMatrix(m_player.mcr_camera.getViewProj());
     m_progLambert.setTime((m_time++) % 100);
+    m_progLambert.setCamPos(glm::vec4(m_player.mcr_camera.mcr_position, 0));
     m_progInstanced.setViewProjMatrix(m_player.mcr_camera.getViewProj());
 
     renderTerrain();

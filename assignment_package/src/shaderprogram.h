@@ -29,6 +29,7 @@ public:
     int unif_normSampler2D;
     int unif_textureBetter;
     int unif_time;
+    int unif_camPos;
 
 public:
     ShaderProgram(OpenGLContext* context);
@@ -58,6 +59,8 @@ public:
     void printLinkInfoLog(int prog);
 
     void setTime(int t);
+
+    void setCamPos(glm::vec4 pos);
 
     QString qTextFileRead(const char*);
 
