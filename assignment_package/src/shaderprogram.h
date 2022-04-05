@@ -29,7 +29,11 @@ public:
     int unif_normSampler2D;
     int unif_textureBetter;
     int unif_time;
+
     int unif_camPos;
+
+    int unif_postType;
+
 
 public:
     ShaderProgram(OpenGLContext* context);
@@ -68,7 +72,7 @@ public:
 
     void drawInterleave_transparent(Drawable &d, int texture_slot);
 
-
+    void setPostType(int type);
 
 
 private:

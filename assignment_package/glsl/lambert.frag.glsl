@@ -112,11 +112,14 @@ void main()
                 diffuseColor = texture(u_texture, vec2(fs_UV.x + (u_Time % 100) * 0.01 * 0.0625, fs_UV.y));
             }
             diffuseColor.xyz = diffuseColor.xyz * (0.5 * fbm(fs_Pos.xyz) + 0.5);
+
             diffuseTerm = dot(normalize(fs_Nor), normalize(fs_LightVec));
         }
 
         // Avoid negative lighting values
         diffuseTerm = clamp(diffuseTerm, 0, 1);
+
+        diffuseColor.rgb = diffuseColor.rgb * (0.5 * fbm(fs_Pos.xyz) + 0.5); // make each block different
 
         float ambientTerm = 0.2;
 

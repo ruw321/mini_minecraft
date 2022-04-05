@@ -12,7 +12,8 @@ ShaderProgram::ShaderProgram(OpenGLContext *context)
       attrPos(-1), attrNor(-1), attrCol(-1), attrUV(-1),
       unifModel(-1), unifModelInvTr(-1), unifViewProj(-1), unifColor(-1),
       unif_sampler2D(-1), unif_time(-1), unif_textureBetter(-1),
-      unif_camPos(-1),
+      unif_camPos(-1), unif_postType(-1),
+
       context(context)
 {}
 
@@ -79,7 +80,11 @@ void ShaderProgram::create(const char *vertfile, const char *fragfile)
     unif_normSampler2D = context->glGetUniformLocation(prog, "u_normTexture");
     unif_textureBetter = context->glGetUniformLocation(prog, "u_textureBetter");
     unif_time = context->glGetUniformLocation(prog, "u_Time");
+
     unif_camPos = context->glGetUniformLocation(prog, "u_camPos");
+
+    unif_postType = context->glGetUniformLocation(prog, "u_postType");
+
 }
 
 void ShaderProgram::useMe()
@@ -321,9 +326,10 @@ void ShaderProgram::printLinkInfoLog(int prog)
     }
 }
 
-void ShaderProgram::setTime(int t){
+void ShaderProgram::setTime(int t) {
+    useMe();
+
     if (unif_time != -1){
-        useMe();
         context->glUniform1i(unif_time, t);
     }
 }
@@ -440,18 +446,14 @@ void ShaderProgram::drawQuad(Drawable &d){
         context->glUniform1i(unif_sampler2D, 1);
     }
 
-    if (attrPos != -1 && d.bindInterleave()){
+    if (attrPos != -1 && d.bindPos()){
         context->glEnableVertexAttribArray(attrPos);
-        context->glVertexAttribPointer(attrPos,  4, GL_FLOAT,
-                                       false, 3 * sizeof(glm::vec4),
-                                       (void*)0);
+        context->glVertexAttribPointer(attrPos, 4, GL_FLOAT, false, 0, NULL);
     }
 
-    if (attrCol != -1 && d.bindInterleave()){
-        context->glEnableVertexAttribArray(attrCol);
-        context->glVertexAttribPointer(attrCol, 4, GL_FLOAT,
-                                       false, 3 * sizeof(glm::vec4),
-                                       (void*)sizeof(glm::vec4));
+    if (attrUV != -1 && d.bindUV()) {
+        context->glEnableVertexAttribArray(attrUV);
+        context->glVertexAttribPointer(attrUV, 2, GL_FLOAT, false, 0, NULL);
     }
 
     d.bindIdx();
@@ -461,4 +463,14 @@ void ShaderProgram::drawQuad(Drawable &d){
     if (attrCol != -1) context->glDisableVertexAttribArray(attrCol);
 
     context->printGLErrorLog();
+}
+
+void ShaderProgram::setPostType(int type)
+{
+    useMe();
+
+    if(unif_postType != -1)
+    {
+        context->glUniform1i(unif_postType, type);
+    }
 }
