@@ -14,6 +14,7 @@
 uniform vec4 u_Color; // The color with which to render this instance of geometry.
 uniform sampler2D u_texture;
 uniform sampler2D u_normTexture;
+uniform sampler2D u_textureBetter;
 uniform int u_Time;
 // These are the interpolated values out of the rasterizer, so you can't know
 // their specific values without knowing the vertices that contributed to them
@@ -79,15 +80,27 @@ void main()
 
         float diffuseTerm = 0;
         if (fs_Nor.w == 0.5){
-            diffuseColor = texture(u_texture, fs_UV);
+            if (fs_Col.z == 0.2){
+                diffuseColor = texture(u_textureBetter, fs_UV);
+            }
+            else{
+                diffuseColor = texture(u_texture, fs_UV);
+            }
+            diffuseColor.xyz = diffuseColor.xyz * (0.5 * fbm(fs_Pos.xyz) + 0.5);
             vec4 my_Nor = texture(u_normTexture, fs_UV);
             diffuseTerm = dot(normalize(fs_Nor + my_Nor), normalize(fs_LightVec));
-        }
-        else{
+        }else{
+            if (fs_Col.z == 0.2){
+                diffuseColor = texture(u_textureBetter, vec2(fs_UV.x + (u_Time % 100) * 0.01 * 0.0625, fs_UV.y));
+            }
+            else{
+                diffuseColor = texture(u_texture, vec2(fs_UV.x + (u_Time % 100) * 0.01 * 0.0625, fs_UV.y));
+            }
+            diffuseColor.xyz = diffuseColor.xyz * (0.5 * fbm(fs_Pos.xyz) + 0.5);
 
-            diffuseColor = texture(u_texture, vec2(fs_UV.x + (u_Time % 100) * 0.01 * 0.0625, fs_UV.y));
             diffuseTerm = dot(normalize(fs_Nor), normalize(fs_LightVec));
         }
+
         // Avoid negative lighting values
         diffuseTerm = clamp(diffuseTerm, 0, 1);
 
