@@ -20,6 +20,7 @@ MyGL::MyGL(QWidget *parent)
       m_quad(this),
       m_texture(this),
       m_textureNormal(this),
+      m_textureBetter(this),
       m_time(0),
 
       m_currentMSecsSinceEpoch(QDateTime::currentMSecsSinceEpoch())
@@ -182,7 +183,7 @@ void MyGL::paintGL() {
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     m_frameBuffer.bindToTextureSlot(1);
-    m_postprog.setPostType(1);
+    m_postprog.setPostType(0);
     m_postprog.drawQuad(m_quad);
 
 
