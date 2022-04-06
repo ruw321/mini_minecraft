@@ -21,6 +21,7 @@ MyGL::MyGL(QWidget *parent)
       m_texture(this),
       m_textureNormal(this),
       m_time(0),
+      m_textureBetter(this),
 
       m_currentMSecsSinceEpoch(QDateTime::currentMSecsSinceEpoch())
 {
