@@ -164,7 +164,6 @@ void MyGL::paintGL() {
     m_progLambert.setTime(m_time);
     m_progInstanced.setViewProjMatrix(m_player.mcr_camera.getViewProj());
 
-//    std::cout << m_time << std::endl;
     m_postprog.setTime(m_time);
     renderTerrain();
     glBindFramebuffer(GL_FRAMEBUFFER, this->defaultFramebufferObject());
@@ -173,11 +172,19 @@ void MyGL::paintGL() {
     glViewport(0, 0, this->width()* this->devicePixelRatio(), this->height() *this->devicePixelRatio());
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
     m_frameBuffer.bindToTextureSlot(1);
-    m_postprog.setPostType(1);
+    if (m_player.getCameraBlock(m_terrain) == WATER) {
+        // 1 is for under water visual effects
+        m_postprog.setPostType(1);
+    } else if (m_player.getCameraBlock(m_terrain) == LAVA) {
+        // 2 for lava
+        m_postprog.setPostType(2);
+    } else {
+        // any other number will be normal
+        m_postprog.setPostType(0);
+    }
     m_postprog.drawQuad(m_quad);
-
-
 
 //  // draw the world axes
 //    glDisable(GL_DEPTH_TEST);
@@ -237,7 +244,7 @@ void MyGL::keyPressEvent(QKeyEvent *e) {
     } else if (e->key() == Qt::Key_E) {
         m_inputs.ePressed = true;
     } else if (e->key() == Qt::Key_Space) {
-        if (m_inputs.isOnGround) {
+        if (m_inputs.isOnGround || m_player.getCameraBlock(m_terrain) == WATER || m_player.getCameraBlock(m_terrain) == LAVA) {
             m_inputs.spacePressed = true;
         }
     } else if (e->key() == Qt::Key_F) {
@@ -274,7 +281,6 @@ void MyGL::keyReleaseEvent(QKeyEvent *e) {
 }
 
 void MyGL::mouseMoveEvent(QMouseEvent *e) {
-    // TODO
     QPoint lastPosition = QPoint(width() / 2.f, height() / 2.f);
     float delta_x = GLfloat(lastPosition.x() - e->pos().x()) / width();
     float delta_y = GLfloat(lastPosition.y() - e->pos().y()) / height();
