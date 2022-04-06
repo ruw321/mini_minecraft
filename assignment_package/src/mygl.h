@@ -36,6 +36,7 @@ private:
     Quad m_quad;
     Texture m_texture;
     Texture m_textureNormal;
+    Texture m_textureBetter;
     int m_time;
 
     long long m_currentMSecsSinceEpoch; // Store the previous frame's currentMSecsSinceEpoch in MyGL

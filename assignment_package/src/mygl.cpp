@@ -8,6 +8,7 @@
 
 MyGL::MyGL(QWidget *parent)
     : OpenGLContext(parent),
+
       m_worldAxes(this),
       m_progLambert(this),
       m_progFlat(this),
@@ -20,6 +21,7 @@ MyGL::MyGL(QWidget *parent)
       m_texture(this),
       m_textureNormal(this),
       m_time(0),
+
       m_currentMSecsSinceEpoch(QDateTime::currentMSecsSinceEpoch())
 {
     // Connect the timer to a function so that when the timer ticks the function is executed
@@ -96,6 +98,10 @@ void MyGL::initializeGL()
     m_textureNormal.create(":/minecraft_textures_all/minecraft_normals_all.png");
     m_textureNormal.load(1);
     m_textureNormal.bind(1);
+
+    m_textureBetter.create(":/minecraft_textures_all/textureBetter.png");
+    m_textureBetter.load(2);
+    m_textureBetter.bind(2);
 
 //    m_terrain.CreateTestScene();
 }
@@ -205,6 +211,7 @@ void MyGL::renderTerrain() {
 
     m_texture.bind(0);
     m_textureNormal.bind(1);
+    m_textureBetter.bind(2);
     m_terrain.draw(x - 256, x + 256, z - 256, z + 256, &m_progLambert);
 
 

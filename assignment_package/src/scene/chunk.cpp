@@ -74,8 +74,13 @@ void Chunk::createVBOdata() {
                                 for (int i = 0; i < 4; i++){
 
                                     VBOdata.push_back(neighborFace.vertices[i].m_pos + currentPos);
-                                    VBOdata.push_back(glm::vec4(neighborFace.vertices[i].m_uv +
+                                    if (usingBetterTexture.find(current) == usingBetterTexture.end()){
+                                        VBOdata.push_back(glm::vec4(neighborFace.vertices[i].m_uv +
                                                                 blockFaceUV[current][neighborFace.direction], 0, 0));
+                                    }else{
+                                        VBOdata.push_back(glm::vec4(neighborFace.vertices[i].m_uv +
+                                                                blockFaceUV[current][neighborFace.direction], 0.2, 0));
+                                    }
 
                                     VBOdata.push_back(glm::vec4(neighborFace.directionVec, 0.5));
 
@@ -95,8 +100,14 @@ void Chunk::createVBOdata() {
                                 for (int i = 0; i < 4; i++){
 
                                     VBOdata_transparent.push_back(neighborFace.vertices[i].m_pos + currentPos);
-                                    VBOdata_transparent.push_back(glm::vec4(neighborFace.vertices[i].m_uv +
+                                    if (usingBetterTexture.find(current) == usingBetterTexture.end()){
+                                        VBOdata_transparent.push_back(glm::vec4(neighborFace.vertices[i].m_uv +
                                                                 blockFaceUV[current][neighborFace.direction], 0, 0));
+                                    }else{
+
+                                        VBOdata_transparent.push_back(glm::vec4(neighborFace.vertices[i].m_uv +
+                                                                blockFaceUV[current][neighborFace.direction], 0.2, 0));
+                                    }
                                     VBOdata_transparent.push_back(glm::vec4(neighborFace.directionVec, 0));
 
                                 }
