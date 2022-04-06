@@ -69,29 +69,31 @@ void Chunk::createVBOdata() {
                         if ((x == 0 || z == 0 || x == 15 || z == 15) and neighborFace.direction != YPOS and neighborFace.direction != YNEG){
                             Chunk* neighborChunk = m_neighbors[neighborFace.direction];
                             if (neighborChunk == nullptr){
-                                continue;
-                            }
-                            if (neighborFace.direction == XNEG && x == 0){
-                                neighborType = neighborChunk->getBlockAt(int(15),
-                                                                         int(neighborPos.y),
-                                                                         int(neighborPos.z));
-                            } else if (neighborFace.direction == XPOS && x == 15){
-                                neighborType = neighborChunk->getBlockAt(int(0),
-                                                                         int(neighborPos.y),
-                                                                         int(neighborPos.z));
-                            } else if (neighborFace.direction == ZPOS && z == 15){
-                                neighborType = neighborChunk->getBlockAt(int(neighborPos.x),
-                                                                         int(neighborPos.y),
-                                                                         int(0));
-                            } else if (neighborFace.direction == ZNEG && z == 0){
-                                neighborType = neighborChunk->getBlockAt(int(neighborPos.x),
-                                                                         int(neighborPos.y),
-                                                                         int(15));
+                                neighborType = EMPTY;
                             }
                             else{
-                                neighborType = getBlockAt(int(neighborPos.x),
-                                                                int(neighborPos.y),
-                                                                int(neighborPos.z));
+                                if (neighborFace.direction == XNEG && x == 0){
+                                    neighborType = neighborChunk->getBlockAt(int(15),
+                                                                             int(neighborPos.y),
+                                                                             int(neighborPos.z));
+                                } else if (neighborFace.direction == XPOS && x == 15){
+                                    neighborType = neighborChunk->getBlockAt(int(0),
+                                                                             int(neighborPos.y),
+                                                                             int(neighborPos.z));
+                                } else if (neighborFace.direction == ZPOS && z == 15){
+                                    neighborType = neighborChunk->getBlockAt(int(neighborPos.x),
+                                                                             int(neighborPos.y),
+                                                                             int(0));
+                                } else if (neighborFace.direction == ZNEG && z == 0){
+                                    neighborType = neighborChunk->getBlockAt(int(neighborPos.x),
+                                                                             int(neighborPos.y),
+                                                                             int(15));
+                                }
+                                else{
+                                    neighborType = getBlockAt(int(neighborPos.x),
+                                                                    int(neighborPos.y),
+                                                                    int(neighborPos.z));
+                                }
                             }
 
 
