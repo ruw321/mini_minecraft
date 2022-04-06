@@ -336,10 +336,10 @@ void ShaderProgram::setTime(int t) {
 
 void ShaderProgram::setCamPos(glm::vec4 pos){
 
-
+    useMe();
     if(unif_camPos != -1)
     {
-        useMe();
+        std::cout<<pos.x<<" "<<pos.y<<" "<<pos.z<<std::endl;
         context->glUniform4fv(unif_camPos, 1, &pos[0]);
     }
 }

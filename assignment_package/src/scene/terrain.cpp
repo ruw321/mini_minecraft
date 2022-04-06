@@ -261,8 +261,9 @@ void Terrain::updateTerrian(glm::vec3 p) {
             {
                 for (int z = zone_z; z < zone_z + 64; z += 16)
                 {
-                    uPtr<Chunk> newChunk = mkU<Chunk>(mp_context, x, z);
-                    m_chunks[toKey(x, z)] = move(newChunk);
+//                    uPtr<Chunk> newChunk = mkU<Chunk>(mp_context, x, z);
+//                    m_chunks[toKey(x, z)] = move(newChunk);
+                    instantiateChunkAt(x, z);
                     newChunks.push_back(m_chunks[toKey(x, z)].get());
                 }
             }

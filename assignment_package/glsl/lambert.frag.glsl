@@ -28,7 +28,7 @@ in vec4 fs_Col;
 out vec4 out_Col; // This is the final output color that you will see on your
                   // screen for the pixel that is currently being processed.
 
-const vec4 fogColor = vec4(0.8, 0.9, 1, 0.1);
+const vec4 fogColor = vec4(0.8, 0.9, 1, 0.9);
 
 float random1(vec3 p) {
     return fract(sin(dot(p,vec3(127.1, 311.7, 191.999)))
@@ -76,16 +76,16 @@ float fbm(vec3 p) {
 }
 
 //https://vicrucann.github.io/tutorials/osg-shader-fog/
-float getFogFactor(float d){
-    float fogMax = 20.f;
-    float fogMin = 10.f;
+//float getFogFactor(float d){
+//    float fogMax = 20.f;
+//    float fogMin = 10.f;
 
-    if (d >= fogMax)
-        return 1;
-    if (d <= fogMin)
-        return 0;
-    return 1 - (fogMax - d) / (fogMax - fogMin);
-}
+//    if (d >= fogMax)
+//        return 1;
+//    if (d <= fogMin)
+//        return 0;
+//    return 1 - (fogMax - d) / (fogMax - fogMin);
+//}
 
 void main()
 {

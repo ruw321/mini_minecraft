@@ -65,9 +65,41 @@ void Chunk::createVBOdata() {
                         glm::vec3 neighborPos = neighborFace.directionVec
                                 + glm::vec3(x, y, z);
 //                        std::cout<<getBlockAt(0, 0, 0)<<std::endl;
-                        BlockType neighborType = getBlockAt(int(neighborPos.x),
+                        BlockType neighborType;
+                        if ((x == 0 || z == 0 || x == 15 || z == 15) and neighborFace.direction != YPOS and neighborFace.direction != YNEG){
+                            Chunk* neighborChunk = m_neighbors[neighborFace.direction];
+                            if (neighborChunk == nullptr){
+                                continue;
+                            }
+                            if (neighborFace.direction == XNEG && x == 0){
+                                neighborType = neighborChunk->getBlockAt(int(15),
+                                                                         int(neighborPos.y),
+                                                                         int(neighborPos.z));
+                            } else if (neighborFace.direction == XPOS && x == 15){
+                                neighborType = neighborChunk->getBlockAt(int(0),
+                                                                         int(neighborPos.y),
+                                                                         int(neighborPos.z));
+                            } else if (neighborFace.direction == ZPOS && z == 15){
+                                neighborType = neighborChunk->getBlockAt(int(neighborPos.x),
+                                                                         int(neighborPos.y),
+                                                                         int(0));
+                            } else if (neighborFace.direction == ZNEG && z == 0){
+                                neighborType = neighborChunk->getBlockAt(int(neighborPos.x),
+                                                                         int(neighborPos.y),
+                                                                         int(15));
+                            }
+                            else{
+                                neighborType = getBlockAt(int(neighborPos.x),
+                                                                int(neighborPos.y),
+                                                                int(neighborPos.z));
+                            }
+
+
+                        }else{
+                            neighborType = getBlockAt(int(neighborPos.x),
                                                             int(neighborPos.y),
                                                             int(neighborPos.z));
+                        }
 
                         if (transparentType.find(current) == transparentType.end()) {
                             if (neighborType == EMPTY || neighborType == WATER){
@@ -186,7 +218,7 @@ BlockType Chunk::getBlockAt(unsigned int x, unsigned int y, unsigned int z) cons
 
 // Exists to get rid of compiler warnings about int -> unsigned int implicit conversion
 BlockType Chunk::getBlockAt(int x, int y, int z) const {
-    if (x < 0 || x > 15 || y < 0 || y > 255 || z < 0 || z > 15) {
+    if (y < 0 || y > 255){
         return EMPTY;
     }
     return getBlockAt(static_cast<unsigned int>(x), static_cast<unsigned int>(y), static_cast<unsigned int>(z));

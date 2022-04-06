@@ -135,6 +135,9 @@ void MyGL::tick() {
     m_player.tick(dT, m_inputs);
     m_currentMSecsSinceEpoch = QDateTime::currentMSecsSinceEpoch();
     m_terrain.updateTerrian(m_player.mcr_position);
+//    std::cout<<m_player.mcr_position.x<< " "<<m_player.mcr_position.y<<" "<<m_player.mcr_position.z<<std::endl;
+
+//    m_progLambert.setCamPos(glm::vec4(m_player.mcr_position, 0));
     update(); // Calls paintGL() as part of a larger QOpenGLWidget pipeline
     sendPlayerDataToGUI(); // Updates the info in the secondary window displaying player data
 }
@@ -170,7 +173,8 @@ void MyGL::paintGL() {
     m_progLambert.setViewProjMatrix(m_player.mcr_camera.getViewProj());
 
     m_progLambert.setTime((m_time++) % 100);
-    m_progLambert.setCamPos(glm::vec4(m_player.mcr_camera.mcr_position, 0));
+    m_progLambert.setCamPos(glm::vec4(m_player.mcr_position, 1));
+//    std::cout<<m_player.mcr_position.x<< " "<<m_player.mcr_position.y<<" "<<m_player.mcr_position.z<<std::endl;
     m_progInstanced.setViewProjMatrix(m_player.mcr_camera.getViewProj());
 
 //    std::cout << m_time << std::endl;
