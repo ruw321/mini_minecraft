@@ -69,7 +69,11 @@ void Chunk::createVBOdata() {
                         if ((x == 0 || z == 0 || x == 15 || z == 15) and neighborFace.direction != YPOS and neighborFace.direction != YNEG){
                             Chunk* neighborChunk = m_neighbors[neighborFace.direction];
                             if (neighborChunk == nullptr){
-                                neighborType = EMPTY;
+                                if (y > 128){
+                                    neighborType = EMPTY;
+                                }else{
+                                    continue;
+                                }
                             }
                             else{
                                 if (neighborFace.direction == XNEG && x == 0){
