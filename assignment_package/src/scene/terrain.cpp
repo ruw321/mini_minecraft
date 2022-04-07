@@ -202,7 +202,7 @@ void Terrain::draw(int minX, int maxX, int minZ, int maxZ, ShaderProgram *shader
             }
         }
     }
-
+//    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     for(int x = minX; x < maxX; x += 16) {
         for(int z = minZ; z < maxZ; z += 16) {
             if (hasChunkAt(x, z)) {
@@ -261,8 +261,9 @@ void Terrain::updateTerrian(glm::vec3 p) {
             {
                 for (int z = zone_z; z < zone_z + 64; z += 16)
                 {
-                    uPtr<Chunk> newChunk = mkU<Chunk>(mp_context, x, z);
-                    m_chunks[toKey(x, z)] = move(newChunk);
+//                    uPtr<Chunk> newChunk = mkU<Chunk>(mp_context, x, z);
+//                    m_chunks[toKey(x, z)] = move(newChunk);
+                    instantiateChunkAt(x, z);
                     newChunks.push_back(m_chunks[toKey(x, z)].get());
                 }
             }

@@ -5,6 +5,7 @@
 #include <unordered_map>
 #include <cstddef>
 #include "drawable.h"
+#include <set>
 
 
 //using namespace std;
@@ -15,7 +16,7 @@
 // block types, but in the scope of this project we'll never get anywhere near that many.
 enum BlockType : unsigned char
 {
-    EMPTY, GRASS, DIRT, STONE, WATER, SNOW, SAND
+    EMPTY, GRASS, DIRT, STONE, WATER, SNOW, SAND, LAVA, BEDROCK
 };
 
 // The six cardinal directions in 3D space
@@ -102,6 +103,14 @@ const static std::array<BlockFace, 6> adjacentFaces{
 
 };
 
+static std::set<BlockType> transparentType{
+    WATER, LAVA
+};
+
+static std::set<BlockType> usingBetterTexture{
+    LAVA
+};
+
 static std::unordered_map<BlockType,
 std::unordered_map<Direction, glm::vec2, EnumHash>, EnumHash> blockFaceUV{
     {GRASS, std::unordered_map<Direction, glm::vec2, EnumHash>{
@@ -112,14 +121,6 @@ std::unordered_map<Direction, glm::vec2, EnumHash>, EnumHash> blockFaceUV{
             {ZPOS, glm::vec2(3.f BLK_UVX, 15.f BLK_UVY)},
             {ZNEG, glm::vec2(3.f BLK_UVX, 15.f BLK_UVY)}
         }},
-//    {GRASS, std::unordered_map<Direction, glm::vec2, EnumHash>{
-//            {XPOS, glm::vec2(1.f, 1.f)},
-//            {XNEG, glm::vec2(1.f, 1.f)},
-//            {YPOS, glm::vec2(1.f, 1.f)},
-//            {YNEG, glm::vec2(1.f, 1.f)},
-//            {ZPOS, glm::vec2(1.f, 1.f)},
-//            {ZNEG, glm::vec2(1.f, 1.f)}
-//        }},
     {DIRT, std::unordered_map<Direction, glm::vec2, EnumHash>{
             {XPOS, glm::vec2(2.f BLK_UVX, 15.f BLK_UVY)},
             {XNEG, glm::vec2(2.f BLK_UVX, 15.f BLK_UVY)},
@@ -137,12 +138,12 @@ std::unordered_map<Direction, glm::vec2, EnumHash>, EnumHash> blockFaceUV{
             {ZNEG, glm::vec2(1.f BLK_UVX, 15.f BLK_UVY)}
         }},
     {WATER, std::unordered_map<Direction, glm::vec2, EnumHash>{
-            {XPOS, glm::vec2(13.f BLK_UVX, 3.f BLK_UVY)},
-            {XNEG, glm::vec2(13.f BLK_UVX, 3.f BLK_UVY)},
-            {YPOS, glm::vec2(13.f BLK_UVX, 3.f BLK_UVY)},
-            {YNEG, glm::vec2(13.f BLK_UVX, 3.f BLK_UVY)},
-            {ZPOS, glm::vec2(13.f BLK_UVX, 3.f BLK_UVY)},
-            {ZNEG, glm::vec2(13.f BLK_UVX, 3.f BLK_UVY)}
+            {XPOS, glm::vec2(14.f BLK_UVX, 2.f BLK_UVY)},
+            {XNEG, glm::vec2(14.f BLK_UVX, 2.f BLK_UVY)},
+            {YPOS, glm::vec2(14.f BLK_UVX, 2.f BLK_UVY)},
+            {YNEG, glm::vec2(14.f BLK_UVX, 2.f BLK_UVY)},
+            {ZPOS, glm::vec2(14.f BLK_UVX, 2.f BLK_UVY)},
+            {ZNEG, glm::vec2(14.f BLK_UVX, 2.f BLK_UVY)}
         }},
 
     {SNOW, std::unordered_map<Direction, glm::vec2, EnumHash>{
@@ -160,6 +161,22 @@ std::unordered_map<Direction, glm::vec2, EnumHash>, EnumHash> blockFaceUV{
             {YNEG, glm::vec2(2.f BLK_UVX, 14.f BLK_UVY)},
             {ZPOS, glm::vec2(2.f BLK_UVX, 14.f BLK_UVY)},
             {ZNEG, glm::vec2(2.f BLK_UVX, 14.f BLK_UVY)}
+        }},
+    {LAVA, std::unordered_map<Direction, glm::vec2, EnumHash>{
+            {XPOS, glm::vec2(13.f BLK_UVX, 0.f BLK_UVY)},
+            {XNEG, glm::vec2(13.f BLK_UVX, 0.f BLK_UVY)},
+            {YPOS, glm::vec2(13.f BLK_UVX, 0.f BLK_UVY)},
+            {YNEG, glm::vec2(13.f BLK_UVX, 0.f BLK_UVY)},
+            {ZPOS, glm::vec2(13.f BLK_UVX, 0.f BLK_UVY)},
+            {ZNEG, glm::vec2(13.f BLK_UVX, 0.f BLK_UVY)}
+        }},
+    {BEDROCK, std::unordered_map<Direction, glm::vec2, EnumHash>{
+            {XPOS, glm::vec2(1.f BLK_UVX, 14.f BLK_UVY)},
+            {XNEG, glm::vec2(1.f BLK_UVX, 14.f BLK_UVY)},
+            {YPOS, glm::vec2(1.f BLK_UVX, 14.f BLK_UVY)},
+            {YNEG, glm::vec2(1.f BLK_UVX, 14.f BLK_UVY)},
+            {ZPOS, glm::vec2(1.f BLK_UVX, 14.f BLK_UVY)},
+            {ZNEG, glm::vec2(1.f BLK_UVX, 14.f BLK_UVY)}
         }}
 
 };
@@ -178,6 +195,7 @@ struct ChunkVBOData
     std::vector<GLuint> idx;
     std::vector<glm::vec4> data;
 };
+
 
 class Chunk : public Drawable{
 private:

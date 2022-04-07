@@ -29,6 +29,9 @@ public:
     void removeBlock(Terrain *terrain);
     void placeBlock(Terrain *terrain);
 
+    BlockType getCameraBlock(const Terrain &terrain);
+    BlockType getPositionBlock(const Terrain &terrain);
+
     // Player overrides all of Entity's movement
     // functions so that it transforms its camera
     // by the same amount as it transforms itself.

@@ -20,6 +20,7 @@ void Player::tick(float dT, InputBundle &input) {
 // state of the inputs.
 void Player::processInputs(InputBundle &inputs) {
     // this variable makes sure to halt the movement
+    m_acceleration = glm::vec3(0.f);
     bool nothingClicked = true;
     if (inputs.flight_mode) {
         if (inputs.wPressed) {
@@ -31,9 +32,9 @@ void Player::processInputs(InputBundle &inputs) {
         } else if (inputs.aPressed) {
             m_acceleration += -m_right;
         } else if (inputs.ePressed) {
-            m_acceleration += m_up;
+            m_acceleration.y += m_up.y;
         } else if (inputs.qPressed) {
-            m_acceleration += -m_up;
+            m_acceleration.y += -m_up.y;
         } else {
             m_velocity = glm::vec3(0.f);
             m_acceleration = glm::vec3(0.f);
@@ -59,8 +60,12 @@ void Player::processInputs(InputBundle &inputs) {
             nothingClicked = false;
         }
         if (inputs.spacePressed) {
-            if (isOnGround(mcr_terrain, inputs)) {
-                m_velocity.y = 10.f * m_up.y;
+            if (isOnGround(mcr_terrain, inputs) && !(getCameraBlock(mcr_terrain) == WATER) && !(getCameraBlock(mcr_terrain) == LAVA)) {
+                m_velocity.y = 30.f * m_up.y;
+                nothingClicked = false;
+            }
+            else if (getCameraBlock(mcr_terrain) == WATER || getCameraBlock(mcr_terrain) == LAVA) {
+                m_velocity.y += 5.f * m_up.y;
                 nothingClicked = false;
             }
         }
@@ -80,30 +85,45 @@ void Player::processInputs(InputBundle &inputs) {
 void Player::computePhysics(float dT, const Terrain &terrain, InputBundle &inputs) {
     // the player's velocity is reduced to less than 100% of its current value
     // every frame (simulates friction + drag) before acceleration is added to it.
+    glm::vec3 gravity = glm::vec3(0.0f, -9.8f, 0.0f) * 10.f;
+    m_velocity += m_acceleration * dT * 30.f;
     m_velocity *= 0.9f;
-    glm::vec3 gravity = glm::vec3(0.0f, -9.8f, 0.0f);
     glm::vec3 rayDirection = m_velocity + dT * m_acceleration;
-    m_velocity += m_acceleration * dT;
     // only perform collision detection when you are not in flight mode
     if (!inputs.flight_mode) {
         if (!isOnGround(terrain, inputs)) {
-            // drop to the ground
-            m_acceleration += gravity;
+            if ((getCameraBlock(terrain) == WATER || getCameraBlock(terrain) == LAVA)) {
+                if (!inputs.spacePressed) {
+                    // drop to the ground
+                    gravity *= 0.3;
+                    m_acceleration += gravity;
+                    m_velocity += m_acceleration * dT;
+                }
+            } else {
+                // drop to the ground
+                m_acceleration += gravity;
+                m_velocity += m_acceleration * dT;
+            }
         } else if (isOnGround(terrain, inputs)){
             m_acceleration.y = 0.f;
             m_velocity.y = glm::max(m_velocity.y, 0.f);
         }
         rayDirection = m_velocity * dT;
         detectCollision(&rayDirection, terrain);
+        if (getCameraBlock(terrain) == WATER || getCameraBlock(terrain) == LAVA || getPositionBlock(terrain) == WATER) {
+            // the player should move at 2/3 its normal speed
+            rayDirection *= 0.4;
+        }
+    } else {
+         rayDirection *= 0.2;
     }
-//    m_velocity += m_acceleration * dT;
     this->moveAlongVector(rayDirection);
 }
 
 bool Player::isOnGround(const Terrain &terrain, InputBundle &inputs) {
     // player position is 0.5 away from the vertex
     // chose bottomleft because I wanted to add 1 to get all the other three vertices
-    glm::vec3 bottomLeft = this->m_position - glm::vec3(0.5f, 0, 0.5f);
+    glm::vec3 bottomLeft = m_position - glm::vec3(0.5f, 0, 0.5f);
     // traverse the four bottom vertices
     for (int x = 0; x < 2; x++) {
         for (int z = 0; z < 2; z++) {
@@ -113,7 +133,8 @@ bool Player::isOnGround(const Terrain &terrain, InputBundle &inputs) {
                     floor(bottomLeft.z) + z);
             // as long as one of the vertex is on a block that is not empty
             // player is on the ground
-            if (terrain.getBlockAt(vertexPos) != EMPTY) {
+            BlockType currBlock = terrain.getBlockAt(vertexPos);
+            if (currBlock != EMPTY && currBlock != WATER && currBlock != LAVA) {
                 inputs.isOnGround = true;
                 if (!inputs.spacePressed) {
                     m_acceleration.y = 0.f;
@@ -166,7 +187,7 @@ bool Player::gridMarch(glm::vec3 rayOrigin, glm::vec3 rayDirection, const Terrai
         // If currCell contains something other than EMPTY, return
         // curr_t
         BlockType cellType = terrain.getBlockAt(currCell.x, currCell.y, currCell.z);
-        if (cellType != EMPTY) {
+        if (cellType != EMPTY && cellType != WATER && cellType != LAVA) {
             *out_blockHit = currCell;
             *out_dist = glm::min(maxLen, curr_t);
             return true;
@@ -244,6 +265,31 @@ void Player::placeBlock(Terrain *terrain) {
         chunkToUpdate->createVBOdata();
         chunkToUpdate->sendVBOdata();
     }
+}
+
+// returns the block that the camera position is at
+BlockType Player::getCameraBlock(const Terrain &terrain) {
+    glm::vec3 cam_pos = m_camera.mcr_position;
+    // we have to add hasChunkAt() because initially when the terrain is still forming, there are no chunks
+    if (cam_pos.y > 255 || cam_pos.y < 0 || !terrain.hasChunkAt(floor(cam_pos.x), floor(cam_pos.z))) {
+        return EMPTY;
+    }
+
+    BlockType cam_block = terrain.getBlockAt(floor(cam_pos.x), floor(cam_pos.y), floor(cam_pos.z));
+
+    return cam_block;
+}
+
+BlockType Player::getPositionBlock(const Terrain &terrain) {
+    glm::vec3 pos = m_position - glm::vec3(0.f, 0.5f, 0.f);
+    // we have to add hasChunkAt() because initially when the terrain is still forming, there are no chunks
+    if (pos.y > 255 || pos.y < 0 || !terrain.hasChunkAt(floor(pos.x), floor(pos.z))) {
+        return EMPTY;
+    }
+
+    BlockType pos_block = terrain.getBlockAt(floor(pos.x), floor(pos.y), floor(pos.z));
+
+    return pos_block;
 }
 
 void Player::setCameraWidthHeight(unsigned int w, unsigned int h) {

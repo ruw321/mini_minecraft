@@ -1,3 +1,14 @@
+# Milestone 2:
+
+## Texturing and Texture Animation (Zongxin Cui)
+- Texture
+   - Initially having trouble figure out how to load texture file, but evetually figured out
+   - Constructed the VBO texture data in a hard coded way, soon change to using unordered map and set to store and retrive data
+   - The normal texture did not worked as good as expected, but I added block face direction to the normal vector then normalize the normal vector to increase the contrast of different block face
+- Texture Animation
+   - Initially struggling to get the right changing offset for the uv to make runing water and lava, but later figure it out
+- Currently working on fog effect
+
 # Milestone 1: 
 
 [Milestone 1 demonstration](https://www.youtube.com/watch?v=VI6Wz9TMFQs)

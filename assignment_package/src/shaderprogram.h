@@ -26,6 +26,14 @@ public:
     int unifViewProj; // A handle for the "uniform" mat4 representing combined projection and view matrices in the vertex shader
     int unifColor; // A handle for the "uniform" vec4 representing color of geometry in the vertex shader
     int unif_sampler2D;
+    int unif_normSampler2D;
+    int unif_textureBetter;
+    int unif_time;
+
+    int unif_camPos;
+
+    int unif_postType;
+
 
 public:
     ShaderProgram(OpenGLContext* context);
@@ -54,12 +62,17 @@ public:
     // Utility function that prints any shader linking errors to the console
     void printLinkInfoLog(int prog);
 
+    void setTime(int t);
+
+    void setCamPos(glm::vec4 pos);
+
     QString qTextFileRead(const char*);
 
     void drawInterleave(Drawable &d, int texture_slot);
 
     void drawInterleave_transparent(Drawable &d, int texture_slot);
 
+    void setPostType(int type);
 
 
 private:

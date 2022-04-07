@@ -41,7 +41,7 @@ const vec4 lightDir = normalize(vec4(0.5, 1, 0.75, 0));  // The direction of our
 
 void main()
 {
-    fs_Pos = vs_Pos;
+    fs_Pos = u_Model * vs_Pos;
     fs_Col = vs_Col;                         // Pass the vertex colors to the fragment shader for interpolation
     fs_UV = vs_Col.xy;
 
@@ -51,7 +51,10 @@ void main()
                                                             // model matrix. This is necessary to ensure the normals remain
                                                             // perpendicular to the surface after the surface is transformed by
                                                             // the model matrix.
-
+//    fs_Nor = vs_Nor;
+    if (vs_Nor.w == 0.5){
+        fs_Nor = vs_Nor;
+    }
 
     vec4 modelposition = u_Model * vs_Pos;   // Temporarily store the transformed vertex positions for use below
 

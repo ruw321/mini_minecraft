@@ -13,6 +13,10 @@
 
 uniform vec4 u_Color; // The color with which to render this instance of geometry.
 uniform sampler2D u_texture;
+uniform sampler2D u_normTexture;
+uniform sampler2D u_textureBetter;
+uniform int u_Time;
+uniform vec4 u_camPos;
 // These are the interpolated values out of the rasterizer, so you can't know
 // their specific values without knowing the vertices that contributed to them
 in vec4 fs_Pos;
@@ -23,6 +27,8 @@ in vec4 fs_Col;
 
 out vec4 out_Col; // This is the final output color that you will see on your
                   // screen for the pixel that is currently being processed.
+
+const vec4 fogColor = vec4(0.8, 0.9, 1, 1);
 
 float random1(vec3 p) {
     return fract(sin(dot(p,vec3(127.1, 311.7, 191.999)))
@@ -69,16 +75,51 @@ float fbm(vec3 p) {
     return sum;
 }
 
+//https://vicrucann.github.io/tutorials/osg-shader-fog/
+//float getFogFactor(float d){
+//    float fogMax = 20.f;
+//    float fogMin = 10.f;
+
+//    if (d >= fogMax)
+//        return 1;
+//    if (d <= fogMin)
+//        return 0;
+//    return 1 - (fogMax - d) / (fogMax - fogMin);
+//}
+
 void main()
 {
     // Material base color (before shading)
-        vec4 diffuseColor = texture(u_texture, fs_UV);
-//        diffuseColor = diffuseColor * (0.5 * fbm(fs_Pos.xyz) + 0.5);
+        vec4 diffuseColor = vec4(0);
 
-        // Calculate the diffuse term for Lambert shading
-        float diffuseTerm = dot(normalize(fs_Nor), normalize(fs_LightVec));
+
+        float diffuseTerm = 0;
+        if (fs_Nor.w == 0.5){
+            if (fs_Col.z == 0.2){
+                diffuseColor = texture(u_textureBetter, fs_UV);
+            }
+            else{
+                diffuseColor = texture(u_texture, fs_UV);
+            }
+            diffuseColor.xyz = diffuseColor.xyz * (0.5 * fbm(fs_Pos.xyz) + 0.5);
+            vec4 my_Nor = texture(u_normTexture, fs_UV);
+            diffuseTerm = dot(normalize(fs_Nor + my_Nor), normalize(fs_LightVec));
+        }else{
+            if (fs_Col.z == 0.2){
+                diffuseColor = texture(u_textureBetter, vec2(fs_UV.x + (u_Time % 100) * 0.01 * 0.0625, fs_UV.y));
+            }
+            else{
+                diffuseColor = texture(u_texture, vec2(fs_UV.x + (u_Time % 100) * 0.01 * 0.0625, fs_UV.y));
+            }
+            diffuseColor.xyz = diffuseColor.xyz * (0.5 * fbm(fs_Pos.xyz) + 0.5);
+
+            diffuseTerm = dot(normalize(fs_Nor), normalize(fs_LightVec));
+        }
+
         // Avoid negative lighting values
         diffuseTerm = clamp(diffuseTerm, 0, 1);
+
+        diffuseColor.rgb = diffuseColor.rgb * (0.5 * fbm(fs_Pos.xyz) + 0.5); // make each block different
 
         float ambientTerm = 0.2;
 
@@ -87,8 +128,10 @@ void main()
                                                             //lit by our point light are not completely black.
 
         // Compute final shaded color
+        float d = distance(u_camPos, fs_Pos);
+        float fogAlpha = smoothstep(30.f, 200.f, d);
 
-//        out_Col = vec4(diffuseColor.rgb * lightIntensity, diffuseColor.a);
+        out_Col = mix(vec4(diffuseColor.rgb * lightIntensity, diffuseColor.a), fogColor, fogAlpha * 0.7);
 
-        out_Col = diffuseColor;
+//        out_Col = diffuseColor;
 }
