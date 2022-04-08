@@ -97,7 +97,7 @@ void main()
         if (fs_Nor.w == 0.5){
             if (fs_Col.z == 0.2){
                 diffuseColor = texture(u_textureBetter, fs_UV);
-                diffuseColor.xyz = diffuseColor.xyz * (0.3 + 0.5);
+                diffuseColor.xyz = diffuseColor.xyz * (0.1 * fbm(fs_Pos.xyz) + 0.9);
             }
             else{
                 diffuseColor = texture(u_texture, fs_UV);
@@ -109,7 +109,7 @@ void main()
         }else{
             if (fs_Col.z == 0.2){
                 diffuseColor = texture(u_textureBetter, vec2(fs_UV.x + (u_Time % 100) * 0.01 * 0.0625, fs_UV.y));
-                diffuseColor.xyz = diffuseColor.xyz * (0.3 + 0.5);
+                diffuseColor.xyz = diffuseColor.xyz * (0.1 * fbm(fs_Pos.xyz) + 0.9);
             }
             else{
                 diffuseColor = texture(u_texture, vec2(fs_UV.x + (u_Time % 100) * 0.01 * 0.0625, fs_UV.y));
@@ -133,7 +133,7 @@ void main()
 
         // Compute final shaded color
         float d = distance(u_camPos, fs_Pos);
-        float fogAlpha = smoothstep(30.f, 200.f, d);
+        float fogAlpha = smoothstep(30.f, 500.f, d);
 
         out_Col = mix(vec4(diffuseColor.rgb * lightIntensity, diffuseColor.a), fogColor, fogAlpha);
 
