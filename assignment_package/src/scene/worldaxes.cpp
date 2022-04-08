@@ -3,7 +3,7 @@
 WorldAxes::~WorldAxes()
 {}
 
-void WorldAxes::createVBOdata()
+void WorldAxes::createVBOdata(bool created)
 {
 
     GLuint idx[6] = {0, 1, 2, 3, 4, 5};

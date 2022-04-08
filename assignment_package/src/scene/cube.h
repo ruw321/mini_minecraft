@@ -12,6 +12,6 @@ class Cube : public InstancedDrawable
 public:
     Cube(OpenGLContext* context) : InstancedDrawable(context){}
     virtual ~Cube(){}
-    void createVBOdata() override;
+    void createVBOdata(bool created) override;
     void createInstancedVBOdata(std::vector<glm::vec3> &offsets, std::vector<glm::vec3> &colors) override;
 };

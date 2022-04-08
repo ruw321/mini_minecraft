@@ -148,12 +148,21 @@ float mountain(glm::vec2 uv) {
     uv = uv / SCALE;
     glm::vec2 coord = uv;
     glm::mat2 m = glm::mat2( 1.3, 2.2, -1.4, 1.2 );
+//    std::cout<<PerlinNoise(coord)<<std::endl;
     float h  = 0.5000*SimplexNoise( coord );
     coord = m*coord;
     //  bug here h can be negative
     h += 0.2500*SimplexNoise( coord );
 
     return glm::clamp(h, 0.f, 1.f) * (250 - 128) + 128;
+}
+
+float moisture(glm::vec2 uv){
+    return PerlinNoise(uv);
+}
+
+float temperature(glm::vec2 uv){
+    return PerlinNoise(uv);
 }
 
 float plain(glm::vec2 uv) {
