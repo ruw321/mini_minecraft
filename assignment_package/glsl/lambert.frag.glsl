@@ -28,7 +28,7 @@ in vec4 fs_Col;
 out vec4 out_Col; // This is the final output color that you will see on your
                   // screen for the pixel that is currently being processed.
 
-const vec4 fogColor = vec4(0.8, 0.9, 1, 1);
+const vec4 fogColor = vec4(0.37f, 0.74f, 1.0f, 1);
 
 float random1(vec3 p) {
     return fract(sin(dot(p,vec3(127.1, 311.7, 191.999)))
@@ -135,7 +135,7 @@ void main()
         float d = distance(u_camPos, fs_Pos);
         float fogAlpha = smoothstep(30.f, 200.f, d);
 
-        out_Col = mix(vec4(diffuseColor.rgb * lightIntensity, diffuseColor.a), fogColor, fogAlpha * 0.7);
+        out_Col = mix(vec4(diffuseColor.rgb * lightIntensity, diffuseColor.a), fogColor, fogAlpha);
 
 //        out_Col = diffuseColor;
 }

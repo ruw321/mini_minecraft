@@ -341,7 +341,7 @@ void Terrain::fillColumn(int x, int z) {
     }
     for (int k = maxHeight+1; k < 138; k++) {
         if (moist > 0){
-            setBlockAt(x, k, z, LAVA);
+            setBlockAt(x, k, z, WATER);
         }else{
             setBlockAt(x, k, z, SAND);
         }
