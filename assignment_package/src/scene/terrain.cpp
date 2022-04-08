@@ -1,5 +1,6 @@
 #include "terrain.h"
 #include "cube.h"
+#include "biomes.h"
 #include <stdexcept>
 #include <iostream>
 
@@ -137,6 +138,8 @@ Chunk* Terrain::instantiateChunkAt(int x, int z) {
     if(hasChunkAt(x, z + 16)) {
         auto &chunkNorth = m_chunks[toKey(x, z + 16)];
         cPtr->linkNeighbor(chunkNorth, ZPOS);
+//        chunkNorth->destroyVBOdata();
+//        chunkNorth->createVBOdata();
     }
     if(hasChunkAt(x, z - 16)) {
         auto &chunkSouth = m_chunks[toKey(x, z - 16)];
@@ -161,30 +164,30 @@ Chunk* Terrain::instantiateChunkAt(int x, int z) {
 }
 
 void Terrain::terrainUpdate(glm::vec4 playerPos){
-    int x = static_cast<int>(glm::floor(playerPos.x / 16.f) * 16);
-    int z = static_cast<int>(glm::floor(playerPos.z / 16.f) * 16);
+//    int x = static_cast<int>(glm::floor(playerPos.x / 16.f) * 16);
+//    int z = static_cast<int>(glm::floor(playerPos.z / 16.f) * 16);
 
-    std::vector<std::pair<int, int>> offsets;
-    offsets.push_back(std::make_pair(0, 16));
-    offsets.push_back(std::make_pair(16, 0));
-    offsets.push_back(std::make_pair(0, -16));
-    offsets.push_back(std::make_pair(-16, 0));
-    offsets.push_back(std::make_pair(16, -16));
-    offsets.push_back(std::make_pair(16, 16));
-    offsets.push_back(std::make_pair(-16, -16));
-    offsets.push_back(std::make_pair(-16, 16));
+//    std::vector<std::pair<int, int>> offsets;
+//    offsets.push_back(std::make_pair(0, 16));
+//    offsets.push_back(std::make_pair(16, 0));
+//    offsets.push_back(std::make_pair(0, -16));
+//    offsets.push_back(std::make_pair(-16, 0));
+//    offsets.push_back(std::make_pair(16, -16));
+//    offsets.push_back(std::make_pair(16, 16));
+//    offsets.push_back(std::make_pair(-16, -16));
+//    offsets.push_back(std::make_pair(-16, 16));
 
-    for (auto offset : offsets){
-        if (!hasChunkAt(x + offset.first, z + offset.second)){
-            for(int i = x + offset.first; i < x + offset.first + 64; i += 16) {
-                for(int j = z + offset.second; j < z + offset.second + 64; j += 16) {
-                    instantiateChunkAt(i, j);
-                }
-            }
-            m_generatedTerrain.insert(toKey(x + offset.first, z + offset.second));
+//    for (auto offset : offsets){
+//        if (!hasChunkAt(x + offset.first, z + offset.second)){
+//            for(int i = x + offset.first; i < x + offset.first + 64; i += 16) {
+//                for(int j = z + offset.second; j < z + offset.second + 64; j += 16) {
+//                    instantiateChunkAt(i, j);
+//                }
+//            }
+//            m_generatedTerrain.insert(toKey(x + offset.first, z + offset.second));
 
-        }
-    }
+//        }
+//    }
 
 }
 
@@ -265,6 +268,16 @@ void Terrain::updateTerrian(glm::vec3 p) {
 //                    m_chunks[toKey(x, z)] = move(newChunk);
                     instantiateChunkAt(x, z);
                     newChunks.push_back(m_chunks[toKey(x, z)].get());
+                    for (auto neighbor : adjacentFaces){
+                        if (neighbor.direction != YPOS and neighbor.direction != YNEG){
+                            if (m_chunks[toKey(x, z)].get()->m_neighbors[neighbor.direction] != nullptr){
+                                m_chunks[toKey(x, z)].get()->m_neighbors[neighbor.direction]->destroyVBOdata();
+                                newChunks.push_back(m_chunks[toKey(x, z)].get()->m_neighbors[neighbor.direction]);
+            //                chunk->m_neighbors[neighbor.direction]->createVBOdata(false);
+                            }
+//
+                        }
+                    }
                 }
             }
         }
@@ -279,6 +292,12 @@ void Terrain::updateTerrian(glm::vec3 p) {
         this->BlockTypeWorkers.push_back(std::thread(&Terrain::BlockTypeWorker, this, chunk->m_pos));
     }
 
+    // thread.join() forces the the main thread (the one calling thread.join())
+    // to halt all progress until the other thread is complete.
+    // You DO NOT EVER want to call thread.join() during the normal execution
+    // of your program; you only want to call join when the program is shutting down.
+    // Refer to the example code on the syllabus on tick multithreading for an example
+    // of how to do the expected behavior with std::threads.
     for (std::thread &thread : this->BlockTypeWorkers) {
 //        if(thread.joinable()) {
             thread.join();
@@ -289,6 +308,7 @@ void Terrain::updateTerrian(glm::vec3 p) {
 
     for (Chunk *chunk : newChunks) {
         this->VBOWorkers.push_back(std::thread(&Terrain::VBOWorker, this, chunk));
+
     }
 
     for (std::thread &thread : this->VBOWorkers) {
@@ -307,13 +327,59 @@ void Terrain::updateTerrian(glm::vec3 p) {
 
 
 void Terrain::fillColumn(int x, int z) {
-    int maxHeight = mountain(glm::vec2(x,z));
 
-    for (int k = 0; k <= maxHeight; k++) {
-        setBlockAt(x, k, z, BlockType(k, maxHeight, GRASSLAND));
+
+
+
+    int maxHeight = mountain(glm::vec2(x,z));
+    float moist = moisture(glm::vec2(x, z) / 500.f);
+//    std::cout<<moist<<std::endl;
+
+
+    int caveCeilHeight = caveCeil(glm::vec2(x,z));
+    int caveFloorHeight = caveCeil(glm::vec2(x,z));
+
+    // Cave
+    for (int k = 0; k < 64; k++) { // start from the ground
+        setBlockAt(x, k, z, BEDROCK);
+    }
+
+    for (int k = 64; k < 64 + caveFloorHeight; k++) {
+        setBlockAt(x, k, z, STONE);
+    }
+
+    for (int k = 64; k < 75; k++) {
+        if (getBlockAt(x, k, z) == EMPTY) {
+            setBlockAt(x, k, z, LAVA);
+        }
+    }
+
+    for (int k = 127; k > 127 - caveCeilHeight; k--) {
+        if ( k <= 64 + caveFloorHeight) {
+            break;
+        }
+        setBlockAt(x, k, z, STONE);
+    }
+
+    for (int k = 128; k <= maxHeight; k++) {
+        if (moist > 0){
+            setBlockAt(x, k, z, BlockType(k, maxHeight, GRASSLAND));
+        }else{
+            setBlockAt(x, k, z, BlockType(k, maxHeight, SANDLAND));
+        }
     }
     for (int k = maxHeight+1; k < 138; k++) {
-        setBlockAt(x, k, z, WATER);
+        if (moist > 0){
+            setBlockAt(x, k, z, WATER);
+        }else{
+            setBlockAt(x, k, z, SAND);
+        }
+    }
+
+    if (x > 44 && x < 52 && z > 44 && z < 52) {
+        for (int k = 100; k < 150; k++) {
+            setBlockAt(x, k, z, EMPTY);
+        }
     }
 }
 
@@ -339,25 +405,52 @@ std::vector<glm::ivec2> Terrain::getSurroundingZones(int x, int z, int r)
 }
 
 BlockType Terrain::BlockType(int height, int maxHeight, enum BiomeType biome) {
-    if (height <= 128) {
-        return STONE;
-    }
-    else {
-        if (maxHeight <= 145) {
-            if (height == maxHeight) {
-                return GRASS;
-            } else {
-                return DIRT;
-            }
+    if (biome == SANDLAND){
+        if (height <= 128) {
+            return SAND;
         }
         else {
-            if (maxHeight <= 170) {
-                return STONE;
-            } else {
+            if (maxHeight <= 145) {
                 if (height == maxHeight) {
-                    return SNOW;
+                    return REDSTONE;
                 } else {
+                    return REDSTONE;
+                }
+            }
+            else {
+                if (maxHeight <= 170) {
+                    return REDSTONE;
+                } else {
+                    if (height == maxHeight) {
+                        return REDSTONE;
+                    } else {
+                        return REDSTONE;
+                    }
+                }
+            }
+        }
+    }
+    else if (biome == GRASSLAND){
+        if (height <= 128) {
+            return STONE;
+        }
+        else {
+            if (maxHeight <= 145) {
+                if (height == maxHeight) {
+                    return GRASS;
+                } else {
+                    return DIRT;
+                }
+            }
+            else {
+                if (maxHeight <= 170) {
                     return STONE;
+                } else {
+                    if (height == maxHeight) {
+                        return SNOW;
+                    } else {
+                        return STONE;
+                    }
                 }
             }
         }
@@ -384,6 +477,7 @@ void Terrain::BlockTypeWorker(glm::ivec2 m_pos)
 }
 
 void Terrain::VBOWorker(Chunk *chunk) {
-    chunk->createVBOdata();
+    chunk->createVBOdata(false);
+
 
 }

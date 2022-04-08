@@ -22,8 +22,6 @@ MyGL::MyGL(QWidget *parent)
       m_textureNormal(this),
       m_textureBetter(this),
       m_time(0),
-
-
       m_currentMSecsSinceEpoch(QDateTime::currentMSecsSinceEpoch())
 {
     // Connect the timer to a function so that when the timer ticks the function is executed
@@ -71,7 +69,7 @@ void MyGL::initializeGL()
     glGenVertexArrays(1, &vao);
 
     //Create the instance of the world axes
-    m_quad.createVBOdata();
+    m_quad.createVBOdata(false);
 //    m_worldAxes.createVBOdata();
     m_frameBuffer.create();
     m_frameBuffer.bindFrameBuffer();

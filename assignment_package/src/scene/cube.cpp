@@ -129,7 +129,7 @@ void createCubeIndices(GLuint (&cub_idx)[CUB_IDX_COUNT])
     }
 }
 
-void Cube::createVBOdata()
+void Cube::createVBOdata(bool created)
 {
     GLuint sph_idx[CUB_IDX_COUNT];
     glm::vec4 sph_vert_pos[CUB_VERT_COUNT];

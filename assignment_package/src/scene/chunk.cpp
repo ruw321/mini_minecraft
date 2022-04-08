@@ -14,7 +14,7 @@ Chunk::Chunk(OpenGLContext* context, int x, int z)
 
 Chunk::~Chunk(){}
 
-void Chunk::createVBOdata() {
+void Chunk::createVBOdata(bool created) {
     std::vector<glm::vec4> VBOdata;
     std::vector<GLuint> idx;
 
@@ -69,34 +69,54 @@ void Chunk::createVBOdata() {
                         if ((x == 0 || z == 0 || x == 15 || z == 15) and neighborFace.direction != YPOS and neighborFace.direction != YNEG){
                             Chunk* neighborChunk = m_neighbors[neighborFace.direction];
                             if (neighborChunk == nullptr){
-                                if (y > 128){
-                                    neighborType = EMPTY;
-                                }else{
-                                    continue;
-                                }
+                                neighborType = EMPTY;
                             }
                             else{
                                 if (neighborFace.direction == XNEG && x == 0){
                                     neighborType = neighborChunk->getBlockAt(int(15),
                                                                              int(neighborPos.y),
                                                                              int(neighborPos.z));
+//                                    if (!created){
+//                                        neighborChunk->destroyVBOdata();
+//                                        neighborChunk->createVBOdata(true);
+//                                    }
                                 } else if (neighborFace.direction == XPOS && x == 15){
                                     neighborType = neighborChunk->getBlockAt(int(0),
                                                                              int(neighborPos.y),
                                                                              int(neighborPos.z));
+//                                    if (!created){
+//                                        neighborChunk->destroyVBOdata();
+//                                        neighborChunk->createVBOdata(true);
+//                                    }
+
                                 } else if (neighborFace.direction == ZPOS && z == 15){
                                     neighborType = neighborChunk->getBlockAt(int(neighborPos.x),
                                                                              int(neighborPos.y),
                                                                              int(0));
+//                                    if (!created){
+//                                        neighborChunk->destroyVBOdata();
+//                                        neighborChunk->createVBOdata(true);
+//                                    }
+
                                 } else if (neighborFace.direction == ZNEG && z == 0){
                                     neighborType = neighborChunk->getBlockAt(int(neighborPos.x),
                                                                              int(neighborPos.y),
                                                                              int(15));
+//                                    if (!created){
+//                                        neighborChunk->destroyVBOdata();
+//                                        neighborChunk->createVBOdata(true);
+//                                    }
+
                                 }
                                 else{
                                     neighborType = getBlockAt(int(neighborPos.x),
                                                                     int(neighborPos.y),
                                                                     int(neighborPos.z));
+//                                    if (!created){
+//                                        neighborChunk->destroyVBOdata();
+//                                        neighborChunk->createVBOdata(true);
+//                                    }
+
                                 }
                             }
 
@@ -174,6 +194,8 @@ void Chunk::createVBOdata() {
 
     this->m_VBOdata_transparent.idx = idx_transparent;
     this->m_VBOdata_transparent.data = VBOdata_transparent;
+
+
 }
 
 void Chunk::sendVBOdata() {
