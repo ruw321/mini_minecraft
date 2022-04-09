@@ -111,7 +111,6 @@ public:
 
     std::vector<glm::ivec2> getSurroundingZones(int x, int z, int r = 2);
     bool hasZoneAt(int x, int z) const;
-    void initializeChunk(Chunk *chunk);
     /*
     Milestone 2
     */

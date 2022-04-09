@@ -154,42 +154,11 @@ Chunk* Terrain::instantiateChunkAt(int x, int z) {
         cPtr->linkNeighbor(chunkWest, XNEG);
     }
 
-    for (int i = x; i < x + 16; i++) {
-        for (int j = z; j < z + 16; j++) {
-            fillColumn(i, j);
-        }
-    }
 
     return cPtr;
 }
 
-void Terrain::terrainUpdate(glm::vec4 playerPos){
-//    int x = static_cast<int>(glm::floor(playerPos.x / 16.f) * 16);
-//    int z = static_cast<int>(glm::floor(playerPos.z / 16.f) * 16);
 
-//    std::vector<std::pair<int, int>> offsets;
-//    offsets.push_back(std::make_pair(0, 16));
-//    offsets.push_back(std::make_pair(16, 0));
-//    offsets.push_back(std::make_pair(0, -16));
-//    offsets.push_back(std::make_pair(-16, 0));
-//    offsets.push_back(std::make_pair(16, -16));
-//    offsets.push_back(std::make_pair(16, 16));
-//    offsets.push_back(std::make_pair(-16, -16));
-//    offsets.push_back(std::make_pair(-16, 16));
-
-//    for (auto offset : offsets){
-//        if (!hasChunkAt(x + offset.first, z + offset.second)){
-//            for(int i = x + offset.first; i < x + offset.first + 64; i += 16) {
-//                for(int j = z + offset.second; j < z + offset.second + 64; j += 16) {
-//                    instantiateChunkAt(i, j);
-//                }
-//            }
-//            m_generatedTerrain.insert(toKey(x + offset.first, z + offset.second));
-
-//        }
-//    }
-
-}
 
 // TODO: When you make Chunk inherit from Drawable, change this code so
 // it draws each Chunk with the given ShaderProgram, remembering to set the
@@ -223,30 +192,7 @@ void Terrain::CreateTestScene()
 
 }
 
-void Terrain::initializeChunk(Chunk *chunk) {
 
-    int x = chunk->m_pos[0];
-    int z = chunk->m_pos[1];
-
-    if(hasChunkAt(x, z + 16)) {
-        auto &chunkNorth = m_chunks[toKey(x, z + 16)];
-        chunk->linkNeighbor(chunkNorth, ZPOS);
-    }
-    if(hasChunkAt(x, z - 16)) {
-        auto &chunkSouth = m_chunks[toKey(x, z - 16)];
-        chunk->linkNeighbor(chunkSouth, ZNEG);
-    }
-    if(hasChunkAt(x + 16, z)) {
-        auto &chunkEast = m_chunks[toKey(x + 16, z)];
-        chunk->linkNeighbor(chunkEast, XPOS);
-    }
-    if(hasChunkAt(x - 16, z)) {
-        auto &chunkWest = m_chunks[toKey(x - 16, z)];
-        chunk->linkNeighbor(chunkWest, XNEG);
-    }
-
-
-}
 
 void Terrain::updateTerrian(glm::vec3 p) {
 
