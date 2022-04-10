@@ -130,32 +130,45 @@ void Terrain::setBlockAt(glm::vec3 p, enum BlockType t) {
 
 Chunk* Terrain::instantiateChunkAt(int x, int z) {
 
-    uPtr<Chunk> chunk = mkU<Chunk>(mp_context, x, z);
+    Chunk *chunk = newChunkBuffer[toKey(x, z)].get();
 
-    Chunk *cPtr = chunk.get();
-    m_chunks[toKey(x, z)] = move(chunk);
-    // Set the neighbor pointers of itself and its neighbors
-    if(hasChunkAt(x, z + 16)) {
-        auto &chunkNorth = m_chunks[toKey(x, z + 16)];
-        cPtr->linkNeighbor(chunkNorth, ZPOS);
-//        chunkNorth->destroyVBOdata();
-//        chunkNorth->createVBOdata();
+    if (hasChunkAt(x, z + 16)) {
+        auto &chunkNorth = getChunkAt(x, z + 16);
+        chunk->linkNeighbor(chunkNorth, ZPOS);
     }
-    if(hasChunkAt(x, z - 16)) {
-        auto &chunkSouth = m_chunks[toKey(x, z - 16)];
-        cPtr->linkNeighbor(chunkSouth, ZNEG);
+    if (hasChunkAt(x, z - 16)) {
+        auto &chunkSouth = getChunkAt(x, z - 16);
+        chunk->linkNeighbor(chunkSouth, ZNEG);
     }
-    if(hasChunkAt(x + 16, z)) {
-        auto &chunkEast = m_chunks[toKey(x + 16, z)];
-        cPtr->linkNeighbor(chunkEast, XPOS);
+    if (hasChunkAt(x + 16, z)) {
+        auto &chunkEast = getChunkAt(x + 16, z);
+        chunk->linkNeighbor(chunkEast, XPOS);
     }
-    if(hasChunkAt(x - 16, z)) {
-        auto &chunkWest = m_chunks[toKey(x - 16, z)];
-        cPtr->linkNeighbor(chunkWest, XNEG);
+    if (hasChunkAt(x - 16, z)) {
+        auto &chunkWest = getChunkAt(x - 16, z);
+        chunk->linkNeighbor(chunkWest, XNEG);
     }
 
+    if (hasNewChunkAt(x, z + 16)) {
+        auto &chunkNorth = getNewChunkAt(x, z + 16);
+        chunk->linkNeighbor(chunkNorth, ZPOS);
+    }
+    if (hasNewChunkAt(x, z - 16)) {
+        auto &chunkSouth = getNewChunkAt(x, z - 16);
+        chunk->linkNeighbor(chunkSouth, ZNEG);
+    }
+    if (hasNewChunkAt(x + 16, z)) {
+        auto &chunkEast = getNewChunkAt(x + 16, z);
+        chunk->linkNeighbor(chunkEast, XPOS);
+    }
+    if (hasNewChunkAt(x - 16, z)) {
+        auto &chunkWest = getNewChunkAt(x - 16, z);
+        chunk->linkNeighbor(chunkWest, XNEG);
+    }
 
-    return cPtr;
+
+    return chunk;
+
 }
 
 
@@ -164,6 +177,8 @@ Chunk* Terrain::instantiateChunkAt(int x, int z) {
 // it draws each Chunk with the given ShaderProgram, remembering to set the
 // model matrix to the proper X and Z translation!
 void Terrain::draw(int minX, int maxX, int minZ, int maxZ, ShaderProgram *shaderProgram) {
+
+//    chunksWithBlockDataMutex.lock();
 
     for(int x = minX; x < maxX; x += 16) {
         for(int z = minZ; z < maxZ; z += 16) {
@@ -174,7 +189,6 @@ void Terrain::draw(int minX, int maxX, int minZ, int maxZ, ShaderProgram *shader
             }
         }
     }
-//    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     for(int x = minX; x < maxX; x += 16) {
         for(int z = minZ; z < maxZ; z += 16) {
             if (hasChunkAt(x, z)) {
@@ -185,6 +199,8 @@ void Terrain::draw(int minX, int maxX, int minZ, int maxZ, ShaderProgram *shader
         }
     }
 
+//    chunksWithBlockDataMutex.unlock();
+
 }
 
 void Terrain::CreateTestScene()
@@ -194,109 +210,30 @@ void Terrain::CreateTestScene()
 
 
 
-void Terrain::updateTerrian(glm::vec3 p) {
 
-    int r = 1; // 5x5
-    std::vector<glm::ivec2> currSourrondingZones = getSurroundingZones(p.x, p.z, r);
+void Terrain::fillColumn(Chunk *chunk, int x, int z) {
 
-    std::vector<Chunk*> newChunks;
+    int map_x = chunk->m_pos[0] + x;
+    int map_z = chunk->m_pos[1] + z;
 
-    for (glm::ivec2 zone : currSourrondingZones) {
-        int zone_x = zone[0];
-        int zone_z = zone[1];
-        if (!hasZoneAt(zone_x, zone_z)) {
-            m_generatedTerrain.insert(toKey(zone_x, zone_z));
-            for (int x = zone_x; x < zone_x + 64; x += 16)
-            {
-                for (int z = zone_z; z < zone_z + 64; z += 16)
-                {
-//                    uPtr<Chunk> newChunk = mkU<Chunk>(mp_context, x, z);
-//                    m_chunks[toKey(x, z)] = move(newChunk);
-                    instantiateChunkAt(x, z);
-                    newChunks.push_back(m_chunks[toKey(x, z)].get());
-                    for (auto neighbor : adjacentFaces){
-                        if (neighbor.direction != YPOS and neighbor.direction != YNEG){
-                            if (m_chunks[toKey(x, z)].get()->m_neighbors[neighbor.direction] != nullptr){
-                                m_chunks[toKey(x, z)].get()->m_neighbors[neighbor.direction]->destroyVBOdata();
-                                newChunks.push_back(m_chunks[toKey(x, z)].get()->m_neighbors[neighbor.direction]);
-            //                chunk->m_neighbors[neighbor.direction]->createVBOdata(false);
-                            }
-//
-                        }
-                    }
-                }
-            }
-        }
-    }
+    int maxHeight = mountain(glm::vec2(map_x, map_z));
+    float moist = moisture(glm::vec2(map_x, map_z) / 500.f);
 
-
-
-
-    for (Chunk *chunk : newChunks) {
-
-
-        this->BlockTypeWorkers.push_back(std::thread(&Terrain::BlockTypeWorker, this, chunk->m_pos));
-    }
-
-    // thread.join() forces the the main thread (the one calling thread.join())
-    // to halt all progress until the other thread is complete.
-    // You DO NOT EVER want to call thread.join() during the normal execution
-    // of your program; you only want to call join when the program is shutting down.
-    // Refer to the example code on the syllabus on tick multithreading for an example
-    // of how to do the expected behavior with std::threads.
-    for (std::thread &thread : this->BlockTypeWorkers) {
-//        if(thread.joinable()) {
-            thread.join();
-//        }
-    }
-
-    this->BlockTypeWorkers.clear();
-
-    for (Chunk *chunk : newChunks) {
-        this->VBOWorkers.push_back(std::thread(&Terrain::VBOWorker, this, chunk));
-
-    }
-
-    for (std::thread &thread : this->VBOWorkers) {
-//        if(thread.joinable()) {
-            thread.join();
-//        }
-    }
-
-    for (Chunk *chunk : newChunks) {
-        chunk->sendVBOdata();
-    }
-
-    this->VBOWorkers.clear();
-
-}
-
-
-void Terrain::fillColumn(int x, int z) {
-
-
-
-
-    int maxHeight = mountain(glm::vec2(x,z));
-    float moist = moisture(glm::vec2(x, z) / 500.f);
-//    std::cout<<moist<<std::endl;
-
-
-    int caveCeilHeight = caveCeil(glm::vec2(x,z));
-    int caveFloorHeight = caveCeil(glm::vec2(x,z));
+    int caveCeilHeight = caveCeil(glm::vec2(map_x, map_z));
+    int caveFloorHeight = caveCeil(glm::vec2(map_x, map_z));
 
     // Cave
     for (int k = 0; k < 64; k++) { // start from the ground
-        setBlockAt(x, k, z, BEDROCK);
+        chunk->setBlockAt(x, k, z, BEDROCK);
     }
 
     for (int k = 64; k < 64 + caveFloorHeight; k++) {
-        setBlockAt(x, k, z, STONE);
+        chunk->setBlockAt(x, k, z, STONE);
     }
 
     for (int k = 64; k < 75; k++) {
-        if (getBlockAt(x, k, z) == EMPTY) {
-            setBlockAt(x, k, z, LAVA);
+        if (chunk->getBlockAt(x, k, z) == EMPTY) {
+            chunk->setBlockAt(x, k, z, LAVA);
         }
     }
 
@@ -304,27 +241,28 @@ void Terrain::fillColumn(int x, int z) {
         if ( k <= 64 + caveFloorHeight) {
             break;
         }
-        setBlockAt(x, k, z, STONE);
+        chunk->setBlockAt(x, k, z, STONE);
     }
 
     for (int k = 128; k <= maxHeight; k++) {
         if (moist > 0){
-            setBlockAt(x, k, z, BlockType(k, maxHeight, GRASSLAND));
+            chunk->setBlockAt(x, k, z, BlockType(k, maxHeight, GRASSLAND));
         }else{
-            setBlockAt(x, k, z, BlockType(k, maxHeight, SANDLAND));
+            chunk->setBlockAt(x, k, z, BlockType(k, maxHeight, SANDLAND));
         }
     }
+
     for (int k = maxHeight+1; k < 138; k++) {
         if (moist > 0){
-            setBlockAt(x, k, z, WATER);
+            chunk->setBlockAt(x, k, z, WATER);
         }else{
-            setBlockAt(x, k, z, SAND);
+            chunk->setBlockAt(x, k, z, SAND);
         }
     }
 
     if (x > 44 && x < 52 && z > 44 && z < 52) {
         for (int k = 100; k < 150; k++) {
-            setBlockAt(x, k, z, EMPTY);
+            chunk->setBlockAt(x, k, z, EMPTY);
         }
     }
 }
@@ -401,6 +339,9 @@ BlockType Terrain::BlockType(int height, int maxHeight, enum BiomeType biome) {
             }
         }
     }
+    else {
+        return EMPTY;
+    }
 }
 
 
@@ -409,21 +350,95 @@ Milestone 2
 */
 
 
-void Terrain::BlockTypeWorker(glm::ivec2 m_pos)
-{
-    int chunk_x = m_pos[0];
-    int chunk_z = m_pos[1];
+bool Terrain::hasNewChunkAt(int x, int z) const {
+    int xFloor = static_cast<int>(glm::floor(x / 16.f));
+    int zFloor = static_cast<int>(glm::floor(z / 16.f));
 
-    for (int x = chunk_x; x < chunk_x + 16; ++x) {
-        for (int z = chunk_z; z < chunk_z + 16; ++z) {
-            fillColumn(x, z);
+    return newChunkBuffer.find(toKey(16 * xFloor, 16 * zFloor)) != newChunkBuffer.end();
+}
+
+
+uPtr<Chunk>& Terrain::getNewChunkAt(int x, int z) {
+    int xFloor = static_cast<int>(glm::floor(x / 16.f));
+    int zFloor = static_cast<int>(glm::floor(z / 16.f));
+
+    return newChunkBuffer[toKey(16 * xFloor, 16 * zFloor)];
+}
+
+
+void Terrain::updateTerrian(glm::vec3 currPlayerPos) {
+
+    int r = 2; // 5x5
+    std::vector<glm::ivec2> newZones = getSurroundingZones(currPlayerPos.x, currPlayerPos.z, r);
+
+    for (glm::ivec2 newZone : newZones) {
+        if (!hasZoneAt(newZone[0], newZone[1])) {
+            m_generatedTerrain.insert(toKey(newZone.x, newZone.y));
+            for (int x = 0; x < 64; x += 16) {
+                for (int z = 0; z < 64; z += 16) {
+                    newChunkBuffer[toKey(newZone.x + x, newZone.y + z)] = mkU<Chunk>(mp_context, newZone[0]+x, newZone[1]+z);
+                }
+            }
         }
     }
 
+
+    for (auto & [key, chunk]: newChunkBuffer) {
+        // link to neighbour
+        instantiateChunkAt(chunk->m_pos[0], chunk->m_pos[1]);
+    }
+
+    for (auto & [key, chunk]: newChunkBuffer) {
+        BlockTypeWorkers.push_back(std::thread(&Terrain::BlockTypeWorker, this, move(chunk)));
+    }
+
+    newChunkBuffer.clear(); // all uPtrs have been moved
+
+    BlockTypeBufferMutex.lock();
+    for (auto & [key, chunk] : BlockTypeBuffer) {
+        VBOWorkers.push_back(std::thread(&Terrain::VBOWorker, this, move(chunk)));
+    }
+    BlockTypeBuffer.clear(); // all uPtrs have been moved
+    BlockTypeBufferMutex.unlock();
+
+    VBOdataBufferMutex.lock();
+    for (auto & [key, chunk] : VBOdataBuffer) {
+        chunk->sendVBOdata();
+        // after vbo being sent to GPU, it should be considered as created, therefore store it in m_chunks
+        m_chunks[key] = move(chunk);
+    }
+    VBOdataBuffer.clear(); // all uPtrs have been moved
+    VBOdataBufferMutex.unlock();
+
 }
 
-void Terrain::VBOWorker(Chunk *chunk) {
-    chunk->createVBOdata(false);
 
+void Terrain::BlockTypeWorker(uPtr<Chunk> chunk) {
 
+    for (int x = 0; x < 16; x++) {
+        for (int z = 0; z < 16; z++) {
+
+            fillColumn(chunk.get(), x, z);
+        }
+    }
+    BlockTypeBufferMutex.lock();
+    BlockTypeBuffer[toKey(chunk->m_pos[0], chunk->m_pos[1])] = move(chunk);
+    BlockTypeBufferMutex.unlock();
 }
+
+
+
+void Terrain::VBOWorker(uPtr<Chunk> chunk) {
+    chunk->createVBOdata();
+
+    VBOdataBufferMutex.lock();
+    VBOdataBuffer[toKey(chunk->m_pos[0], chunk->m_pos[1])] = move(chunk);
+    VBOdataBufferMutex.unlock();
+}
+
+
+
+
+
+
+

@@ -222,7 +222,7 @@ public:
     Chunk(OpenGLContext* context, int x, int z);
 
     ~Chunk();
-    void createVBOdata(bool created) override;
+    void createVBOdata() override;
     void sendVBOdata();
 
     GLenum drawMode() override;

@@ -105,21 +105,33 @@ public:
     */
 
     void updateTerrian(glm::vec3 p);
-    void fillColumn(int x, int z);
-
-    BlockType BlockType(int height, int maxHeight, BiomeType biome);
-
+    void fillColumn(Chunk *chunk, int x, int z);
+    BlockType BlockType(int height, int maxHeight, enum::BiomeType biome);
     std::vector<glm::ivec2> getSurroundingZones(int x, int z, int r = 2);
     bool hasZoneAt(int x, int z) const;
+
+
     /*
     Milestone 2
     */
 
-
     std::vector<std::thread> BlockTypeWorkers;
     std::vector<std::thread> VBOWorkers;
 
-    void BlockTypeWorker(glm::ivec2 m_pos);
-    void VBOWorker(Chunk *chunk);
+    void BlockTypeWorker(uPtr<Chunk> chunk);
+    void VBOWorker(uPtr<Chunk> chunk);
+
+
+
+    std::unordered_map<int64_t, uPtr<Chunk>> newChunkBuffer;
+    std::unordered_map<int64_t, uPtr<Chunk>> BlockTypeBuffer;
+    std::mutex BlockTypeBufferMutex;
+    std::unordered_map<int64_t, uPtr<Chunk>> VBOdataBuffer;
+    std::mutex VBOdataBufferMutex;
+
+    bool hasNewChunkAt(int x, int z) const;
+    uPtr<Chunk>& getNewChunkAt(int x, int z);
+    void setNewBlockAt(int x, int y, int z, enum::BlockType t);
+
 
 };

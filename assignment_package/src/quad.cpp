@@ -6,7 +6,7 @@ Quad::Quad(OpenGLContext* context)
 
 }
 
-void Quad::createVBOdata(bool created){
+void Quad::createVBOdata(){
     GLuint idx[6]{0, 1, 2, 0, 2, 3};
 
     glm::vec4 vert_pos[4] {glm::vec4(-1.f, -1.f, 0.999999f, 1.f),

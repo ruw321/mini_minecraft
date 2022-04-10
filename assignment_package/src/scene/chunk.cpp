@@ -14,7 +14,7 @@ Chunk::Chunk(OpenGLContext* context, int x, int z)
 
 Chunk::~Chunk(){}
 
-void Chunk::createVBOdata(bool created) {
+void Chunk::createVBOdata() {
     std::vector<glm::vec4> VBOdata;
     std::vector<GLuint> idx;
 

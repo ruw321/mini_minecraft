@@ -8,6 +8,6 @@ class WorldAxes : public Drawable
 public:
     WorldAxes(OpenGLContext* context) : Drawable(context){}
     virtual ~WorldAxes() override;
-    void createVBOdata(bool created) override;
+    void createVBOdata() override;
     GLenum drawMode() override;
 };
