@@ -260,7 +260,7 @@ void Terrain::fillColumn(Chunk *chunk, int x, int z) {
         }
     }
 
-    if (x > 44 && x < 52 && z > 44 && z < 52) {
+    if (map_x > 44 && map_x < 52 && map_z > 44 && map_z < 52) {
         for (int k = 100; k < 150; k++) {
             chunk->setBlockAt(x, k, z, EMPTY);
         }
