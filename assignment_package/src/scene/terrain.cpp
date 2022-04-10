@@ -3,6 +3,7 @@
 #include "biomes.h"
 #include <stdexcept>
 #include <iostream>
+#include <algorithm>
 
 Terrain::Terrain(OpenGLContext *context)
     : m_chunks(),
@@ -327,17 +328,25 @@ void Terrain::updateTerrian(glm::vec3 p) {
 
 
 void Terrain::fillColumn(int x, int z) {
-    int maxHeight = mountain(glm::vec2(x,z));
+    float maxHeight = 0;
     float moist = moisture(glm::vec2(x, z) / 500.f);
+    BiomeType currentBiome;
+    if (moist < 0){
+        currentBiome = SANDLAND;
+        maxHeight = plain(glm::vec2(x, z));
+        std::cout<<maxHeight<<std::endl;
+        maxHeight = 138 + (maxHeight - floor(maxHeight)) * 10;
+    }else if (moist > 0){
+        currentBiome = GRASSLAND;
+        maxHeight = mountain(glm::vec2(x,z));
+    }
+
 //    std::cout<<moist<<std::endl;
 
 
     for (int k = 0; k <= maxHeight; k++) {
-        if (moist > 0){
-            setBlockAt(x, k, z, BlockType(k, maxHeight, GRASSLAND));
-        }else{
-            setBlockAt(x, k, z, BlockType(k, maxHeight, SANDLAND));
-        }
+
+        setBlockAt(x, k, z, BlockType(k, maxHeight, currentBiome));
     }
     for (int k = maxHeight+1; k < 138; k++) {
         if (moist > 0){
@@ -371,28 +380,19 @@ std::vector<glm::ivec2> Terrain::getSurroundingZones(int x, int z, int r)
 
 BlockType Terrain::BlockType(int height, int maxHeight, enum BiomeType biome) {
     if (biome == SANDLAND){
-        if (height <= 128) {
+        if (height <= 148) {
             return SAND;
         }
         else {
-            if (maxHeight <= 145) {
+            if (maxHeight <= 185) {
                 if (height == maxHeight) {
                     return REDSTONE;
                 } else {
                     return REDSTONE;
                 }
             }
-            else {
-                if (maxHeight <= 170) {
-                    return REDSTONE;
-                } else {
-                    if (height == maxHeight) {
-                        return REDSTONE;
-                    } else {
-                        return REDSTONE;
-                    }
-                }
-            }
+
+
         }
     }
     else if (biome == GRASSLAND){
