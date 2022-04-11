@@ -9,11 +9,16 @@
    - Initially struggling to get the right changing offset for the uv to make runing water and lava, but later figure it out
 - Currently working on fog effect
 
-
 ## Multi-Thread (Zhiyuan Liang)
 I used to implement multi-thread in a wrong way. But my teammate told me that Adam said our multi-thread method was wrong. Then I checked the example code from the lecture. I re-implemented the multi-thread and only called thread.join when the application is going to end.
 I used newChunks, BlockTypeBuffer and VBOdataBuffer to temporarily store the created chunks' uPtr. I used to two mutexes to make sure that the modifications to these buffers are atomic.
 
+## Cave Systems (Ruifan Wang)
+Cave: I initially tried the 3D perlin noises (summed and recursive version) but the cave turned out to be not really realistic. So I decided to use the 2D perlin noise to generated cave cell and cave floor, which makes the cave seem a lot more realistic.
+
+Post shader: I utilized the provided framebuffer code. At first, we want to used two textures and I figured out how to set the texture slot id. After I implemented the framebuffer, the scene did not display normally. The scene was painted only in the left-bottom corner. I debugged for quite a while and multily the width and height of framebuffer by devicePixelRatio, then it displayed correctly. I also added a cool underwater-view effect.
+
+Physics under water and lava: I first had trouble with detecting the water with either the camera perspective or the player perspective, and when to switch on the underwater-view effect. EVentually I used the camera perspective. The physics applied under water was also very tricky, especially the intersection between water and outside world, when to apply real gravity and when to apply water gravity, I had to make sure the player was able to get out of the water as well. I also fixed the physics when the player is not in flight mode, now the player will move in constant speed in stead of increasing acceleration. 
 
 
 # Milestone 1: 
