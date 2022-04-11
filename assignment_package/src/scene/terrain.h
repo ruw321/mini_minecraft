@@ -133,5 +133,6 @@ public:
     uPtr<Chunk>& getNewChunkAt(int x, int z);
     void setNewBlockAt(int x, int y, int z, enum::BlockType t);
 
+    void end();
 
 };

@@ -433,6 +433,13 @@ void Terrain::VBOWorker(uPtr<Chunk> chunk) {
 
 
 
-
+void Terrain::end() {
+    for (auto &thread: BlockTypeWorkers) {
+        thread.join();
+    }
+    for (auto &thread: VBOWorkers) {
+        thread.join();
+    }
+}
 
 
