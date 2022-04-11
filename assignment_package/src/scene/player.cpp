@@ -243,8 +243,10 @@ void Player::removeBlock(Terrain *terrain) {
 
         terrain->setBlockAt(outBlockHit.x, outBlockHit.y, outBlockHit.z, EMPTY);
         uPtr<Chunk> &chunkToUpdate = terrain->getChunkAt(outBlockHit.x, outBlockHit.z);
+
         chunkToUpdate->createVBOdata();
         chunkToUpdate->sendVBOdata();
+
     }
 
 }

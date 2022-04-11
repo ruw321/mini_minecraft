@@ -16,7 +16,7 @@
 // block types, but in the scope of this project we'll never get anywhere near that many.
 enum BlockType : unsigned char
 {
-    EMPTY, GRASS, DIRT, STONE, WATER, SNOW, SAND, LAVA, BEDROCK
+    EMPTY, GRASS, DIRT, STONE, WATER, SNOW, SAND, LAVA, BEDROCK, REDSTONE
 };
 
 // The six cardinal directions in 3D space
@@ -108,7 +108,7 @@ static std::set<BlockType> transparentType{
 };
 
 static std::set<BlockType> usingBetterTexture{
-    LAVA
+    LAVA, SAND
 };
 
 static std::unordered_map<BlockType,
@@ -177,6 +177,14 @@ std::unordered_map<Direction, glm::vec2, EnumHash>, EnumHash> blockFaceUV{
             {YNEG, glm::vec2(1.f BLK_UVX, 14.f BLK_UVY)},
             {ZPOS, glm::vec2(1.f BLK_UVX, 14.f BLK_UVY)},
             {ZNEG, glm::vec2(1.f BLK_UVX, 14.f BLK_UVY)}
+        }},
+    {REDSTONE, std::unordered_map<Direction, glm::vec2, EnumHash>{
+            {XPOS, glm::vec2(7.f BLK_UVX, 9.f BLK_UVY)},
+            {XNEG, glm::vec2(7.f BLK_UVX, 9.f BLK_UVY)},
+            {YPOS, glm::vec2(7.f BLK_UVX, 9.f BLK_UVY)},
+            {YNEG, glm::vec2(7.f BLK_UVX, 9.f BLK_UVY)},
+            {ZPOS, glm::vec2(7.f BLK_UVX, 9.f BLK_UVY)},
+            {ZNEG, glm::vec2(7.f BLK_UVX, 9.f BLK_UVY)}
         }}
 
 };
@@ -205,9 +213,11 @@ private:
     // The third input to this map just lets us use a Direction as
     // a key for this map.
     // These allow us to properly determine
-    std::unordered_map<Direction, Chunk*, EnumHash> m_neighbors;
+//    std::unordered_map<Direction, Chunk*, EnumHash> m_neighbors;
 
 public:
+    std::unordered_map<Direction, Chunk*, EnumHash> m_neighbors;
+
 
     Chunk(OpenGLContext* context, int x, int z);
 
