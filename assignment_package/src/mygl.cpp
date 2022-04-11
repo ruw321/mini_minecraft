@@ -234,6 +234,7 @@ void MyGL::keyPressEvent(QKeyEvent *e) {
     // syntax so I chose to be lazy and use a long
     // chain of if statements instead
     if (e->key() == Qt::Key_Escape) {
+        m_terrain.end();
         QApplication::quit();
     } else if (e->key() == Qt::Key_Right) {
         m_player.rotateOnUpGlobal(-amount);
@@ -293,10 +294,12 @@ void MyGL::keyReleaseEvent(QKeyEvent *e) {
 }
 
 void MyGL::mouseMoveEvent(QMouseEvent *e) {
-//    float dx = (width() * 0.5 - e->pos().x()) / width();
-//    float dy = (height() * 0.5 - e->pos().y()) / height();
-//    m_player.rotateOnUpGlobal(dx * 360 * 0.1f);
-//    m_player.rotateOnRightLocal(dy * 360 * 0.1f);
+//    QPoint lastPosition = QPoint(width() / 2.f, height() / 2.f);
+//    float delta_x = GLfloat(lastPosition.x() - e->pos().x()) / width();
+//    float delta_y = GLfloat(lastPosition.y() - e->pos().y()) / height();
+//    m_player.rotateOnUpGlobal(delta_x * 360 * 0.05f);
+//    m_player.rotateOnRightLocal(delta_y * 360 * 0.05f);
+//    // move mouse back to center
 //    moveMouseToCenter();
 }
 
