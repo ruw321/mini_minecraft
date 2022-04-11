@@ -2,3 +2,5 @@ Milestone 1 Procedural Terrain
 I refered to the code from https://www.shadertoy.com/view/tlKXzh of simplex noise to achieve the ridge-stylrf terrian.
 I refered to https://www.redblobgames.com/maps/terrain-from-noise/.
 
+
+I referred to the code from lecture recording.
