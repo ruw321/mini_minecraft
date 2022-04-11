@@ -43,4 +43,8 @@ float temperature(glm::vec2 uv);
 
 float plain(glm::vec2 uv);
 
+float caveCeil(glm::vec2 uv);
+
+float caveFloor(glm::vec2 uv);
+
 #endif

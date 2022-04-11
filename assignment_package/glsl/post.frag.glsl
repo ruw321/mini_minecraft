@@ -26,5 +26,9 @@ void main()
         diffuse_color += vec3(0, 0, 0.3);
     }
 
+    else if (u_postType == 2) {
+        diffuse_color = vec3(1.f, 0, 0);
+    }
+
     out_Col = vec4(diffuse_color, 1);
 }

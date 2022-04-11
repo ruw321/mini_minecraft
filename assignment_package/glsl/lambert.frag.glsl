@@ -28,7 +28,7 @@ in vec4 fs_Col;
 out vec4 out_Col; // This is the final output color that you will see on your
                   // screen for the pixel that is currently being processed.
 
-const vec4 fogColor = vec4(0.37f, 0.74f, 1.0f, 1);
+const vec4 fogColor = vec4(0.8, 0.9, 1, 1);
 
 float random1(vec3 p) {
     return fract(sin(dot(p,vec3(127.1, 311.7, 191.999)))
@@ -97,25 +97,21 @@ void main()
         if (fs_Nor.w == 0.5){
             if (fs_Col.z == 0.2){
                 diffuseColor = texture(u_textureBetter, fs_UV);
-                diffuseColor.xyz = diffuseColor.xyz * (0.1 * fbm(fs_Pos.xyz) + 0.9);
             }
             else{
                 diffuseColor = texture(u_texture, fs_UV);
-                diffuseColor.xyz = diffuseColor.xyz * (0.5 * fbm(fs_Pos.xyz) + 0.5);
             }
-//            diffuseColor.xyz = diffuseColor.xyz * (0.5 * fbm(fs_Pos.xyz) + 0.5);
+            diffuseColor.xyz = diffuseColor.xyz * (0.5 * fbm(fs_Pos.xyz) + 0.5);
             vec4 my_Nor = texture(u_normTexture, fs_UV);
             diffuseTerm = dot(normalize(fs_Nor + my_Nor), normalize(fs_LightVec));
         }else{
             if (fs_Col.z == 0.2){
                 diffuseColor = texture(u_textureBetter, vec2(fs_UV.x + (u_Time % 100) * 0.01 * 0.0625, fs_UV.y));
-                diffuseColor.xyz = diffuseColor.xyz * (0.1 * fbm(fs_Pos.xyz) + 0.9);
             }
             else{
                 diffuseColor = texture(u_texture, vec2(fs_UV.x + (u_Time % 100) * 0.01 * 0.0625, fs_UV.y));
-                diffuseColor.xyz = diffuseColor.xyz * (0.5 * fbm(fs_Pos.xyz) + 0.5);
             }
-//            diffuseColor.xyz = diffuseColor.xyz * (0.5 * fbm(fs_Pos.xyz) + 0.5);
+            diffuseColor.xyz = diffuseColor.xyz * (0.5 * fbm(fs_Pos.xyz) + 0.5);
 
             diffuseTerm = dot(normalize(fs_Nor), normalize(fs_LightVec));
         }
@@ -123,7 +119,7 @@ void main()
         // Avoid negative lighting values
         diffuseTerm = clamp(diffuseTerm, 0, 1);
 
-        //diffuseColor.rgb = diffuseColor.rgb * (0.5 * fbm(fs_Pos.xyz) + 0.5); // make each block different
+        diffuseColor.rgb = diffuseColor.rgb * (0.5 * fbm(fs_Pos.xyz) + 0.5); // make each block different
 
         float ambientTerm = 0.2;
 
@@ -133,9 +129,9 @@ void main()
 
         // Compute final shaded color
         float d = distance(u_camPos, fs_Pos);
-        float fogAlpha = smoothstep(30.f, 500.f, d);
+        float fogAlpha = smoothstep(30.f, 200.f, d);
 
-        out_Col = mix(vec4(diffuseColor.rgb * lightIntensity, diffuseColor.a), fogColor, fogAlpha);
+        out_Col = mix(vec4(diffuseColor.rgb * lightIntensity, diffuseColor.a), fogColor, fogAlpha * 0.7);
 
 //        out_Col = diffuseColor;
 }

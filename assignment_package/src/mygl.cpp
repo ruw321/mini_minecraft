@@ -30,7 +30,7 @@ MyGL::MyGL(QWidget *parent)
     m_timer.start(16);
     setFocusPolicy(Qt::ClickFocus);
 
-    setMouseTracking(false); // MyGL will track the mouse's movements even if a mouse button is not pressed
+    setMouseTracking(true); // MyGL will track the mouse's movements even if a mouse button is not pressed
     setCursor(Qt::BlankCursor); // Make the cursor invisible
 }
 
@@ -69,8 +69,8 @@ void MyGL::initializeGL()
     glGenVertexArrays(1, &vao);
 
     //Create the instance of the world axes
-    m_quad.createVBOdata(false);
-//    m_worldAxes.createVBOdata();
+    m_quad.createVBOdata();
+    m_worldAxes.createVBOdata();
     m_frameBuffer.create();
     m_frameBuffer.bindFrameBuffer();
 
@@ -82,11 +82,6 @@ void MyGL::initializeGL()
     m_progFlat.create(":/glsl/flat.vert.glsl", ":/glsl/flat.frag.glsl");
     m_progInstanced.create(":/glsl/instanced.vert.glsl", ":/glsl/lambert.frag.glsl");
 
-    // Set a color with which to draw geometry.
-    // This will ultimately not be used when you change
-    // your program to render Chunks with vertex colors
-    // and UV coordinates
-//    m_progLambert.setGeometryColor(glm::vec4(0,1,0,1));
 
     // We have to have a VAO bound in OpenGL 3.2 Core. But if we're not
     // using multiple VAOs, we can just bind one once.
@@ -129,14 +124,16 @@ void MyGL::resizeGL(int w, int h) {
 // all per-frame actions here, such as performing physics updates on all
 // entities in the scene.
 void MyGL::tick() {
+
+
     // compute the delta-time
     float dT = (QDateTime::currentMSecsSinceEpoch() - m_currentMSecsSinceEpoch) / 1000.f;
     m_player.tick(dT, m_inputs);
     m_currentMSecsSinceEpoch = QDateTime::currentMSecsSinceEpoch();
-    m_terrain.updateTerrian(m_player.mcr_position);
-//    std::cout<<m_player.mcr_position.x<< " "<<m_player.mcr_position.y<<" "<<m_player.mcr_position.z<<std::endl;
 
-//    m_progLambert.setCamPos(glm::vec4(m_player.mcr_position, 0));
+    m_terrain.updateTerrian(m_player.mcr_position);
+
+
     update(); // Calls paintGL() as part of a larger QOpenGLWidget pipeline
     sendPlayerDataToGUI(); // Updates the info in the secondary window displaying player data
 }
@@ -200,13 +197,13 @@ void MyGL::paintGL() {
 
     m_postprog.drawQuad(m_quad);
 
-//  // draw the world axes
-//    glDisable(GL_DEPTH_TEST);
-//    m_progFlat.setModelMatrix(glm::mat4());
-//    m_progFlat.setViewProjMatrix(m_player.mcr_camera.getViewProj());
+  // draw the world axes
+    glDisable(GL_DEPTH_TEST);
+    m_progFlat.setModelMatrix(glm::mat4());
+    m_progFlat.setViewProjMatrix(m_player.mcr_camera.getViewProj());
 
-//    m_progFlat.draw(m_worldAxes);
-//    glEnable(GL_DEPTH_TEST);
+    m_progFlat.draw(m_worldAxes);
+    glEnable(GL_DEPTH_TEST);
 }
 
 // TODO: Change this so it renders the nine zones of generated
@@ -296,6 +293,7 @@ void MyGL::keyReleaseEvent(QKeyEvent *e) {
 }
 
 void MyGL::mouseMoveEvent(QMouseEvent *e) {
+
     float dx = (width() * 0.5 - e->pos().x()) / width();
     float dy = (height() * 0.5 - e->pos().y()) / height();
     m_player.rotateOnUpGlobal(dx * 360 * 0.1f);

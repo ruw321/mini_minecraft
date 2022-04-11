@@ -244,7 +244,7 @@ void Player::removeBlock(Terrain *terrain) {
         terrain->setBlockAt(outBlockHit.x, outBlockHit.y, outBlockHit.z, EMPTY);
         uPtr<Chunk> &chunkToUpdate = terrain->getChunkAt(outBlockHit.x, outBlockHit.z);
 
-        chunkToUpdate->createVBOdata(false);
+        chunkToUpdate->createVBOdata();
         chunkToUpdate->sendVBOdata();
 
     }
@@ -264,7 +264,7 @@ void Player::placeBlock(Terrain *terrain) {
         // now we are placing a stone, we can change it later if we want to
         terrain->setBlockAt(outBlockHit.x, outBlockHit.y, outBlockHit.z, STONE);
         uPtr<Chunk> &chunkToUpdate = terrain->getChunkAt(outBlockHit.x, outBlockHit.z);
-        chunkToUpdate->createVBOdata(false);
+        chunkToUpdate->createVBOdata();
         chunkToUpdate->sendVBOdata();
     }
 }

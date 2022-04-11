@@ -144,11 +144,10 @@ float ridge(glm::vec2 uv) {
 }
 
 float mountain(glm::vec2 uv) {
-    float SCALE = 50.0;
+    float SCALE = 100.0;
     uv = uv / SCALE;
     glm::vec2 coord = uv;
     glm::mat2 m = glm::mat2( 1.3, 2.2, -1.4, 1.2 );
-//    std::cout<<PerlinNoise(coord)<<std::endl;
     float h  = 0.5000*SimplexNoise( coord );
     coord = m*coord;
     //  bug here h can be negative
@@ -166,11 +165,54 @@ float temperature(glm::vec2 uv){
 }
 
 float plain(glm::vec2 uv) {
-    float SCALE = 250.0;
+    float SCALE = 50.0;
     uv = uv / SCALE;
     glm::vec2 coord = uv;
     return 1 - fbm(uv);
 }
 
+
+
+float caveCeil(glm::vec2 uv) {
+    float SCALE = 50.0;
+    uv = uv / SCALE;
+    glm::vec2 coord = uv;
+    glm::mat2 m = glm::mat2( 1.5, 1.8, -1.1, 2.2 );
+    float h  = 0.5000*SimplexNoise( coord );
+    coord = m*coord;
+    h += 0.2500*SimplexNoise( coord );
+
+    float h1 = glm::clamp(h, 0.f, 1.f) * 128.f;
+
+
+    SCALE = 40.0;
+    uv = uv / SCALE;
+    m = glm::mat2( 2.9, -1.3, 1.4, -1.8 );
+    h  = 0.5000*SimplexNoise( coord );
+    coord = m*coord;
+    h += 0.2500*SimplexNoise( coord );
+    coord = m*coord;
+    h += 0.12500*SimplexNoise( coord );
+
+    float h2 = glm::clamp(h, 0.f, 1.f) * 32.f;
+    if ( h1 > 0) {
+       return h1 + 1;
+    } else {
+     return h2 + 1;
+    }
+}
+
+float caveFloor(glm::vec2 uv) {
+    float SCALE = 100.0;
+    uv = uv / SCALE;
+    glm::vec2 coord = uv;
+    glm::mat2 m = glm::mat2( 2.5, 1.7, -0.9, 1.2 );
+    float h  = 0.5000*SimplexNoise( coord );
+    coord = m*coord;
+    //  bug here h can be negative
+    h += 0.2500*SimplexNoise( coord );
+
+    return glm::clamp(h, 0.f, 1.f) * 32;
+}
 
 

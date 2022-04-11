@@ -12,7 +12,7 @@ class Quad : public Drawable
 {
 public:
     Quad(OpenGLContext* context);
-    virtual void createVBOdata(bool created);
+    virtual void createVBOdata();
 };
 
 #endif // QUAD_H
