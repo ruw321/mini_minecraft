@@ -293,11 +293,13 @@ void MyGL::keyReleaseEvent(QKeyEvent *e) {
 }
 
 void MyGL::mouseMoveEvent(QMouseEvent *e) {
-//    float dx = (width() * 0.5 - e->pos().x()) / width();
-//    float dy = (height() * 0.5 - e->pos().y()) / height();
-//    m_player.rotateOnUpGlobal(dx * 360 * 0.1f);
-//    m_player.rotateOnRightLocal(dy * 360 * 0.1f);
-//    moveMouseToCenter();
+
+    float dx = (width() * 0.5 - e->pos().x()) / width();
+    float dy = (height() * 0.5 - e->pos().y()) / height();
+    m_player.rotateOnUpGlobal(dx * 360 * 0.1f);
+    m_player.rotateOnRightLocal(dy * 360 * 0.1f);
+    moveMouseToCenter();
+
 }
 
 void MyGL::mousePressEvent(QMouseEvent *e) {

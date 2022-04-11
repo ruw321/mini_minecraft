@@ -3,6 +3,7 @@
 #include "biomes.h"
 #include <stdexcept>
 #include <iostream>
+#include <algorithm>
 
 Terrain::Terrain(OpenGLContext *context)
     : m_chunks(),
@@ -244,12 +245,14 @@ void Terrain::fillColumn(Chunk *chunk, int x, int z) {
         chunk->setBlockAt(x, k, z, STONE);
     }
 
+
     for (int k = 128; k <= maxHeight; k++) {
         if (moist > 0){
             chunk->setBlockAt(x, k, z, BlockType(k, maxHeight, GRASSLAND));
         }else{
             chunk->setBlockAt(x, k, z, BlockType(k, maxHeight, SANDLAND));
         }
+
     }
 
     for (int k = maxHeight+1; k < 138; k++) {
@@ -290,28 +293,19 @@ std::vector<glm::ivec2> Terrain::getSurroundingZones(int x, int z, int r)
 
 BlockType Terrain::BlockType(int height, int maxHeight, enum BiomeType biome) {
     if (biome == SANDLAND){
-        if (height <= 128) {
+        if (height <= 148) {
             return SAND;
         }
         else {
-            if (maxHeight <= 145) {
+            if (maxHeight <= 185) {
                 if (height == maxHeight) {
                     return REDSTONE;
                 } else {
                     return REDSTONE;
                 }
             }
-            else {
-                if (maxHeight <= 170) {
-                    return REDSTONE;
-                } else {
-                    if (height == maxHeight) {
-                        return REDSTONE;
-                    } else {
-                        return REDSTONE;
-                    }
-                }
-            }
+
+
         }
     }
     else if (biome == GRASSLAND){
