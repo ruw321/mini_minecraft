@@ -1,5 +1,5 @@
 # Milestone 2:
-
+[Milestone 2 demonstration](https://www.youtube.com/watch?v=hBTctWhnhlQ&t=14s)
 ## Texturing and Texture Animation (Zongxin Cui)
 - Texture
    - Initially having trouble figure out how to load texture file, but evetually figured out
