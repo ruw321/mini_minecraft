@@ -47,8 +47,11 @@ float surflet(glm::vec2 P, glm::vec2 gridPoint) {
     float distY = glm::abs(P.y - gridPoint.y);
     float tX = 1 - 6 * pow(distX, 5.0) + 15 * pow(distX, 4.0) - 10 * pow(distX, 3.0);
     float tY = 1 - 6 * pow(distY, 5.0) + 15 * pow(distY, 4.0) - 10 * pow(distY, 3.0);
+//    glm::vec2 gradient = random2(gridPoint) * 2.f - glm::vec2(1.f, 1.f);
     glm::vec2 gradient = random2(gridPoint);
+
     glm::vec2 diff = P - gridPoint;
+//    float height = (glm::dot(diff, gradient) + 1.f) * 0.5;
     float height = glm::dot(diff, gradient);
     return height * tX * tY;
 }
@@ -143,21 +146,55 @@ float ridge(glm::vec2 uv) {
     return res * 0.5 + 0.5;
 }
 
-float mountain(glm::vec2 uv) {
-    float SCALE = 100.0;
+//float mountain(glm::vec2 uv) {
+//    float SCALE = 100.0;
+//    uv = uv / SCALE;
+//    glm::vec2 coord = uv;
+//    glm::mat2 m = glm::mat2( 1.3, 2.2, -1.4, 1.2 );
+//    float h  = 0.5000 * SimplexNoise( coord );
+//    coord = m*coord;
+//    //  bug here h can be negative
+//    h += 0.2500*SimplexNoise( coord );
+////    h = 0.5 * (h + 1.f);
+////    std::cout<<(h>1)<<std::endl;
+////    return h * (250 - 128) + 128;
+//    return glm::clamp(h, 0.f, 1.f) * (250 - 128) + 128;
+//}
+
+float desert(glm::vec2 uv, float scale, float offset) {
+    float SCALE = scale;//800.0;
     uv = uv / SCALE;
     glm::vec2 coord = uv;
     glm::mat2 m = glm::mat2( 1.3, 2.2, -1.4, 1.2 );
-    float h  = 0.5000*SimplexNoise( coord );
+    float h  = 0.5000 * SimplexNoise( coord );
     coord = m*coord;
     //  bug here h can be negative
     h += 0.2500*SimplexNoise( coord );
-
-    return glm::clamp(h, 0.f, 1.f) * (250 - 128) + 128;
+//    h = 0.5 * (h + 1.f);
+//    std::cout<<(h>1)<<std::endl;
+//    return h * (250 - 128) + 128;
+    h = 0.5 * (h + 1.f);
+    return h * 50 + offset;//128; //[78, 244]
 }
 
+float grassland(glm::vec2 uv, float scale, float offset) {
+    float SCALE = scale;//50.0;
+    uv = uv / SCALE;
+    glm::vec2 coord = uv;
+    glm::mat2 m = glm::mat2( 1.3, 2.2, -1.4, 1.2 );
+    float h  = SimplexNoise( uv * 1.3f);
+    coord = m*coord;
+    //  bug here h can be negative
+//    h += 0.2500*SimplexNoise( coord );
+    h = 0.5 * (h + 1.f);
+//    std::cout<<(h>1)<<std::endl;
+    return h * 90 + offset;//135;
+//    return glm::clamp(h, 0.f, 1.f) * (250 - 128) + 138;
+}
+
+
 float moisture(glm::vec2 uv){
-    return PerlinNoise(uv);
+    return SimplexNoise(uv);
 }
 
 float temperature(glm::vec2 uv){

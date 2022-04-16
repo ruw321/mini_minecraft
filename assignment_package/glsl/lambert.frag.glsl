@@ -107,11 +107,13 @@ void main()
         }else{
             if (fs_Col.z == 0.2){
                 diffuseColor = texture(u_textureBetter, vec2(fs_UV.x + (u_Time % 100) * 0.01 * 0.0625, fs_UV.y));
+                diffuseColor.xyz = diffuseColor.xyz * (0.5 * fbm(fs_Pos.xyz) + 0.5);
             }
             else{
                 diffuseColor = texture(u_texture, vec2(fs_UV.x + (u_Time % 100) * 0.01 * 0.0625, fs_UV.y));
+                diffuseColor.xyz = diffuseColor.xyz * (0.5 * fbm(fs_Pos.xyz) + 0.5);
             }
-            diffuseColor.xyz = diffuseColor.xyz * (0.5 * fbm(fs_Pos.xyz) + 0.5);
+
 
             diffuseTerm = dot(normalize(fs_Nor), normalize(fs_LightVec));
         }

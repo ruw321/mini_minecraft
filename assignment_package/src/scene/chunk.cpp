@@ -1,4 +1,4 @@
-#include "chunk.h"
+ #include "chunk.h"
 #include <iostream>
 
 
@@ -21,16 +21,16 @@ void Chunk::createVBOdata() {
     std::vector<glm::vec4> VBOdata_transparent;
     std::vector<GLuint> idx_transparent;
 
-    std::unordered_map<BlockType, glm::vec4> blockColorMp = {
+//    std::unordered_map<BlockType, glm::vec4> blockColorMp = {
 
-        {GRASS, glm::vec4(95.f, 159.f, 53.f, 0) / 255.f},
-        {DIRT, glm::vec4(121.f, 85.f, 58.f, 0) / 255.f},
-        {STONE, glm::vec4(0.5, 0.5, 0.5f, 0)},
-        {WATER, glm::vec4(0.f, 0.f, 0.75f, 0)},
-        {SNOW, glm::vec4(1.f, 1.f, 1.f, 0)},
-        {SAND, glm::vec4(1.f, 0.95, 0.9f, 0)}
+//        {GRASS, glm::vec4(95.f, 159.f, 53.f, 0) / 255.f},
+//        {DIRT, glm::vec4(121.f, 85.f, 58.f, 0) / 255.f},
+//        {STONE, glm::vec4(0.5, 0.5, 0.5f, 0)},
+//        {WATER, glm::vec4(0.f, 0.f, 0.75f, 0)},
+//        {SNOW, glm::vec4(1.f, 1.f, 1.f, 0)},
+//        {SAND, glm::vec4(1.f, 0.95, 0.9f, 0)}
 
-    };
+//    };
 
     //front 1, back 2, left 3, right 4, up 5, down 6
 //    std::vector<std::pair<int, int>> blockFaceNeedRender;
@@ -70,6 +70,7 @@ void Chunk::createVBOdata() {
                             Chunk* neighborChunk = m_neighbors[neighborFace.direction];
                             if (neighborChunk == nullptr){
                                 neighborType = EMPTY;
+//                                continue;
                             }
                             else{
                                 if (neighborFace.direction == XNEG && x == 0){

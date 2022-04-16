@@ -217,26 +217,27 @@ void Terrain::fillColumn(Chunk *chunk, int x, int z) {
     int map_x = chunk->m_pos[0] + x;
     int map_z = chunk->m_pos[1] + z;
 
-    int maxHeight = mountain(glm::vec2(map_x, map_z));
-    float moist = moisture(glm::vec2(map_x, map_z) / 500.f);
+
+    //moisture return (-1, 1)
+
 
     int caveCeilHeight = caveCeil(glm::vec2(map_x, map_z));
     int caveFloorHeight = caveCeil(glm::vec2(map_x, map_z));
 
     // Cave
-    for (int k = 0; k < 64; k++) { // start from the ground
-        chunk->setBlockAt(x, k, z, BEDROCK);
-    }
+//    for (int k = 0; k < 64; k++) { // start from the ground
+//        chunk->setBlockAt(x, k, z, BEDROCK);
+//    }
 
-    for (int k = 64; k < 64 + caveFloorHeight; k++) {
-        chunk->setBlockAt(x, k, z, STONE);
-    }
+//    for (int k = 64; k < 64 + caveFloorHeight; k++) {
+//        chunk->setBlockAt(x, k, z, STONE);
+//    }
 
-    for (int k = 64; k < 75; k++) {
-        if (chunk->getBlockAt(x, k, z) == EMPTY) {
-            chunk->setBlockAt(x, k, z, LAVA);
-        }
-    }
+//    for (int k = 64; k < 75; k++) {
+//        if (chunk->getBlockAt(x, k, z) == EMPTY) {
+//            chunk->setBlockAt(x, k, z, LAVA);
+//        }
+//    }
 
     for (int k = 127; k > 127 - caveCeilHeight; k--) {
         if ( k <= 64 + caveFloorHeight) {
@@ -245,23 +246,94 @@ void Terrain::fillColumn(Chunk *chunk, int x, int z) {
         chunk->setBlockAt(x, k, z, STONE);
     }
 
+    float pi = 3.14159f;
+
+
+    float moist = moisture(glm::vec2(map_x * cos(pi * 0.25) - sin(pi * 0.25) * map_z,
+                                     map_x * sin(pi * 0.25) + cos(pi * 0.25) * map_z) / 1000.f);
+//    float moist = moisture(glm::vec2(map_x, map_z) / 500.f);
+    moist = 0.5 * (moist + 1);
+    float temperature = moisture(glm::vec2(map_x * cos(pi * 0.45) - sin(pi * 0.45) * map_z,
+                                           map_x * sin(pi * 0.45) + cos(pi * 0.45) * map_z) / 1000.f);
+//    std::cout<<moist<<std::endl;
+    temperature = 0.5 * (temperature + 1);
+    float s = glm::smoothstep(0.4f, 0.75f, moist);
+    int maxHeight;
+    float t = glm::smoothstep(0.4f, 0.75f, temperature);
+//    if (t < 0.575){
+//        maxHeight = glm::mix(m, sm , (t + s) / 2.f);
+//    }else{
+//        maxHeight = glm::mix(m, sm , (t + s) / 2.f);
+//    }
+
+
+
+//    int maxHeight = sm;
+//    std::cout<<moist<<std::endl;
+    BiomeType currentBiome;
+    if (s < 0.575 && t > 0.575){
+        currentBiome = SANDLAND;
+        float m = desert(glm::vec2(map_x * cos(pi * 0.33) - sin(pi * 0.33) * map_z,
+                                   map_x * sin(pi * 0.33) + cos(pi * 0.33) * map_z), 800, 128);
+        float sm = grassland(glm::vec2(map_x, map_z), 50, 140);
+        maxHeight = glm::mix(m, sm , (t + s) / 2.f);
+    }
+    else if (s > 0.575 && t < 0.575){
+        currentBiome = GRASSLAND;
+        float m = desert(glm::vec2(map_x * cos(pi * 0.33) - sin(pi * 0.33) * map_z,
+                                   map_x * sin(pi * 0.33) + cos(pi * 0.33) * map_z), 800, 128);
+        float sm = grassland(glm::vec2(map_x, map_z), 50, 140);
+        maxHeight = glm::mix(m, sm , (t + s) / 2.f);
+//        maxHeight = mountain(glm::vec2(map_x, map_z));
+    }else if (s > 0.575 && t > 0.575){
+        currentBiome = MOUNTAIN;
+        float m = desert(glm::vec2(map_x * cos(pi * 0.33) - sin(pi * 0.33) * map_z,
+                                   map_x * sin(pi * 0.33) + cos(pi * 0.33) * map_z), 800, 128);
+        float sm = grassland(glm::vec2(map_x, map_z), 50, 140);
+        maxHeight = glm::mix(m, sm , (t + s) / 2.f);
+    }else{
+        currentBiome = ISLAND;
+        float m = desert(glm::vec2(map_x * cos(pi * 0.33) - sin(pi * 0.33) * map_z,
+                                   map_x * sin(pi * 0.33) + cos(pi * 0.33) * map_z), 800, 128);
+        float sm = grassland(glm::vec2(map_x, map_z), 50, 140);
+        maxHeight = glm::mix(m, sm , (t + s) / 2.f);
+    }
+
 
     for (int k = 128; k <= maxHeight; k++) {
-        if (moist > 0){
-            chunk->setBlockAt(x, k, z, BlockType(k, maxHeight, GRASSLAND));
-        }else{
-            chunk->setBlockAt(x, k, z, BlockType(k, maxHeight, SANDLAND));
-        }
-
+        chunk->setBlockAt(x, k, z, BlockType(k, maxHeight, currentBiome));
+//        chunk->setBlockAt(x, k, z, BlockType(k, maxHeight, currentBiome));
     }
 
-    for (int k = maxHeight+1; k < 138; k++) {
-        if (moist > 0){
+
+    if (currentBiome == ISLAND){
+        for (int k = maxHeight+1; k < 165; k++) {
             chunk->setBlockAt(x, k, z, WATER);
-        }else{
-            chunk->setBlockAt(x, k, z, SAND);
         }
     }
+    else if (currentBiome == GRASSLAND){
+        for (int k = maxHeight+1; k < 165; k++) {
+            chunk->setBlockAt(x, k, z, GRASS);
+        }
+    }else if (currentBiome == SANDLAND){
+        for (int k = maxHeight+1; k < 165; k++) {
+            chunk->setBlockAt(x, k, z, SAND);
+
+        }
+
+        if (maxHeight > 173){
+            float decide = fbm(glm::vec2(x, z));
+            std::cout<<decide<<std::endl;
+            if (decide > 1.6){
+                chunk->setBlockAt(x, maxHeight + 1, z, PUMPKIN);
+            }
+        }
+    }else if (currentBiome == MOUNTAIN){
+        for (int k = maxHeight+1; k < 165; k++) {
+            chunk->setBlockAt(x, k, z, ICE);
+        }
+    }
+
 
     if (map_x > 44 && map_x < 52 && map_z > 44 && map_z < 52) {
         for (int k = 100; k < 150; k++) {
@@ -293,45 +365,42 @@ std::vector<glm::ivec2> Terrain::getSurroundingZones(int x, int z, int r)
 
 BlockType Terrain::BlockType(int height, int maxHeight, enum BiomeType biome) {
     if (biome == SANDLAND){
-        if (height <= 148) {
+        if (height <= 170) {
             return SAND;
         }
         else {
-            if (maxHeight <= 185) {
-                if (height == maxHeight) {
-                    return REDSTONE;
-                } else {
-                    return REDSTONE;
-                }
-            }
-
-
+            return REDSTONE;
         }
+//        return SAND;
     }
     else if (biome == GRASSLAND){
-        if (height <= 128) {
-            return STONE;
+        if (height <= 170 ){
+            return DIRT;
+        }else{
+
+            return GRASS;
         }
-        else {
-            if (maxHeight <= 145) {
-                if (height == maxHeight) {
-                    return GRASS;
-                } else {
-                    return DIRT;
-                }
-            }
-            else {
-                if (maxHeight <= 170) {
-                    return STONE;
-                } else {
-                    if (height == maxHeight) {
-                        return SNOW;
-                    } else {
-                        return STONE;
-                    }
-                }
+    }else if (biome == MOUNTAIN){
+        if (maxHeight < 192){
+            return ICESTONE;
+        }else{
+            if (height == maxHeight) {
+                return SNOW;
+            } else {
+                return STONE;
             }
         }
+
+
+    }
+    else if (biome == ISLAND){
+        if (maxHeight > 165){
+            return GRASS;
+        }
+        else{
+            return SAND;
+        }
+//        return DIRT;
     }
     else {
         return EMPTY;

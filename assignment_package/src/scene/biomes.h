@@ -8,6 +8,7 @@ enum BiomeType: unsigned char
     GRASSLAND,
     MOUNTAIN,
     SANDLAND,
+    ISLAND
 };
 
 float random1(glm::vec2 p);
@@ -35,7 +36,8 @@ float fbm(glm::vec2 uv);
 
 float ridge(glm::vec2 uv);
 
-float mountain(glm::vec2 uv);
+float desert(glm::vec2 uv, float scale, float offset);
+float grassland(glm::vec2 uv, float scale, float offset);
 
 float moisture(glm::vec2 uv);
 
