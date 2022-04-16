@@ -4,24 +4,15 @@
 #include <iostream>
 #include <QApplication>
 #include <QKeyEvent>
+#include <QDate>
 
 
 MyGL::MyGL(QWidget *parent)
     : OpenGLContext(parent),
 
       m_worldAxes(this),
-      m_progLambert(this),
-      m_progFlat(this),
-      m_progInstanced(this),
-      m_postprog(this),
-      m_terrain(this),
-      m_player(glm::vec3(48.f, 210.f, 48.f), m_terrain),
-      m_frameBuffer(this, this->width()*this->devicePixelRatio(), this->height()*this->devicePixelRatio(), this->devicePixelRatio()),
-      m_quad(this),
-      m_texture(this),
-      m_textureNormal(this),
-      m_textureBetter(this),
-      m_time(0),
+      m_progLambert(this), m_progFlat(this), m_progInstanced(this),
+      m_terrain(this), m_player(glm::vec3(48.f, 129.f, 48.f), m_terrain),
       m_currentMSecsSinceEpoch(QDateTime::currentMSecsSinceEpoch())
 {
     // Connect the timer to a function so that when the timer ticks the function is executed
@@ -124,16 +115,10 @@ void MyGL::resizeGL(int w, int h) {
 // all per-frame actions here, such as performing physics updates on all
 // entities in the scene.
 void MyGL::tick() {
-
-
     // compute the delta-time
     float dT = (QDateTime::currentMSecsSinceEpoch() - m_currentMSecsSinceEpoch) / 1000.f;
     m_player.tick(dT, m_inputs);
     m_currentMSecsSinceEpoch = QDateTime::currentMSecsSinceEpoch();
-
-    m_terrain.updateTerrian(m_player.mcr_position);
-
-
     update(); // Calls paintGL() as part of a larger QOpenGLWidget pipeline
     sendPlayerDataToGUI(); // Updates the info in the secondary window displaying player data
 }
@@ -224,6 +209,7 @@ void MyGL::renderTerrain() {
 
 
 void MyGL::keyPressEvent(QKeyEvent *e) {
+
     float amount = 2.0f;
     if(e->modifiers() & Qt::ShiftModifier){
         amount = 10.0f;
@@ -257,7 +243,7 @@ void MyGL::keyPressEvent(QKeyEvent *e) {
     } else if (e->key() == Qt::Key_E) {
         m_inputs.ePressed = true;
     } else if (e->key() == Qt::Key_Space) {
-        if (m_inputs.isOnGround || m_player.getCameraBlock(m_terrain) == WATER || m_player.getCameraBlock(m_terrain) == LAVA) {
+        if (m_inputs.isOnGround) {
             m_inputs.spacePressed = true;
         }
     } else if (e->key() == Qt::Key_F) {
@@ -294,17 +280,18 @@ void MyGL::keyReleaseEvent(QKeyEvent *e) {
 }
 
 void MyGL::mouseMoveEvent(QMouseEvent *e) {
-//    QPoint lastPosition = QPoint(width() / 2.f, height() / 2.f);
-//    float delta_x = GLfloat(lastPosition.x() - e->pos().x()) / width();
-//    float delta_y = GLfloat(lastPosition.y() - e->pos().y()) / height();
-//    m_player.rotateOnUpGlobal(delta_x * 360 * 0.05f);
-//    m_player.rotateOnRightLocal(delta_y * 360 * 0.05f);
-//    // move mouse back to center
-//    moveMouseToCenter();
+    QPoint lastPosition = QPoint(width() / 2.f, height() / 2.f);
+    float delta_x = GLfloat(lastPosition.x() - e->pos().x()) / width();
+    float delta_y = GLfloat(lastPosition.y() - e->pos().y()) / height();
+    m_player.rotateOnUpGlobal(delta_x * 360 * 0.05f);
+    m_player.rotateOnRightLocal(delta_y * 360 * 0.05f);
+    // move mouse back to center
+    moveMouseToCenter();
+
+    // the above code might not work for windows
 }
 
 void MyGL::mousePressEvent(QMouseEvent *e) {
-    // TODO
     if (e->button() == Qt::LeftButton) {
         m_player.removeBlock(&m_terrain);
     } else if (e->button() == Qt::RightButton) {

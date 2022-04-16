@@ -13,7 +13,7 @@
 #include <QOpenGLVertexArrayObject>
 #include <QOpenGLShaderProgram>
 #include <smartpointerhelp.h>
-#include <QDateTime>
+#include <QDate>
 
 class MyGL : public OpenGLContext
 {
@@ -38,6 +38,8 @@ private:
     Texture m_textureNormal;
     Texture m_textureBetter;
     int m_time;
+
+    long long m_currentMSecsSinceEpoch; // Store the previous frame's currentMSecsSinceEpoch in MyGL
 
     long long m_currentMSecsSinceEpoch; // Store the previous frame's currentMSecsSinceEpoch in MyGL
 

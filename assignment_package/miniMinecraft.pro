@@ -53,3 +53,6 @@ address_sanitizer {
 HEADERS +=
 
 SOURCES +=
+
+DISTFILES += \
+    Wang_helplog.txt

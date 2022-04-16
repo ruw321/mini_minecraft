@@ -1,0 +1,18 @@
+Milestone 1:
+
+Procedural Terrain
+
+Efficient Terrain Rendering and Chunking
+
+Game Engine Tick Function and Player Physics (Ruifan Wang)
+    - Jumping
+        - to avoid click space before it lands, I had to add another global variable to inputs to store whether it is on ground or not
+        - to avoid holding space and flying up, I added a condition that checks if I am on ground or not before jumping
+    - Collision detection
+        - intially I implemented the way that the player's movement will come to a complete halt when it collides
+        - eventually I did the same thing but one axis at the time to allow smoother collision such as walking along the wall
+    - Placing block
+        - intially I made it that it could place a block only if the space was empty, but I had hard time placing blocks this way
+        - then I realized that I should check if gridMarch returns true, and then players wouldn't be able to place block in the air
+    - Velocity and acceleration
+        - just the overall tuning of the velocity and acceleration is definitely a pain in the butt
