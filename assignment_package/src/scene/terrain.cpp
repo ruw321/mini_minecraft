@@ -385,7 +385,9 @@ BlockType Terrain::BlockType(int height, int maxHeight, enum BiomeType biome) {
             return ICESTONE;
         }else{
             if (height == maxHeight) {
-                return CACTUS;
+
+                return SNOW;
+
             } else {
                 return STONE;
             }
@@ -510,5 +512,4 @@ void Terrain::end() {
         thread.join();
     }
 }
-
 

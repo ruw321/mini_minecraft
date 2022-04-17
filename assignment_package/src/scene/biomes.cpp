@@ -252,4 +252,3 @@ float caveFloor(glm::vec2 uv) {
     return glm::clamp(h, 0.f, 1.f) * 32;
 }
 
-

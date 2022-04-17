@@ -9,6 +9,13 @@
    - Initially struggling to get the right changing offset for the uv to make runing water and lava, but later figure it out
 - Currently working on fog effect
 
+
+## Multi-Thread (Zhiyuan Liang)
+I used to implement multi-thread in a wrong way. But my teammate told me that Adam said our multi-thread method was wrong. Then I checked the example code from the lecture. I re-implemented the multi-thread and only called thread.join when the application is going to end.
+I used newChunks, BlockTypeBuffer and VBOdataBuffer to temporarily store the created chunks' uPtr. I used to two mutexes to make sure that the modifications to these buffers are atomic.
+
+
+
 # Milestone 1: 
 
 [Milestone 1 demonstration](https://www.youtube.com/watch?v=VI6Wz9TMFQs)

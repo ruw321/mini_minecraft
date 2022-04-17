@@ -13,6 +13,8 @@ ShaderProgram::ShaderProgram(OpenGLContext *context)
       unifModel(-1), unifModelInvTr(-1), unifViewProj(-1), unifColor(-1),
       unif_sampler2D(-1), unif_time(-1), unif_textureBetter(-1),
       unif_camPos(-1), unif_postType(-1),
+      /* TEST!!! */
+      unif_dimensions(-1), unif_eye(-1),
 
       context(context)
 {}
@@ -81,9 +83,14 @@ void ShaderProgram::create(const char *vertfile, const char *fragfile)
     unif_textureBetter = context->glGetUniformLocation(prog, "u_textureBetter");
     unif_time = context->glGetUniformLocation(prog, "u_Time");
 
-    unif_camPos = context->glGetUniformLocation(prog, "u_camPos");
+    unif_camPos = context->glGetUniformLocation(prog, "u_CamPos");
 
-    unif_postType = context->glGetUniformLocation(prog, "u_postType");
+    unif_postType = context->glGetUniformLocation(prog, "u_PostType");
+
+    /* TEST!!! */
+    unif_dimensions = context->glGetUniformLocation(prog, "u_Dimensions");
+    unif_eye = context->glGetUniformLocation(prog, "u_Eye");
+
 
 }
 
@@ -472,5 +479,25 @@ void ShaderProgram::setPostType(int type)
     if(unif_postType != -1)
     {
         context->glUniform1i(unif_postType, type);
+    }
+}
+
+void ShaderProgram::set_dimensions(int width, int height)
+{
+    useMe();
+
+    if(unif_dimensions != -1)
+    {
+        context->glUniform2i(unif_dimensions, width, height);
+    }
+}
+
+void ShaderProgram::set_eye(float x, float y, float z)
+{
+    useMe();
+
+    if(unif_eye != -1)
+    {
+        context->glUniform3f(unif_eye, x, y, z);
     }
 }
