@@ -1,4 +1,4 @@
-#include "chunk.h"
+ #include "chunk.h"
 #include <iostream>
 
 
@@ -34,92 +34,137 @@ void Chunk::createVBOdata() {
 
    //front 1, back 2, left 3, right 4, up 5, down 6
 //    std::vector<std::pair<int, int>> blockFaceNeedRender;
-   int currentIdx = 0;
-   int currentIdx_transparent = 0;
-   for (int z = 0; z < 16; z++){
-       for (int y = 0; y < 256; y++){
-           for (int x = 0; x < 16; x++){
 
-               BlockType current = getBlockAt(x, y, z);
-               glm::vec4 currentPos = glm::vec4(x, y, z, 0);
-               if (current != EMPTY){
+    int currentIdx = 0;
+    int currentIdx_transparent = 0;
+    for (int z = 0; z < 16; z++){
+        for (int y = 0; y < 256; y++){
+            for (int x = 0; x < 16; x++){
 
-                   for (BlockFace neighborFace : adjacentFaces){
-                       if (transparentType.find(current) != transparentType.end()) {
-                           if (neighborFace.directionVec == glm::vec3(1, 0, 0)){
-                               continue;
-                           }
-                           if (neighborFace.directionVec == glm::vec3(-1, 0, 0)){
-                               continue;
-                           }
-                           if (neighborFace.directionVec == glm::vec3(0, -1, 0)){
-                               continue;
-                           }
-                           if (neighborFace.directionVec == glm::vec3(0, 0, 1)){
-                               continue;
-                           }
-                           if (neighborFace.directionVec == glm::vec3(0, 0, -1)){
-                               continue;
-                           }
-                       }
-                       glm::vec3 neighborPos = neighborFace.directionVec
-                               + glm::vec3(x, y, z);
+                BlockType current = getBlockAt(x, y, z);
+                glm::vec4 currentPos = glm::vec4(x, y, z, 0);
+                if (current != EMPTY){
+
+                    for (BlockFace neighborFace : adjacentFaces){
+                        if (noNormal.find(current) != noNormal.end()) {
+                            if (neighborFace.directionVec == glm::vec3(1, 0, 0)){
+                                continue;
+                            }
+                            if (neighborFace.directionVec == glm::vec3(-1, 0, 0)){
+                                continue;
+                            }
+                            if (neighborFace.directionVec == glm::vec3(0, -1, 0)){
+                                continue;
+                            }
+                            if (neighborFace.directionVec == glm::vec3(0, 0, 1)){
+                                continue;
+                            }
+                            if (neighborFace.directionVec == glm::vec3(0, 0, -1)){
+                                continue;
+                            }
+                        }
+                        glm::vec3 neighborPos = neighborFace.directionVec
+                                + glm::vec3(x, y, z);
 //                        std::cout<<getBlockAt(0, 0, 0)<<std::endl;
-                       BlockType neighborType;
-                       if ((x == 0 || z == 0 || x == 15 || z == 15) and neighborFace.direction != YPOS and neighborFace.direction != YNEG){
-                           Chunk* neighborChunk = m_neighbors[neighborFace.direction];
-                           if (neighborChunk == nullptr){
-                               neighborType = EMPTY;
+                        BlockType neighborType;
+                        if ((x == 0 || z == 0 || x == 15 || z == 15) and neighborFace.direction != YPOS and neighborFace.direction != YNEG){
+                            Chunk* neighborChunk = m_neighbors[neighborFace.direction];
+                            if (neighborChunk == nullptr){
+                                neighborType = EMPTY;
 //                                continue;
-                           }
-                           else{
-                               if (neighborFace.direction == XNEG && x == 0){
-                                   neighborType = neighborChunk->getBlockAt(int(15),
-                                                                            int(neighborPos.y),
-                                                                            int(neighborPos.z));
-//                                    if (!created){
-//                                        neighborChunk->destroyVBOdata();
-//                                        neighborChunk->createVBOdata(true);
-//                                    }
-                               } else if (neighborFace.direction == XPOS && x == 15){
-                                   neighborType = neighborChunk->getBlockAt(int(0),
-                                                                            int(neighborPos.y),
-                                                                            int(neighborPos.z));
-//                                    if (!created){
-//                                        neighborChunk->destroyVBOdata();
-//                                        neighborChunk->createVBOdata(true);
-//                                    }
+                            }
+                            else{
+                                if (neighborFace.direction == XNEG && x == 0){
+                                    neighborType = neighborChunk->getBlockAt(int(15),
+                                                                             int(neighborPos.y),
+                                                                             int(neighborPos.z));
+                                } else if (neighborFace.direction == XPOS && x == 15){
+                                    neighborType = neighborChunk->getBlockAt(int(0),
+                                                                             int(neighborPos.y),
+                                                                             int(neighborPos.z));
 
-                               } else if (neighborFace.direction == ZPOS && z == 15){
-                                   neighborType = neighborChunk->getBlockAt(int(neighborPos.x),
-                                                                            int(neighborPos.y),
-                                                                            int(0));
-//                                    if (!created){
-//                                        neighborChunk->destroyVBOdata();
-//                                        neighborChunk->createVBOdata(true);
-//                                    }
+                                } else if (neighborFace.direction == ZPOS && z == 15){
+                                    neighborType = neighborChunk->getBlockAt(int(neighborPos.x),
+                                                                             int(neighborPos.y),
+                                                                             int(0));
+                                } else if (neighborFace.direction == ZNEG && z == 0){
+                                    neighborType = neighborChunk->getBlockAt(int(neighborPos.x),
+                                                                             int(neighborPos.y),
+                                                                             int(15));
+                                }
+                                else{
+                                    neighborType = getBlockAt(int(neighborPos.x),
+                                                                    int(neighborPos.y),
+                                                                    int(neighborPos.z));
+                                }
+                            }
 
-                               } else if (neighborFace.direction == ZNEG && z == 0){
-                                   neighborType = neighborChunk->getBlockAt(int(neighborPos.x),
-                                                                            int(neighborPos.y),
-                                                                            int(15));
-//                                    if (!created){
-//                                        neighborChunk->destroyVBOdata();
-//                                        neighborChunk->createVBOdata(true);
-//                                    }
 
-                               }
-                               else{
-                                   neighborType = getBlockAt(int(neighborPos.x),
-                                                                   int(neighborPos.y),
-                                                                   int(neighborPos.z));
-//                                    if (!created){
-//                                        neighborChunk->destroyVBOdata();
-//                                        neighborChunk->createVBOdata(true);
-//                                    }
+                        }else{
+                            neighborType = getBlockAt(int(neighborPos.x),
+                                                            int(neighborPos.y),
+                                                            int(neighborPos.z));
+                        }
 
-                               }
-                           }
+                        if (transparentBlock.find(current) == transparentBlock.end()) {
+                            if (neighborType == EMPTY || neighborType == WATER){
+                                for (int i = 0; i < 4; i++){
+
+                                    VBOdata.push_back(neighborFace.vertices[i].m_pos + currentPos);
+                                    if (usingBetterTexture.find(current) == usingBetterTexture.end()){
+                                        VBOdata.push_back(glm::vec4(neighborFace.vertices[i].m_uv +
+                                                                blockFaceUV[current][neighborFace.direction], 0, 0));
+                                    }else{
+                                        VBOdata.push_back(glm::vec4(neighborFace.vertices[i].m_uv +
+                                                                blockFaceUV[current][neighborFace.direction], 0.2, 0));
+                                    }
+
+                                    VBOdata.push_back(glm::vec4(neighborFace.directionVec, 0.5));
+
+                                }
+                                idx.push_back(currentIdx);
+                                idx.push_back(currentIdx + 1);
+                                idx.push_back(currentIdx + 2);
+                                idx.push_back(currentIdx);
+                                idx.push_back(currentIdx + 2);
+                                idx.push_back(currentIdx + 3);
+                                currentIdx += 4;
+
+                            }
+                       }
+                       else  { // Water
+                            if (neighborType == EMPTY){
+                                for (int i = 0; i < 4; i++){
+
+                                    VBOdata_transparent.push_back(neighborFace.vertices[i].m_pos + currentPos);
+                                    if (usingBetterTexture.find(current) == usingBetterTexture.end()){
+                                        VBOdata_transparent.push_back(glm::vec4(neighborFace.vertices[i].m_uv +
+                                                                blockFaceUV[current][neighborFace.direction], 0, 0));
+                                    }else{
+
+                                        VBOdata_transparent.push_back(glm::vec4(neighborFace.vertices[i].m_uv +
+                                                                blockFaceUV[current][neighborFace.direction], 0.2, 0));
+                                    }
+                                    VBOdata_transparent.push_back(glm::vec4(neighborFace.directionVec, 0));
+
+                                }
+                                idx_transparent.push_back(currentIdx_transparent);
+                                idx_transparent.push_back(currentIdx_transparent + 1);
+                                idx_transparent.push_back(currentIdx_transparent + 2);
+                                idx_transparent.push_back(currentIdx_transparent);
+                                idx_transparent.push_back(currentIdx_transparent + 2);
+                                idx_transparent.push_back(currentIdx_transparent + 3);
+                                currentIdx_transparent += 4;
+                            }
+                       }
+
+                    }
+
+                }
+            }
+        }
+    }
+
 
 
                        }else{

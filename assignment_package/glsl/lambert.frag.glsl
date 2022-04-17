@@ -32,6 +32,7 @@ in vec4 fs_Col;
 out vec4 out_Col; // This is the final output color that you will see on your
                   // screen for the pixel that is currently being processed.
 
+
 const float SUN_VELOCITY = 1 / 200.f;
 const float TIME_OFFSET = 1000.f; // when does the game start
 
@@ -42,6 +43,7 @@ const vec3 sun[3] = vec3[](vec3(255, 255, 245) / 255.0,
 
 
 const vec4 fogColor = vec4(0.8, 0.9, 1, 1);
+
 
 float random1(vec3 p) {
     return fract(sin(dot(p,vec3(127.1, 311.7, 191.999)))
@@ -150,10 +152,22 @@ void main()
         if (fs_Col.z == 0.2){
             diffuseColor = texture(u_textureBetter, vec2(fs_UV.x + (u_Time % 10) * 0.01 * 0.0625, fs_UV.y));
             diffuseColor.xyz = diffuseColor.xyz * (0.5 * fbm(fs_Pos.xyz) + 0.5);
-        }
-        else{
-            diffuseColor = texture(u_texture, vec2(fs_UV.x + (u_Time % 10) * 0.01 * 0.0625, fs_UV.y));
-            diffuseColor.xyz = diffuseColor.xyz * (0.5 * fbm(fs_Pos.xyz) + 0.5);
+
+            vec4 my_Nor = texture(u_normTexture, fs_UV);
+            diffuseTerm = dot(normalize(fs_Nor + my_Nor), normalize(fs_LightVec));
+        }else{
+            if (fs_Col.z == 0.2){
+                diffuseColor = texture(u_textureBetter, vec2(fs_UV.x + (u_Time % 100) * 0.01 * 0.0625, fs_UV.y));
+                diffuseColor.xyz = diffuseColor.xyz * (0.5 * fbm(fs_Pos.xyz) + 0.5);
+            }
+            else{
+                diffuseColor = texture(u_texture, vec2(fs_UV.x + (u_Time % 100) * 0.01 * 0.0625, fs_UV.y));
+                diffuseColor.xyz = diffuseColor.xyz * (0.5 * fbm(fs_Pos.xyz) + 0.5);
+            }
+
+
+            diffuseTerm = dot(normalize(fs_Nor), normalize(fs_LightVec));
+
         }
 
 
