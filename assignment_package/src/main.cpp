@@ -4,6 +4,7 @@
 #include <QSurfaceFormat>
 #include <QDebug>
 
+
 void debugFormatVersion()
 {
     QSurfaceFormat form = QSurfaceFormat::defaultFormat();
