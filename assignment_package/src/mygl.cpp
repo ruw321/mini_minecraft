@@ -13,7 +13,8 @@ MyGL::MyGL(QWidget *parent)
       m_progLambert(this),
       m_progFlat(this),
       m_progInstanced(this),
-      m_postprog(this),
+      m_progPost(this),
+      m_progSky(this),
       m_terrain(this),
       m_player(glm::vec3(48.f, 210.f, 48.f), m_terrain),
       m_frameBuffer(this, this->width()*this->devicePixelRatio(), this->height()*this->devicePixelRatio(), this->devicePixelRatio()),
@@ -74,13 +75,14 @@ void MyGL::initializeGL()
     m_frameBuffer.create();
     m_frameBuffer.bindFrameBuffer();
 
-    m_postprog.create(":/glsl/post.vert.glsl", ":/glsl/post.frag.glsl");
-
     // Create and set up the diffuse shader
     m_progLambert.create(":/glsl/lambert.vert.glsl", ":/glsl/lambert.frag.glsl");
     // Create and set up the flat lighting shader
     m_progFlat.create(":/glsl/flat.vert.glsl", ":/glsl/flat.frag.glsl");
     m_progInstanced.create(":/glsl/instanced.vert.glsl", ":/glsl/lambert.frag.glsl");
+
+    m_progPost.create(":/glsl/post.vert.glsl", ":/glsl/post.frag.glsl");
+    m_progSky.create(":/glsl/sky.vert.glsl", ":/glsl/sky.frag.glsl");
 
 
     // We have to have a VAO bound in OpenGL 3.2 Core. But if we're not
@@ -111,6 +113,20 @@ void MyGL::resizeGL(int w, int h) {
 
     m_progLambert.setViewProjMatrix(viewproj);
     m_progFlat.setViewProjMatrix(viewproj);
+
+
+
+
+    /* TEST!!! */
+
+    m_progLambert.set_eye(m_player.mcr_camera.mcr_position.x, m_player.mcr_camera.mcr_position.y, m_player.mcr_camera.mcr_position.z);
+
+    m_progSky.setViewProjMatrix(glm::inverse(viewproj));
+    m_progSky.set_dimensions(this->width()* this->devicePixelRatio(), this->height()* this->devicePixelRatio());
+    m_progSky.set_eye(m_player.mcr_camera.mcr_position.x, m_player.mcr_camera.mcr_position.y, m_player.mcr_camera.mcr_position.z);
+
+
+
 
     m_frameBuffer.resize(w * this->devicePixelRatio(), this->height() * this->devicePixelRatio(), this->devicePixelRatio());
     m_frameBuffer.destroy();
@@ -168,12 +184,29 @@ void MyGL::paintGL() {
     m_progFlat.setViewProjMatrix(m_player.mcr_camera.getViewProj());
     m_progLambert.setViewProjMatrix(m_player.mcr_camera.getViewProj());
 
-    m_progLambert.setTime((m_time++) % 100);
+
+
+    m_progLambert.setTime(m_time++);
     m_progLambert.setCamPos(glm::vec4(m_player.mcr_position, 1));
 //    std::cout<<m_player.mcr_position.x<< " "<<m_player.mcr_position.y<<" "<<m_player.mcr_position.z<<std::endl;
     m_progInstanced.setViewProjMatrix(m_player.mcr_camera.getViewProj());
 
-    m_postprog.setTime(m_time);
+    m_progPost.setTime(m_time);
+
+
+    m_progLambert.set_eye(m_player.mcr_camera.mcr_position.x, m_player.mcr_camera.mcr_position.y, m_player.mcr_camera.mcr_position.z);
+
+
+    // Set the inverse of view-project matrix for mapping pixels back to world points
+    m_progSky.setViewProjMatrix(glm::inverse(m_player.mcr_camera.getViewProj()));
+    // Set camera position
+    m_progSky.set_eye(m_player.mcr_camera.mcr_position.x, m_player.mcr_camera.mcr_position.y, m_player.mcr_camera.mcr_position.z);
+    // Set time
+    m_progSky.setTime(m_time);
+
+    m_progSky.draw(m_quad);
+
+
     renderTerrain();
     glBindFramebuffer(GL_FRAMEBUFFER, this->defaultFramebufferObject());
 
@@ -186,16 +219,16 @@ void MyGL::paintGL() {
 
     if (m_player.getCameraBlock(m_terrain) == WATER) {
         // 1 is for under water visual effects
-        m_postprog.setPostType(1);
+        m_progPost.setPostType(1);
     } else if (m_player.getCameraBlock(m_terrain) == LAVA) {
         // 2 for lava
-        m_postprog.setPostType(2);
+        m_progPost.setPostType(2);
     } else {
         // any other number will be normal
-        m_postprog.setPostType(0);
+        m_progPost.setPostType(0);
     }
 
-    m_postprog.drawQuad(m_quad);
+    m_progPost.drawQuad(m_quad);
 
   // draw the world axes
     glDisable(GL_DEPTH_TEST);

@@ -34,6 +34,8 @@ public:
 
     int unif_postType;
 
+    int unif_dimensions;
+    int unif_eye;
 
 public:
     ShaderProgram(OpenGLContext* context);
@@ -73,6 +75,12 @@ public:
     void drawInterleave_transparent(Drawable &d, int texture_slot);
 
     void setPostType(int type);
+
+
+
+    /* TEST!!! */
+    void set_dimensions(int width, int height);
+    void set_eye(float x, float y, float z);
 
 
 private:
