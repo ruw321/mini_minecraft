@@ -24,7 +24,8 @@ private:
     ShaderProgram m_progFlat;// A shader program that uses "flat" reflection (no shadowing at all)
     ShaderProgram m_progInstanced;// A shader program that is designed to be compatible with instanced rendering
 
-    ShaderProgram m_postprog;
+    ShaderProgram m_progPost;
+    ShaderProgram m_progSky;
 
     GLuint vao; // A handle for our vertex array object. This will store the VBOs created in our geometry classes.
                 // Don't worry too much about this. Just know it is necessary in order to render geometry.

@@ -10,7 +10,8 @@ struct InputBundle {
 
     InputBundle()
         : wPressed(false), aPressed(false), sPressed(false),
-          dPressed(false), spacePressed(false), mouseX(0.f), mouseY(0.f),
+          dPressed(false), ePressed(false), qPressed(false),
+          spacePressed(false), mouseX(0.f), mouseY(0.f),
           flight_mode(true)
     {}
 };

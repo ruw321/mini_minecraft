@@ -16,7 +16,8 @@
 // block types, but in the scope of this project we'll never get anywhere near that many.
 enum BlockType : unsigned char
 {
-    EMPTY, GRASS, DIRT, STONE, WATER, SNOW, SAND, LAVA, BEDROCK, REDSTONE
+    EMPTY, GRASS, DIRT, STONE, WATER, SNOW, SAND, LAVA, BEDROCK, REDSTONE, ICE, ICESTONE,
+    PUMPKIN
 };
 
 // The six cardinal directions in 3D space
@@ -108,7 +109,7 @@ static std::set<BlockType> transparentType{
 };
 
 static std::set<BlockType> usingBetterTexture{
-    LAVA, SAND
+    LAVA, SAND, PUMPKIN
 };
 
 static std::unordered_map<BlockType,
@@ -185,6 +186,30 @@ std::unordered_map<Direction, glm::vec2, EnumHash>, EnumHash> blockFaceUV{
             {YNEG, glm::vec2(7.f BLK_UVX, 9.f BLK_UVY)},
             {ZPOS, glm::vec2(7.f BLK_UVX, 9.f BLK_UVY)},
             {ZNEG, glm::vec2(7.f BLK_UVX, 9.f BLK_UVY)}
+        }},
+    {ICE, std::unordered_map<Direction, glm::vec2, EnumHash>{
+            {XPOS, glm::vec2(8.f BLK_UVX, 14.f BLK_UVY)},
+            {XNEG, glm::vec2(8.f BLK_UVX, 14.f BLK_UVY)},
+            {YPOS, glm::vec2(8.f BLK_UVX, 14.f BLK_UVY)},
+            {YNEG, glm::vec2(8.f BLK_UVX, 14.f BLK_UVY)},
+            {ZPOS, glm::vec2(8.f BLK_UVX, 14.f BLK_UVY)},
+            {ZNEG, glm::vec2(8.f BLK_UVX, 14.f BLK_UVY)}
+        }},
+    {ICESTONE, std::unordered_map<Direction, glm::vec2, EnumHash>{
+            {XPOS, glm::vec2(2.f BLK_UVX, 12.f BLK_UVY)},
+            {XNEG, glm::vec2(2.f BLK_UVX, 12.f BLK_UVY)},
+            {YPOS, glm::vec2(2.f BLK_UVX, 12.f BLK_UVY)},
+            {YNEG, glm::vec2(2.f BLK_UVX, 12.f BLK_UVY)},
+            {ZPOS, glm::vec2(2.f BLK_UVX, 12.f BLK_UVY)},
+            {ZNEG, glm::vec2(2.f BLK_UVX, 12.f BLK_UVY)}
+        }},
+    {PUMPKIN, std::unordered_map<Direction, glm::vec2, EnumHash>{
+            {XPOS, glm::vec2(6.f BLK_UVX, 8.f BLK_UVY)},
+            {XNEG, glm::vec2(6.f BLK_UVX, 8.f BLK_UVY)},
+            {YPOS, glm::vec2(6.f BLK_UVX, 9.f BLK_UVY)},
+            {YNEG, glm::vec2(6.f BLK_UVX, 8.f BLK_UVY)},
+            {ZPOS, glm::vec2(8.f BLK_UVX, 8.f BLK_UVY)},
+            {ZNEG, glm::vec2(8.f BLK_UVX, 8.f BLK_UVY)}
         }}
 
 };
