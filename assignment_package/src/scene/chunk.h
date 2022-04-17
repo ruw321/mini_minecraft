@@ -17,7 +17,7 @@
 enum BlockType : unsigned char
 {
     EMPTY, GRASS, DIRT, STONE, WATER, SNOW, SAND, LAVA, BEDROCK, REDSTONE, ICE, ICESTONE,
-    PUMPKIN
+    PUMPKIN, CACTUS
 };
 
 // The six cardinal directions in 3D space
@@ -104,12 +104,16 @@ const static std::array<BlockFace, 6> adjacentFaces{
 
 };
 
-static std::set<BlockType> transparentType{
+static std::set<BlockType> noNormal{
     WATER, LAVA
 };
 
+static std::set<BlockType> transparentBlock{
+    WATER, CACTUS, LAVA
+};
+
 static std::set<BlockType> usingBetterTexture{
-    LAVA, SAND, PUMPKIN
+    LAVA, SAND, PUMPKIN, CACTUS
 };
 
 static std::unordered_map<BlockType,
@@ -210,6 +214,14 @@ std::unordered_map<Direction, glm::vec2, EnumHash>, EnumHash> blockFaceUV{
             {YNEG, glm::vec2(6.f BLK_UVX, 8.f BLK_UVY)},
             {ZPOS, glm::vec2(8.f BLK_UVX, 8.f BLK_UVY)},
             {ZNEG, glm::vec2(8.f BLK_UVX, 8.f BLK_UVY)}
+        }},
+    {CACTUS, std::unordered_map<Direction, glm::vec2, EnumHash>{
+            {XPOS, glm::vec2(6.f BLK_UVX, 11.f BLK_UVY)},
+            {XNEG, glm::vec2(6.f BLK_UVX, 11.f BLK_UVY)},
+            {YPOS, glm::vec2(5.f BLK_UVX, 11.f BLK_UVY)},
+            {YNEG, glm::vec2(5.f BLK_UVX, 11.f BLK_UVY)},
+            {ZPOS, glm::vec2(6.f BLK_UVX, 11.f BLK_UVY)},
+            {ZNEG, glm::vec2(6.f BLK_UVX, 11.f BLK_UVY)}
         }}
 
 };

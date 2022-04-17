@@ -45,7 +45,7 @@ void Chunk::createVBOdata() {
                 if (current != EMPTY){
 
                     for (BlockFace neighborFace : adjacentFaces){
-                        if (transparentType.find(current) != transparentType.end()) {
+                        if (noNormal.find(current) != noNormal.end()) {
                             if (neighborFace.directionVec == glm::vec3(1, 0, 0)){
                                 continue;
                             }
@@ -77,47 +77,24 @@ void Chunk::createVBOdata() {
                                     neighborType = neighborChunk->getBlockAt(int(15),
                                                                              int(neighborPos.y),
                                                                              int(neighborPos.z));
-//                                    if (!created){
-//                                        neighborChunk->destroyVBOdata();
-//                                        neighborChunk->createVBOdata(true);
-//                                    }
                                 } else if (neighborFace.direction == XPOS && x == 15){
                                     neighborType = neighborChunk->getBlockAt(int(0),
                                                                              int(neighborPos.y),
                                                                              int(neighborPos.z));
-//                                    if (!created){
-//                                        neighborChunk->destroyVBOdata();
-//                                        neighborChunk->createVBOdata(true);
-//                                    }
 
                                 } else if (neighborFace.direction == ZPOS && z == 15){
                                     neighborType = neighborChunk->getBlockAt(int(neighborPos.x),
                                                                              int(neighborPos.y),
                                                                              int(0));
-//                                    if (!created){
-//                                        neighborChunk->destroyVBOdata();
-//                                        neighborChunk->createVBOdata(true);
-//                                    }
-
                                 } else if (neighborFace.direction == ZNEG && z == 0){
                                     neighborType = neighborChunk->getBlockAt(int(neighborPos.x),
                                                                              int(neighborPos.y),
                                                                              int(15));
-//                                    if (!created){
-//                                        neighborChunk->destroyVBOdata();
-//                                        neighborChunk->createVBOdata(true);
-//                                    }
-
                                 }
                                 else{
                                     neighborType = getBlockAt(int(neighborPos.x),
                                                                     int(neighborPos.y),
                                                                     int(neighborPos.z));
-//                                    if (!created){
-//                                        neighborChunk->destroyVBOdata();
-//                                        neighborChunk->createVBOdata(true);
-//                                    }
-
                                 }
                             }
 
@@ -128,7 +105,7 @@ void Chunk::createVBOdata() {
                                                             int(neighborPos.z));
                         }
 
-                        if (transparentType.find(current) == transparentType.end()) {
+                        if (transparentBlock.find(current) == transparentBlock.end()) {
                             if (neighborType == EMPTY || neighborType == WATER){
                                 for (int i = 0; i < 4; i++){
 
