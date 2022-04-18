@@ -307,25 +307,49 @@ void Terrain::fillColumn(Chunk *chunk, int x, int z) {
 
 
     if (currentBiome == ISLAND){
-        for (int k = maxHeight+1; k < 165; k++) {
+        float decide = fbm(glm::vec2(x, z));
+        for (int k = maxHeight + 1; k < 165; k++) {
             chunk->setBlockAt(x, k, z, WATER);
         }
+        if (maxHeight > 165){
+            if (decide > 1.6){
+                chunk->setBlockAt(x, maxHeight + 1, z, ROSE);
+            }
+        }
+//        else if (maxHeight == 162){
+//            chunk->setBlockAt(x, maxHeight + 2, z, PAD);
+//        }
     }
     else if (currentBiome == GRASSLAND){
+        float decide = fbm(glm::vec2(x, z));
         for (int k = maxHeight+1; k < 165; k++) {
             chunk->setBlockAt(x, k, z, GRASS);
+
+        }
+        if (maxHeight > 170){
+            if (decide > 1.6){
+                chunk->setBlockAt(x, maxHeight + 1, z, BAMBOO);
+                chunk->setBlockAt(x, maxHeight + 2, z, BAMBOO);
+                chunk->setBlockAt(x, maxHeight + 3, z, BAMBOO);
+            }
         }
     }else if (currentBiome == SANDLAND){
+        float decide = fbm(glm::vec2(x, z));
         for (int k = maxHeight+1; k < 165; k++) {
             chunk->setBlockAt(x, k, z, SAND);
-
         }
 
-        if (maxHeight > 173){
-            float decide = fbm(glm::vec2(x, z));
-            std::cout<<decide<<std::endl;
+        if (maxHeight > 170){
+
+//            std::cout<<decide<<std::endl;
             if (decide > 1.6){
                 chunk->setBlockAt(x, maxHeight + 1, z, PUMPKIN);
+            }
+        }else{
+            if (decide > 1.7){
+                chunk->setBlockAt(x, maxHeight + 1, z, CACTUS);
+                chunk->setBlockAt(x, maxHeight + 2, z, CACTUS);
+                chunk->setBlockAt(x, maxHeight + 3, z, CACTUS);
             }
         }
     }else if (currentBiome == MOUNTAIN){
@@ -482,7 +506,6 @@ void Terrain::BlockTypeWorker(uPtr<Chunk> chunk) {
 
     for (int x = 0; x < 16; x++) {
         for (int z = 0; z < 16; z++) {
-
             fillColumn(chunk.get(), x, z);
         }
     }

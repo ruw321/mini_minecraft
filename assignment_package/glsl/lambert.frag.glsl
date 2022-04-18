@@ -1,3 +1,4 @@
+
 #version 150
 // ^ Change this to version 130 if you have compatibility issues
 
@@ -32,7 +33,6 @@ in vec4 fs_Col;
 out vec4 out_Col; // This is the final output color that you will see on your
                   // screen for the pixel that is currently being processed.
 
-
 const float SUN_VELOCITY = 1 / 200.f;
 const float TIME_OFFSET = 1000.f; // when does the game start
 
@@ -43,7 +43,6 @@ const vec3 sun[3] = vec3[](vec3(255, 255, 245) / 255.0,
 
 
 const vec4 fogColor = vec4(0.8, 0.9, 1, 1);
-
 
 float random1(vec3 p) {
     return fract(sin(dot(p,vec3(127.1, 311.7, 191.999)))
@@ -137,14 +136,17 @@ void main()
 
 
     float diffuseTerm = 0;
+    //fs_Col.z == 0.2, use betterTexture, fs_Nor.w == 0.5 no
+    //animation
     if (fs_Nor.w == 0.5){
         if (fs_Col.z == 0.2){
             diffuseColor = texture(u_textureBetter, fs_UV);
         }
         else{
             diffuseColor = texture(u_texture, fs_UV);
+            diffuseColor.xyz = diffuseColor.xyz * (0.5 * fbm(fs_Pos.xyz) + 0.5);
         }
-        diffuseColor.xyz = diffuseColor.xyz * (0.5 * fbm(fs_Pos.xyz) + 0.5);
+
         vec4 my_Nor = texture(u_normTexture, fs_UV);
         diffuseTerm = dot(normalize(vec3(fs_Nor) + vec3(my_Nor)), sunDir);
 
@@ -152,26 +154,17 @@ void main()
         if (fs_Col.z == 0.2){
             diffuseColor = texture(u_textureBetter, vec2(fs_UV.x + (u_Time % 10) * 0.01 * 0.0625, fs_UV.y));
             diffuseColor.xyz = diffuseColor.xyz * (0.5 * fbm(fs_Pos.xyz) + 0.5);
-
-            vec4 my_Nor = texture(u_normTexture, fs_UV);
-            diffuseTerm = dot(normalize(fs_Nor + my_Nor), normalize(fs_LightVec));
-        }else{
-            if (fs_Col.z == 0.2){
-                diffuseColor = texture(u_textureBetter, vec2(fs_UV.x + (u_Time % 100) * 0.01 * 0.0625, fs_UV.y));
-                diffuseColor.xyz = diffuseColor.xyz * (0.5 * fbm(fs_Pos.xyz) + 0.5);
-            }
-            else{
-                diffuseColor = texture(u_texture, vec2(fs_UV.x + (u_Time % 100) * 0.01 * 0.0625, fs_UV.y));
-                diffuseColor.xyz = diffuseColor.xyz * (0.5 * fbm(fs_Pos.xyz) + 0.5);
-            }
-
-
-            diffuseTerm = dot(normalize(fs_Nor), normalize(fs_LightVec));
-
+        }
+        else{
+            diffuseColor = texture(u_texture, vec2(fs_UV.x + (u_Time % 10) * 0.01 * 0.0625, fs_UV.y));
+            diffuseColor.xyz = diffuseColor.xyz * (0.5 * fbm(fs_Pos.xyz) + 0.5);
         }
 
 
         diffuseTerm = dot(normalize(vec3(fs_Nor)), sunDir);
+    }
+    if (diffuseColor.a == 0){
+        discard;
     }
     diffuseTerm = clamp(diffuseTerm, 0, 1);
 
@@ -206,6 +199,7 @@ void main()
     float d = distance(u_CamPos, fs_Pos);
     float fogAlpha = smoothstep(30.f, 200.f, d);
 
-    out_Col = mix(vec4(diffuseColor.rgb * lightIntensity * sunColor, diffuseColor.a), fogColor, fogAlpha * 0.7);
+//    out_Col = mix(vec4(diffuseColor.rgb * lightIntensity * sunColor, diffuseColor.a), fogColor, fogAlpha * 0.7);
+    out_Col = mix(diffuseColor, fogColor, fogAlpha * 0.7);
 
 }

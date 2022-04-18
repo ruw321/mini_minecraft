@@ -18,7 +18,7 @@ enum BlockType : unsigned char
 {
     EMPTY, GRASS, DIRT, STONE, WATER, SNOW, SAND, LAVA, BEDROCK, REDSTONE, ICE, ICESTONE,
 
-    PUMPKIN, CACTUS
+    PUMPKIN, CACTUS, BAMBOO, BAMBOOBOT, ROSE, PAD
 
 };
 
@@ -106,18 +106,35 @@ const static std::array<BlockFace, 6> adjacentFaces{
 
 };
 
+const static std::array<BlockFace, 2> diagnalFaces{
+    BlockFace(XPOS, glm::vec3(1, 0, 0),
+              VertexData(glm::vec4(1, 0, 1, 1), glm::vec2(0, 0)),
+              VertexData(glm::vec4(0, 0, 0, 1), glm::vec2(BLK_UV, 0)),
+              VertexData(glm::vec4(0, 1, 0, 1), glm::vec2(BLK_UV, BLK_UV)),
+              VertexData(glm::vec4(1, 1, 1, 1), glm::vec2(0, BLK_UV))),
+
+    BlockFace(XNEG, glm::vec3(-1, 0, 0),
+              VertexData(glm::vec4(1, 0, 0, 1), glm::vec2(0, 0)),
+              VertexData(glm::vec4(0, 0, 1, 1), glm::vec2(BLK_UV, 0)),
+              VertexData(glm::vec4(0, 1, 1, 1), glm::vec2(BLK_UV, BLK_UV)),
+              VertexData(glm::vec4(1, 1, 0, 1), glm::vec2(0, BLK_UV)))
+};
+
 static std::set<BlockType> noNormal{
     WATER, LAVA
 };
 
 static std::set<BlockType> transparentBlock{
-    WATER, CACTUS, LAVA
+    WATER, CACTUS, LAVA, BAMBOO, ROSE, PAD
 };
 
 static std::set<BlockType> usingBetterTexture{
 
-    LAVA, SAND, PUMPKIN, CACTUS
+    LAVA, SAND, PUMPKIN, CACTUS, ROSE, BAMBOO, PAD
+};
 
+static std::set<BlockType> diagnalBlock{
+  ROSE
 };
 
 static std::unordered_map<BlockType,
@@ -227,6 +244,42 @@ std::unordered_map<Direction, glm::vec2, EnumHash>, EnumHash> blockFaceUV{
             {YNEG, glm::vec2(5.f BLK_UVX, 11.f BLK_UVY)},
             {ZPOS, glm::vec2(6.f BLK_UVX, 11.f BLK_UVY)},
             {ZNEG, glm::vec2(6.f BLK_UVX, 11.f BLK_UVY)}
+
+        }},
+    {BAMBOO, std::unordered_map<Direction, glm::vec2, EnumHash>{
+            {XPOS, glm::vec2(9.f BLK_UVX, 11.f BLK_UVY)},
+            {XNEG, glm::vec2(9.f BLK_UVX, 11.f BLK_UVY)},
+            {YPOS, glm::vec2(9.f BLK_UVX, 11.f BLK_UVY)},
+            {YNEG, glm::vec2(9.f BLK_UVX, 11.f BLK_UVY)},
+            {ZPOS, glm::vec2(9.f BLK_UVX, 11.f BLK_UVY)},
+            {ZNEG, glm::vec2(9.f BLK_UVX, 11.f BLK_UVY)}
+
+        }},
+    {BAMBOOBOT, std::unordered_map<Direction, glm::vec2, EnumHash>{
+            {XPOS, glm::vec2(9.f BLK_UVX, 11.f BLK_UVY)},
+            {XNEG, glm::vec2(9.f BLK_UVX, 11.f BLK_UVY)},
+            {YPOS, glm::vec2(9.f BLK_UVX, 11.f BLK_UVY)},
+            {YNEG, glm::vec2(8.f BLK_UVX, 13.f BLK_UVY)},
+            {ZPOS, glm::vec2(9.f BLK_UVX, 11.f BLK_UVY)},
+            {ZNEG, glm::vec2(9.f BLK_UVX, 11.f BLK_UVY)}
+
+        }},
+    {ROSE, std::unordered_map<Direction, glm::vec2, EnumHash>{
+            {XPOS, glm::vec2(12.f BLK_UVX, 15.f BLK_UVY)},
+            {XNEG, glm::vec2(12.f BLK_UVX, 15.f BLK_UVY)},
+            {YPOS, glm::vec2(12.f BLK_UVX, 15.f BLK_UVY)},
+            {YNEG, glm::vec2(12.f BLK_UVX, 15.f BLK_UVY)},
+            {ZPOS, glm::vec2(12.f BLK_UVX, 15.f BLK_UVY)},
+            {ZNEG, glm::vec2(12.f BLK_UVX, 15.f BLK_UVY)}
+
+        }},
+    {PAD, std::unordered_map<Direction, glm::vec2, EnumHash>{
+            {XPOS, glm::vec2(13.f BLK_UVX, 8.f BLK_UVY)},
+            {XNEG, glm::vec2(13.f BLK_UVX, 8.f BLK_UVY)},
+            {YPOS, glm::vec2(13.f BLK_UVX, 8.f BLK_UVY)},
+            {YNEG, glm::vec2(13.f BLK_UVX, 8.f BLK_UVY)},
+            {ZPOS, glm::vec2(13.f BLK_UVX, 8.f BLK_UVY)},
+            {ZNEG, glm::vec2(13.f BLK_UVX, 8.f BLK_UVY)}
 
         }}
 

@@ -46,6 +46,15 @@ void Chunk::createVBOdata() {
                 if (current != EMPTY){
 
                     for (BlockFace neighborFace : adjacentFaces){
+                        if (current == BAMBOO &&
+                                (neighborFace.direction == YPOS || neighborFace.direction == YNEG)){
+                            continue;
+                        }
+                        if (current == PAD){
+                            if (neighborFace.direction != YNEG){
+                                continue;
+                            }
+                        }
                         if (noNormal.find(current) != noNormal.end()) {
                             if (neighborFace.directionVec == glm::vec3(1, 0, 0)){
                                 continue;
@@ -107,7 +116,7 @@ void Chunk::createVBOdata() {
                         }
 
                         if (transparentBlock.find(current) == transparentBlock.end()) {
-                            if (neighborType == EMPTY || neighborType == WATER){
+                            if (neighborType == EMPTY || transparentBlock.find(neighborType) != transparentBlock.end()){
                                 for (int i = 0; i < 4; i++){
 
                                     VBOdata.push_back(neighborFace.vertices[i].m_pos + currentPos);
@@ -133,20 +142,58 @@ void Chunk::createVBOdata() {
                             }
                        }
                        else  { // Water
-                            if (neighborType == EMPTY){
-                                for (int i = 0; i < 4; i++){
-
-                                    VBOdata_transparent.push_back(neighborFace.vertices[i].m_pos + currentPos);
-                                    if (usingBetterTexture.find(current) == usingBetterTexture.end()){
-                                        VBOdata_transparent.push_back(glm::vec4(neighborFace.vertices[i].m_uv +
-                                                                blockFaceUV[current][neighborFace.direction], 0, 0));
-                                    }else{
-
-                                        VBOdata_transparent.push_back(glm::vec4(neighborFace.vertices[i].m_uv +
-                                                                blockFaceUV[current][neighborFace.direction], 0.2, 0));
+                            if (current != WATER || neighborType == EMPTY){
+                                if (diagnalBlock.find(current) == diagnalBlock.end()){
+                                    float offset = 0;
+                                    if (current == CACTUS || current == BAMBOO){
+                                        offset = 0.2;
                                     }
-                                    VBOdata_transparent.push_back(glm::vec4(neighborFace.directionVec, 0));
+                                    else{
+                                        offset = 0;
+                                    }
+                                    for (int i = 0; i < 4; i++){
 
+                                        VBOdata_transparent.push_back(neighborFace.vertices[i].m_pos + currentPos+ glm::vec4(-neighborFace.directionVec, 0) * offset);
+                                        if (usingBetterTexture.find(current) == usingBetterTexture.end()){
+                                            VBOdata_transparent.push_back(glm::vec4(neighborFace.vertices[i].m_uv +
+                                                                    blockFaceUV[current][neighborFace.direction], 0, 0));
+                                        }else{
+
+                                            VBOdata_transparent.push_back(glm::vec4(neighborFace.vertices[i].m_uv +
+                                                                    blockFaceUV[current][neighborFace.direction], 0.2, 0));
+                                        }
+                                        if (noNormal.find(current) != noNormal.end()){
+                                            VBOdata_transparent.push_back(glm::vec4(neighborFace.directionVec, 0));
+                                        }else{
+                                            VBOdata_transparent.push_back(glm::vec4(neighborFace.directionVec, 0.5));
+                                        }
+
+                                    }
+                                }else{
+                                    int diagIdx;
+                                    if (neighborFace.direction == XPOS){
+                                        diagIdx = 0;
+                                    }else if (neighborFace.direction == XNEG){
+                                        diagIdx = 1;
+                                    }else{
+                                        continue;
+                                    }
+                                    for (int i = 0; i < 4; i++){
+                                        VBOdata_transparent.push_back(diagnalFaces[diagIdx].vertices[i].m_pos + currentPos);
+                                        if (usingBetterTexture.find(current) == usingBetterTexture.end()){
+                                            VBOdata_transparent.push_back(glm::vec4(diagnalFaces[diagIdx].vertices[i].m_uv +
+                                                                    blockFaceUV[current][diagnalFaces[diagIdx].direction], 0, 0));
+                                        }else{
+
+                                            VBOdata_transparent.push_back(glm::vec4(diagnalFaces[diagIdx].vertices[i].m_uv +
+                                                                    blockFaceUV[current][diagnalFaces[diagIdx].direction], 0.2, 0));
+                                        }
+                                        if (noNormal.find(current) != noNormal.end()){
+                                            VBOdata_transparent.push_back(glm::vec4(diagnalFaces[diagIdx].directionVec, 0));
+                                        }else{
+                                            VBOdata_transparent.push_back(glm::vec4(diagnalFaces[diagIdx].directionVec, 0.5));
+                                        }
+                                    }
                                 }
                                 idx_transparent.push_back(currentIdx_transparent);
                                 idx_transparent.push_back(currentIdx_transparent + 1);
@@ -155,6 +202,7 @@ void Chunk::createVBOdata() {
                                 idx_transparent.push_back(currentIdx_transparent + 2);
                                 idx_transparent.push_back(currentIdx_transparent + 3);
                                 currentIdx_transparent += 4;
+
                             }
                        }
 
@@ -167,70 +215,7 @@ void Chunk::createVBOdata() {
 
 
 
-                       }else{
-                           neighborType = getBlockAt(int(neighborPos.x),
-                                                           int(neighborPos.y),
-                                                           int(neighborPos.z));
-                       }
 
-                       if (transparentType.find(current) == transparentType.end()) {
-                           if (neighborType == EMPTY || neighborType == WATER){
-                               for (int i = 0; i < 4; i++){
-
-                                   VBOdata.push_back(neighborFace.vertices[i].m_pos + currentPos);
-                                   if (usingBetterTexture.find(current) == usingBetterTexture.end()){
-                                       VBOdata.push_back(glm::vec4(neighborFace.vertices[i].m_uv +
-                                                               blockFaceUV[current][neighborFace.direction], 0, 0));
-                                   }else{
-                                       VBOdata.push_back(glm::vec4(neighborFace.vertices[i].m_uv +
-                                                               blockFaceUV[current][neighborFace.direction], 0.2, 0));
-                                   }
-
-                                   VBOdata.push_back(glm::vec4(neighborFace.directionVec, 0.5));
-
-                               }
-                               idx.push_back(currentIdx);
-                               idx.push_back(currentIdx + 1);
-                               idx.push_back(currentIdx + 2);
-                               idx.push_back(currentIdx);
-                               idx.push_back(currentIdx + 2);
-                               idx.push_back(currentIdx + 3);
-                               currentIdx += 4;
-
-                           }
-                      }
-                      else  { // Water
-                           if (neighborType == EMPTY){
-                               for (int i = 0; i < 4; i++){
-
-                                   VBOdata_transparent.push_back(neighborFace.vertices[i].m_pos + currentPos);
-                                   if (usingBetterTexture.find(current) == usingBetterTexture.end()){
-                                       VBOdata_transparent.push_back(glm::vec4(neighborFace.vertices[i].m_uv +
-                                                               blockFaceUV[current][neighborFace.direction], 0, 0));
-                                   }else{
-
-                                       VBOdata_transparent.push_back(glm::vec4(neighborFace.vertices[i].m_uv +
-                                                               blockFaceUV[current][neighborFace.direction], 0.2, 0));
-                                   }
-                                   VBOdata_transparent.push_back(glm::vec4(neighborFace.directionVec, 0));
-
-                               }
-                               idx_transparent.push_back(currentIdx_transparent);
-                               idx_transparent.push_back(currentIdx_transparent + 1);
-                               idx_transparent.push_back(currentIdx_transparent + 2);
-                               idx_transparent.push_back(currentIdx_transparent);
-                               idx_transparent.push_back(currentIdx_transparent + 2);
-                               idx_transparent.push_back(currentIdx_transparent + 3);
-                               currentIdx_transparent += 4;
-                           }
-                      }
-
-                   }
-
-               }
-           }
-       }
-   }
 
    this->m_count = idx.size();
    this->m_count_transparent = idx_transparent.size();
