@@ -143,17 +143,28 @@ void Chunk::createVBOdata() {
                        }
                        else  { // Water
                             if (current != WATER || neighborType == EMPTY){
+                                glm::vec4 offset;
                                 if (diagnalBlock.find(current) == diagnalBlock.end()){
-                                    float offset = 0;
+
                                     if (current == CACTUS || current == BAMBOO){
-                                        offset = 0.2;
+                                        offset = glm::vec4(-neighborFace.directionVec, 0) * 0.2f;
+                                    }else if (current == CAKE && neighborFace.direction == YPOS){
+                                        offset = glm::vec4(0, -1, 0, 0) * 0.5f;
+                                    }else if (current == CAKE && neighborFace.direction == XPOS){
+                                        offset = glm::vec4(-0.1, -0.5f, 0, 0);
+                                    }else if (current == CAKE && neighborFace.direction == XNEG){
+                                        offset = glm::vec4(0.1, -0.5f, 0, 0);
+                                    }else if (current == CAKE && neighborFace.direction == ZPOS){
+                                        offset = glm::vec4(0, -0.5f, -0.1, 0);
+                                    }else if (current == CAKE && neighborFace.direction == ZNEG){
+                                        offset = glm::vec4(0, -0.5f, 0.1, 0);
                                     }
                                     else{
-                                        offset = 0;
+                                        offset = glm::vec4(0);
                                     }
                                     for (int i = 0; i < 4; i++){
 
-                                        VBOdata_transparent.push_back(neighborFace.vertices[i].m_pos + currentPos+ glm::vec4(-neighborFace.directionVec, 0) * offset);
+                                        VBOdata_transparent.push_back(neighborFace.vertices[i].m_pos + currentPos+ offset);
                                         if (usingBetterTexture.find(current) == usingBetterTexture.end()){
                                             VBOdata_transparent.push_back(glm::vec4(neighborFace.vertices[i].m_uv +
                                                                     blockFaceUV[current][neighborFace.direction], 0, 0));

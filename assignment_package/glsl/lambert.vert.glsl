@@ -69,11 +69,21 @@ void main()
                     sin(0.7 * tz + 9.f)) / 4.f;
         float h = 0.25f * (hz - 1.f + hx - 1.f);
         modelposition.y += h;
-
-
-
     }
-
+    if (fs_UV.x >= 15.f * 0.0625 && fs_UV.x < 16.f * 0.0625
+                        && fs_UV.y >= 14.f * 0.0625 && fs_UV.y < 15.f * 0.0625){
+        float tx = modelposition.x * 0.1 + u_Time / 10.f;
+        float tz = modelposition.z * 0.1 + u_Time / 10.f;
+        float hx = (sin(1.5f * tx) + sin(2.6 * tx + 6.f) +
+                sin(3.3 * tx + 1.f) +
+                    sin(4.7 * tx + 9.f)) / 4.f;
+        float hz = (sin(1.5 * tz) + sin(3.6 * tz + 6.f) +
+                sin(2.3 * tz + 1.f) +
+                    sin(4.7 * tz + 9.f)) / 4.f;
+        float h = 0.25f * (hz - 1.f + hx - 1.f);
+        modelposition.x += h;
+        modelposition.z -= h;
+    }
 
 
     fs_LightVec = (lightDir);  // Compute the direction in which the light source lies

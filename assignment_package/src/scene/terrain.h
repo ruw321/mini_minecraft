@@ -98,6 +98,7 @@ public:
     // Initializes the Chunks that store the 64 x 256 x 64 block scene you
     // see when the base code is run.
     void CreateTestScene();
+    void placeTree(Chunk* chunk, int x, int y, int z, BiomeType currentBiome);
 
 
     /*
@@ -130,6 +131,7 @@ public:
     std::mutex VBOdataBufferMutex;
 
     bool hasNewChunkAt(int x, int z) const;
+
     uPtr<Chunk>& getNewChunkAt(int x, int z);
     void setNewBlockAt(int x, int y, int z, enum::BlockType t);
 

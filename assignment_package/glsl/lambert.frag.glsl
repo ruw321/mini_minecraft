@@ -89,6 +89,43 @@ float fbm(vec3 p) {
     return sum;
 }
 
+float vec2Fbm(vec2 uv){
+    float amp = 0.5;
+    float freq = 8.0;
+    float sum = 0.0;
+    for(int i = 0; i < 8; i++) {
+        sum += cubicTriMix(vec3(uv, 0) * freq) * amp;
+        amp *= 0.5;
+        freq *= 2.0;
+    }
+    return sum;
+}
+
+float waterHeight(vec2 uv){
+//    float x = 0.25 * (cos(uv.x + u_Time) + 1.f);
+//    float y = 0.25 * (sin(uv.y + u_Time) + 1.f);
+//    return x + y
+    return vec2Fbm((uv + vec2(u_Time)) * 0.01);
+}
+
+vec3 waterNormalDisplacement(vec2 uv){
+    vec2 dx = vec2(0.1, 0);
+    vec2 dy = vec2(0, 0.1);
+    vec2 grad = vec2(waterHeight(uv + dx) - waterHeight(uv - dx),
+                     waterHeight(uv + dy) - waterHeight(uv - dy));
+    grad = grad * 20.f;
+    float z = sqrt(1.f - grad.x * grad.x - grad.y * grad.y);
+    return vec3(grad.xy, z);
+}
+
+void coordinateSystem(in vec3 nor, out vec3 tan, out vec3 bit){
+    if (abs(nor.x) > abs(nor.y)){
+        tan = vec3(-nor.z, 0, nor.x);
+    }else{
+        tan = vec3(0, nor.z, -nor.y);
+    }
+    bit = cross(nor, tan);
+}
 //https://vicrucann.github.io/tutorials/osg-shader-fog/
 //float getFogFactor(float d){
 //    float fogMax = 20.f;
@@ -152,6 +189,16 @@ void main()
 
     } else{
         if (fs_Col.z == 0.2){
+//            if (fs_UV.x >= 14.f * 0.0625 && fs_UV.x < 15.f * 0.0625
+//                    && fs_UV.y >= 2.f * 0.0625 && fs_UV.y < 3.f * 0.0625){
+//                vec3 tan, bit;
+//                coordinateSystem(normalize(fs_Nor.xyz), tan, bit);
+//                mat3 tanWorld = mat3(tan, bit, normalize(fs_Nor.xyz));
+//                vec3 shadingNormal = waterNormalDisplacement(ivec2(fs_Pos.xz * 4));
+//                shadingNormal = tanWorld * shadingNormal;
+//                out_Col = vec4(0.5 * (shadingNormal + vec3(1.f, 1.f, 1.f)), 1.f);
+//                return;
+//            }
             diffuseColor = texture(u_textureBetter, vec2(fs_UV.x + (u_Time % 10) * 0.01 * 0.0625, fs_UV.y));
             diffuseColor.xyz = diffuseColor.xyz * (0.5 * fbm(fs_Pos.xyz) + 0.5);
         }

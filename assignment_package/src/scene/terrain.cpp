@@ -270,33 +270,32 @@ void Terrain::fillColumn(Chunk *chunk, int x, int z) {
 
 //    int maxHeight = sm;
 //    std::cout<<moist<<std::endl;
+    float p = desert(glm::vec2(map_x * cos(pi * 0.33) - sin(pi * 0.33) * map_z,
+                               map_x * sin(pi * 0.33) + cos(pi * 0.33) * map_z), 300, 128);
+    float sm = grassland(glm::vec2(map_x, map_z), 50, 148);
+    float sp = desert(glm::vec2(map_x * cos(pi * 0.20) - sin(pi * 0.20) * map_z,
+                                    map_x * sin(pi * 0.20) + cos(pi * 0.20) * map_z), 100, 148);
+    float m = desert(glm::vec2(map_x * cos(pi * 0.20) - sin(pi * 0.20) * map_z,
+                                    map_x * sin(pi * 0.20) + cos(pi * 0.20) * map_z), 200, 148);
+    float mediuma = glm::mix(p, m, s);
+    float mediumb = glm::mix(sp, sm, s);
     BiomeType currentBiome;
-    if (s < 0.575 && t > 0.575){
-        currentBiome = SANDLAND;
-        float m = desert(glm::vec2(map_x * cos(pi * 0.33) - sin(pi * 0.33) * map_z,
-                                   map_x * sin(pi * 0.33) + cos(pi * 0.33) * map_z), 800, 128);
-        float sm = grassland(glm::vec2(map_x, map_z), 50, 140);
-        maxHeight = glm::mix(m, sm , (t + s) / 2.f);
-    }
-    else if (s > 0.575 && t < 0.575){
+    float threshold = 0.6;
+    if (s < threshold && t > threshold){
         currentBiome = GRASSLAND;
-        float m = desert(glm::vec2(map_x * cos(pi * 0.33) - sin(pi * 0.33) * map_z,
-                                   map_x * sin(pi * 0.33) + cos(pi * 0.33) * map_z), 800, 128);
-        float sm = grassland(glm::vec2(map_x, map_z), 50, 140);
-        maxHeight = glm::mix(m, sm , (t + s) / 2.f);
+
+        maxHeight = glm::mix(mediuma, mediumb , t);
+    }
+    else if (s > threshold && t < threshold){
+        currentBiome = SANDLAND;
+        maxHeight = glm::mix(mediuma, mediumb , t);
 //        maxHeight = mountain(glm::vec2(map_x, map_z));
-    }else if (s > 0.575 && t > 0.575){
+    }else if (s > threshold && t > threshold){
         currentBiome = MOUNTAIN;
-        float m = desert(glm::vec2(map_x * cos(pi * 0.33) - sin(pi * 0.33) * map_z,
-                                   map_x * sin(pi * 0.33) + cos(pi * 0.33) * map_z), 800, 128);
-        float sm = grassland(glm::vec2(map_x, map_z), 50, 140);
-        maxHeight = glm::mix(m, sm , (t + s) / 2.f);
+        maxHeight = glm::mix(mediuma, mediumb , t);
     }else{
         currentBiome = ISLAND;
-        float m = desert(glm::vec2(map_x * cos(pi * 0.33) - sin(pi * 0.33) * map_z,
-                                   map_x * sin(pi * 0.33) + cos(pi * 0.33) * map_z), 800, 128);
-        float sm = grassland(glm::vec2(map_x, map_z), 50, 140);
-        maxHeight = glm::mix(m, sm , (t + s) / 2.f);
+        maxHeight = glm::mix(mediuma, mediumb , t);
     }
 
 
@@ -307,13 +306,19 @@ void Terrain::fillColumn(Chunk *chunk, int x, int z) {
 
 
     if (currentBiome == ISLAND){
-        float decide = fbm(glm::vec2(x, z));
+        float decide = moisture(glm::vec2(map_x, map_z) / 50.f);
         for (int k = maxHeight + 1; k < 165; k++) {
             chunk->setBlockAt(x, k, z, WATER);
         }
         if (maxHeight > 165){
-            if (decide > 1.6){
+//            std::cout<<decide<<std::endl;
+            if (decide > 0.7){
                 chunk->setBlockAt(x, maxHeight + 1, z, ROSE);
+            }else if (decide > 0.6){
+                chunk->setBlockAt(x, maxHeight + 1, z, YELLOWFLOWER);
+            }
+            else if (decide > 0.5){
+                chunk->setBlockAt(x, maxHeight + 1, z, ANGELBREATH);
             }
         }
 //        else if (maxHeight == 162){
@@ -321,20 +326,26 @@ void Terrain::fillColumn(Chunk *chunk, int x, int z) {
 //        }
     }
     else if (currentBiome == GRASSLAND){
-        float decide = fbm(glm::vec2(x, z));
+        float decide;
         for (int k = maxHeight+1; k < 165; k++) {
             chunk->setBlockAt(x, k, z, GRASS);
 
         }
         if (maxHeight > 170){
-            if (decide > 1.6){
+            decide = moisture(glm::vec2(map_x, map_z) / 20.f);
+            if (decide > 0.5){
                 chunk->setBlockAt(x, maxHeight + 1, z, BAMBOO);
                 chunk->setBlockAt(x, maxHeight + 2, z, BAMBOO);
                 chunk->setBlockAt(x, maxHeight + 3, z, BAMBOO);
             }
+        }else if (maxHeight <= 170 && maxHeight > 165){
+            decide = moisture(glm::vec2(map_x, map_z) / 5.f);
+            if (decide > 0.4){
+                chunk->setBlockAt(x, maxHeight + 1, z, MUSHROOM);
+            }
         }
     }else if (currentBiome == SANDLAND){
-        float decide = fbm(glm::vec2(x, z));
+        float decide = fbm(glm::vec2(map_x, map_z));
         for (int k = maxHeight+1; k < 165; k++) {
             chunk->setBlockAt(x, k, z, SAND);
         }
@@ -342,8 +353,10 @@ void Terrain::fillColumn(Chunk *chunk, int x, int z) {
         if (maxHeight > 170){
 
 //            std::cout<<decide<<std::endl;
-            if (decide > 1.6){
+            if (decide > 1.75){
                 chunk->setBlockAt(x, maxHeight + 1, z, PUMPKIN);
+            }else if (decide > 1.7){
+                chunk->setBlockAt(x, maxHeight + 1, z, CAKE);
             }
         }else{
             if (decide > 1.7){
@@ -353,8 +366,18 @@ void Terrain::fillColumn(Chunk *chunk, int x, int z) {
             }
         }
     }else if (currentBiome == MOUNTAIN){
+        float decide = fbm(glm::vec2(x, z));
         for (int k = maxHeight+1; k < 165; k++) {
             chunk->setBlockAt(x, k, z, ICE);
+        }
+        if (maxHeight < 190){
+            if (decide > 1.7){
+                chunk->setBlockAt(x, maxHeight + 1, z, FIRE);
+            }
+        }else if (maxHeight < 200){
+            if (decide > 1.7){
+                placeTree(chunk, x, maxHeight, z, MOUNTAIN);
+            }
         }
     }
 
@@ -406,7 +429,7 @@ BlockType Terrain::BlockType(int height, int maxHeight, enum BiomeType biome) {
         }
     }else if (biome == MOUNTAIN){
         if (maxHeight < 192){
-            return ICESTONE;
+            return STONE;
         }else{
             if (height == maxHeight) {
 
@@ -430,6 +453,49 @@ BlockType Terrain::BlockType(int height, int maxHeight, enum BiomeType biome) {
     }
     else {
         return EMPTY;
+    }
+}
+
+void Terrain::placeTree(Chunk* chunk, int x, int y, int z, BiomeType currentBiome){
+    if (currentBiome == MOUNTAIN){
+        chunk->setBlockAt(x, y + 1, z, WHITETREESTEM);
+        chunk->setBlockAt(x, y + 2, z, WHITETREESTEM);
+//        chunk->setBlockAt(x, y + 3, z, WHITETREESTEM);
+        chunk->setBlockAt(x, y + 3, z, MOUNTAINLEAF);
+        chunk->setBlockAt(x, y + 4, z, MOUNTAINLEAF);
+        chunk->setBlockAt(x, y + 5, z, MOUNTAINLEAF);
+        if (x - 1 >= 0 && z - 1 >= 0){
+             chunk->setBlockAt(x - 1, y + 3, z - 1, MOUNTAINLEAF);
+             chunk->setBlockAt(x - 1, y + 4, z - 1, MOUNTAINLEAF);
+        }
+        if (x + 1 < 16 && z - 1 >= 0){
+             chunk->setBlockAt(x + 1, y + 3, z - 1, MOUNTAINLEAF);
+             chunk->setBlockAt(x + 1, y + 4, z - 1, MOUNTAINLEAF);
+        }
+        if (z + 1 >= 0 && x - 1 < 16){
+             chunk->setBlockAt(x - 1, y + 3, z + 1, MOUNTAINLEAF);
+             chunk->setBlockAt(x - 1, y + 4, z + 1, MOUNTAINLEAF);
+        }
+        if (z + 1 <16 && x + 1 < 16){
+             chunk->setBlockAt(x + 1, y + 3, z + 1, MOUNTAINLEAF);
+             chunk->setBlockAt(x + 1, y + 4, z + 1, MOUNTAINLEAF);
+        }
+        if (x - 1 >= 0){
+             chunk->setBlockAt(x - 1, y + 3, z, MOUNTAINLEAF);
+             chunk->setBlockAt(x - 1, y + 4, z, MOUNTAINLEAF);
+        }
+        if (x + 1 < 16){
+             chunk->setBlockAt(x + 1, y + 3, z, MOUNTAINLEAF);
+             chunk->setBlockAt(x + 1, y + 4, z, MOUNTAINLEAF);
+        }
+        if (z - 1 >= 0){
+             chunk->setBlockAt(x, y + 3, z - 1, MOUNTAINLEAF);
+             chunk->setBlockAt(x, y + 4, z - 1, MOUNTAINLEAF);
+        }
+        if (z + 1 <16){
+             chunk->setBlockAt(x, y + 3, z + 1, MOUNTAINLEAF);
+             chunk->setBlockAt(x, y + 4, z + 1, MOUNTAINLEAF);
+        }
     }
 }
 
