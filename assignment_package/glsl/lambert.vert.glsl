@@ -61,12 +61,12 @@ void main()
         //WATER
         float tx = modelposition.x * 0.1 + u_Time / 10.f;
         float tz = modelposition.z * 0.1 + u_Time / 10.f;
-        float hx = (sin(tx) + sin(2.f * tx + 5.52) +
-                sin(3.f * tx + 0.93) +
-                    sin(4.6 * tx + 8.94)) / 5.f;
-        float hz = (sin(tz) + sin(2.2 * tz + 5.52) +
-                sin(2.9 * tz + 0.93) +
-                    sin(4.6 * tz + 8.94)) / 5.f;
+        float hx = (sin(0.5f * tx) + sin(0.6 * tx + 6.f) +
+                sin(0.3 * tx + 1.f) +
+                    sin(0.7 * tx + 9.f)) / 4.f;
+        float hz = (sin(0.5 * tz) + sin(0.6 * tz + 6.f) +
+                sin(0.3 * tz + 1.f) +
+                    sin(0.7 * tz + 9.f)) / 4.f;
         float h = 0.25f * (hz - 1.f + hx - 1.f);
         modelposition.y += h;
 
