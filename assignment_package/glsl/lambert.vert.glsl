@@ -22,6 +22,7 @@ uniform mat4 u_ViewProj;    // The matrix that defines the camera's transformati
 
 uniform vec4 u_Color;       // When drawing the cube instance, we'll set our uniform color to represent different block types.
 
+uniform int u_Time;
 
 in vec4 vs_UV;
 
@@ -53,11 +54,27 @@ void main()
                                                             // perpendicular to the surface after the surface is transformed by
                                                             // the model matrix.
 //    fs_Nor = vs_Nor;
+    vec4 modelposition = u_Model * vs_Pos;   // Temporarily store the transformed vertex positions for use below
     if (vs_Nor.w == 0.5){
         fs_Nor = vs_Nor;
+    }else{
+        //WATER
+        float tx = modelposition.x * 0.1 + u_Time / 10.f;
+        float tz = modelposition.z * 0.1 + u_Time / 10.f;
+        float hx = (sin(tx) + sin(2.f * tx + 5.52) +
+                sin(3.f * tx + 0.93) +
+                    sin(4.6 * tx + 8.94)) / 5.f;
+        float hz = (sin(tz) + sin(2.2 * tz + 5.52) +
+                sin(2.9 * tz + 0.93) +
+                    sin(4.6 * tz + 8.94)) / 5.f;
+        float h = 0.25f * (hz - 1.f + hx - 1.f);
+        modelposition.y += h;
+
+
+
     }
 
-    vec4 modelposition = u_Model * vs_Pos;   // Temporarily store the transformed vertex positions for use below
+
 
     fs_LightVec = (lightDir);  // Compute the direction in which the light source lies
 
