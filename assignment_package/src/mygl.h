@@ -50,10 +50,23 @@ private:
 
     void sendPlayerDataToGUI() const;
 
+    void sendInventoryDataToGUI() const;
 
 public:
     explicit MyGL(QWidget *parent = nullptr);
     ~MyGL();
+
+    // inventory
+    bool openInventory;
+    int numGrass;
+    int numDirt;
+    int numStone;
+    int numSand;
+    int numSnow;
+    int numIce;
+    int numRedStone;
+    int numPumpkin;
+    BlockType currBlockType;
 
     // Called once when MyGL is initialized.
     // Once this is called, all OpenGL function
@@ -92,6 +105,17 @@ signals:
     void sig_sendPlayerLook(QString) const;
     void sig_sendPlayerChunk(QString) const;
     void sig_sendPlayerTerrainZone(QString) const;
+
+    void sig_inventoryOpenClose(bool);
+    void sig_sendNumGrass(int) const;
+    void sig_sendNumDirt(int) const;
+    void sig_sendNumStone(int) const;
+    void sig_sendNumSand(int) const;
+    void sig_sendNumIce(int) const;
+    void sig_sendNumSnow(int) const;
+    void sig_sendNumRedStone(int) const;
+    void sig_sendNumPumpkin(int) const;
+
 };
 
 

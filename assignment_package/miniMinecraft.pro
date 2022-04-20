@@ -18,9 +18,11 @@ include(src/src.pri)
 
 FORMS += forms/mainwindow.ui \
     forms/cameracontrolshelp.ui \
+    forms/inventory.ui \
     forms/playerinfo.ui
 
 RESOURCES += glsl.qrc \
+    inventories.qrc \
     texture.qrc
 RESOURCES += texture.qrc
 
@@ -53,3 +55,5 @@ address_sanitizer {
 HEADERS +=
 
 SOURCES +=
+
+DISTFILES +=
