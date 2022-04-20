@@ -18,6 +18,17 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->mygl, SIGNAL(sig_sendPlayerLook(QString)), &playerInfoWindow, SLOT(slot_setLookText(QString)));
     connect(ui->mygl, SIGNAL(sig_sendPlayerChunk(QString)), &playerInfoWindow, SLOT(slot_setChunkText(QString)));
     connect(ui->mygl, SIGNAL(sig_sendPlayerTerrainZone(QString)), &playerInfoWindow, SLOT(slot_setZoneText(QString)));
+
+    // inventory
+    connect(ui->mygl, SIGNAL(sig_inventoryOpenClose(bool)), this, SLOT(slot_inventoryOpenClose(bool)));
+    connect(ui->mygl, SIGNAL(sig_sendNumGrass(int)), &inventoryWindow, SLOT(slot_setNumGrass(int)));
+    connect(ui->mygl, SIGNAL(sig_sendNumDirt(int)), &inventoryWindow, SLOT(slot_setNumDirt(int)));
+    connect(ui->mygl, SIGNAL(sig_sendNumStone(int)), &inventoryWindow, SLOT(slot_setNumStone(int)));
+    connect(ui->mygl, SIGNAL(sig_sendNumSand(int)), &inventoryWindow, SLOT(slot_setNumSand(int)));
+    connect(ui->mygl, SIGNAL(sig_sendNumRedStone(int)), &inventoryWindow, SLOT(slot_setNumRedStone(int)));
+    connect(ui->mygl, SIGNAL(sig_sendNumPumpkin(int)), &inventoryWindow, SLOT(slot_setNumPumpkin(int)));
+    connect(ui->mygl, SIGNAL(sig_sendNumIce(int)), &inventoryWindow, SLOT(slot_setNumIce(int)));
+    connect(ui->mygl, SIGNAL(sig_sendNumSnow(int)), &inventoryWindow, SLOT(slot_setNumSnow(int)));
 }
 
 MainWindow::~MainWindow()
@@ -33,4 +44,16 @@ void MainWindow::on_actionQuit_triggered()
 void MainWindow::on_actionCamera_Controls_triggered()
 {
     cHelp.show();
+}
+
+void MainWindow::slot_inventoryOpenClose(bool openInventory) {
+    if (openInventory) {
+        this->inventoryWindow.ui_main = ui;
+        this->inventoryWindow.show();
+        // open in center
+        inventoryWindow.move(QPoint(this->width() * 0.5, this->height() * 0.5) -
+                             QPoint(inventoryWindow.width() * 0.5, inventoryWindow.height() * 0.5));
+    } else {
+        this->inventoryWindow.close();
+    }
 }

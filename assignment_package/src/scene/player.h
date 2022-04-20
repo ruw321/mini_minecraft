@@ -8,6 +8,7 @@ private:
     glm::vec3 m_velocity, m_acceleration;
     Camera m_camera;
     const Terrain &mcr_terrain;
+    int ray_axis;
 
     void processInputs(InputBundle &inputs);
     void computePhysics(float dT, const Terrain &terrain, InputBundle &inputs);
@@ -26,8 +27,8 @@ public:
     void setCameraWidthHeight(unsigned int w, unsigned int h);
 
     void tick(float dT, InputBundle &input) override;
-    void removeBlock(Terrain *terrain);
-    void placeBlock(Terrain *terrain);
+    BlockType removeBlock(Terrain *terrain);
+    bool placeBlock(Terrain *terrain, BlockType currBlockType);
 
     BlockType getCameraBlock(const Terrain &terrain);
     BlockType getPositionBlock(const Terrain &terrain);
