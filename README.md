@@ -1,4 +1,5 @@
 # Milestone 3:
+## Sound and Inventory GUI (Ruifan Wang)
 - Sound:
 
 I followed this tutorial to add sounds to the game:
