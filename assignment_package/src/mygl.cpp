@@ -203,7 +203,6 @@ void MyGL::paintGL() {
 
     m_progLambert.setTime(m_time++);
     m_progLambert.setCamPos(glm::vec4(m_player.mcr_position, 1));
-//    std::cout<<m_player.mcr_position.x<< " "<<m_player.mcr_position.y<<" "<<m_player.mcr_position.z<<std::endl;
     m_progInstanced.setViewProjMatrix(m_player.mcr_camera.getViewProj());
 
     m_progPost.setTime(m_time);

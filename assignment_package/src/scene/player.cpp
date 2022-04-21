@@ -1,11 +1,13 @@
 #include "player.h"
 #include <QString>
 #include <iostream>
+#include <chrono>
+#include <thread>
 
 Player::Player(glm::vec3 pos, const Terrain &terrain)
     : Entity(pos), m_velocity(0,0,0), m_acceleration(0,0,0),
       m_camera(pos + glm::vec3(0, 1.5f, 0)), mcr_terrain(terrain),
-      ray_axis(-1), mcr_camera(m_camera)
+      ray_axis(-1), mcr_camera(m_camera), effect(new QSoundEffect())
 {}
 
 Player::~Player()
@@ -114,8 +116,38 @@ void Player::computePhysics(float dT, const Terrain &terrain, InputBundle &input
             // the player should move at 2/3 its normal speed
             rayDirection *= 0.4;
         }
+        // sound effects
+        if (getCameraBlock(terrain) == WATER || getPositionBlock(terrain) == WATER) {
+            // under water
+            if (effect.source() != QUrl("qrc:/sound/underWater.wav")) {
+                effect.stop();
+                effect.setSource(QUrl("qrc:/sound/underWater.wav"));
+                effect.setLoopCount(100);
+                effect.setVolume(0.5f);
+                effect.play();
+            }
+        } else if (getCameraBlock(terrain) != WATER && getPositionBlock(terrain) != WATER) {
+            // make sure it is actually walking
+            if (m_velocity.x != 0 || m_velocity.z != 0) {
+                // only plays when the player is walking, not when it stopped
+                if (effect.source() != QUrl("qrc:/sound/walking.wav") || !effect.isPlaying()) {
+                    effect.setSource(QUrl("qrc:/sound/walking.wav"));
+                    effect.setLoopCount(1);
+                    effect.setVolume(10.f);
+                    effect.play();
+                }
+            }
+        }
     } else {
          rayDirection *= 0.2;
+         // sound effect for flight mode
+         if (effect.source() != QUrl("qrc:/sound/wind.wav")) {
+             effect.stop();
+             effect.setSource(QUrl("qrc:/sound/wind.wav"));
+             effect.setLoopCount(100);
+             effect.setVolume(10.f);
+             effect.play();
+         }
     }
     this->moveAlongVector(rayDirection);
 }

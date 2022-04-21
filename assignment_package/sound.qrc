@@ -1,0 +1,11 @@
+<RCC>
+    <qresource prefix="/sound">
+        <file>enterWater.wav</file>
+        <file>underWater.wav</file>
+        <file>walking.wav</file>
+        <file>wind.wav</file>
+        <file>wind2.wav</file>
+        <file>wind3.wav</file>
+        <file>windmp3.mp3</file>
+    </qresource>
+</RCC>
