@@ -1,3 +1,28 @@
+# Milestone 3:
+- Sound:
+
+I followed this tutorial to add sounds to the game:
+https://www.youtube.com/watch?v=DS7CDpIrwN4
+
+I also downloaded the sounds from freesound.com
+
+I had problem with QSound class not being found, even after I modified the .pro file, it still couldn't be found. I then used QMediaPlayer to get around it, but then setMedia function for this class was not found either. 
+
+I found out that it is the version problem, the new version 6.2 doesn't have that class so I instead started using the sound effect class. 
+
+Then I had a problem with the sound being laggy and played with electric noise, later I found out that it was the problem of the sound file because other sounds played just fine.
+
+However the sound still didn’t turn out to be too good, the wind wav file is still lagging, and when you enter the water, there is a static noise before it starts playing the actual water sound effect. I went to the Professor's office hours, but they couldn’t help much.  
+
+
+- Inventory GUI:
+
+I made inventory as a separate window, but it works just like an overlay so the user experience is the same. I started off with 10 blocks of each block type in the inventory, and players can gain more blocks by destroying the corresponding blocks, the number of blocks left in inventory is also shown. The player is not able to place any blocks if they don’t have anything left. 
+
+For this, I had to modify the place block and remove block from the player class. Before the place block was a little buggy, it sometimes replaces a block. Now it will only place a block on top of a block or next to an existing one. It took me some time to make the GUI, and the difficult part was that there is so many things that you have to connect in order for a button from the GUI to work. So I spent a lot of time to debug and find where the missing connection is. 
+
+
+
 # Milestone 2:
 [Milestone 2 demonstration](https://www.youtube.com/watch?v=hBTctWhnhlQ&t=14s)
 ## Texturing and Texture Animation (Zongxin Cui)
