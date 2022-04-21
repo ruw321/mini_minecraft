@@ -187,7 +187,7 @@ float grassland(glm::vec2 uv, float scale, float offset) {
     //  bug here h can be negative
 //    h += 0.2500*SimplexNoise( coord );
     h = 0.5 * (h + 1.f);
-//    std::cout<<(h>1)<<std::endl;
+
     return h * 90 + offset;//135;
 //    return glm::clamp(h, 0.f, 1.f) * (250 - 128) + 138;
 }

@@ -2,6 +2,7 @@
 #include "entity.h"
 #include "camera.h"
 #include "terrain.h"
+#include <QSoundEffect>
 
 class Player : public Entity {
 private:
@@ -20,6 +21,8 @@ public:
     // Readonly public reference to our camera
     // for easy access from MyGL
     const Camera& mcr_camera;
+
+    QSoundEffect effect;
 
     Player(glm::vec3 pos, const Terrain &terrain);
     virtual ~Player() override;

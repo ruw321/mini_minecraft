@@ -88,18 +88,6 @@ float fbm(vec3 p) {
     return sum;
 }
 
-//https://vicrucann.github.io/tutorials/osg-shader-fog/
-//float getFogFactor(float d){
-//    float fogMax = 20.f;
-//    float fogMin = 10.f;
-
-//    if (d >= fogMax)
-//        return 1;
-//    if (d <= fogMin)
-//        return 0;
-//    return 1 - (fogMax - d) / (fogMax - fogMin);
-//}
-
 void main()
 {
     // time loop for a day
@@ -160,7 +148,6 @@ void main()
         diffuseTerm = dot(normalize(vec3(fs_Nor)), sunDir);
     }
     diffuseTerm = clamp(diffuseTerm, 0, 1);
-
 
     // Blinn-Phong
     float shininess = 32;
