@@ -2,11 +2,12 @@
 #include <glm_includes.h>
 
 Drawable::Drawable(OpenGLContext* context)
-    : m_count(-1), m_count_transparent(-1),
-      m_bufIdx(), m_bufPos(), m_bufNor(), m_bufCol(), m_bufUV(), m_bufInterleave(),
+    : m_count(-1), m_count_transparent(-1), m_count_after_transparent(-1),
+      m_bufIdx(), m_bufPos(), m_bufNor(), m_bufCol(), m_bufUV(), m_bufInterleave(), m_bufIdx_after_transparent(),
       m_idxGenerated(false), m_posGenerated(false), m_norGenerated(false), m_colGenerated(false),
-      m_uvGenerated(false), m_interleaveGenerated(false),
+      m_uvGenerated(false), m_interleaveGenerated(false), m_interleaveGenerated_after_transparent(false),
       m_idxGenerated_transparent(false), m_interleaveGenerated_transparent(false),
+      m_idxGenerated_after_transparent(false),
       mp_context(context)
 {}
 
@@ -45,6 +46,11 @@ int Drawable::elemCount_transparent()
     return m_count_transparent;
 }
 
+int Drawable::elemCount_after_transparent()
+{
+    return m_count_after_transparent;
+}
+
 void Drawable::generateIdx()
 {
     m_idxGenerated = true;
@@ -81,6 +87,18 @@ void Drawable::generateIdx_transparent()
 void Drawable::generateInterleave_transparent(){
     m_interleaveGenerated_transparent = true;
     mp_context->glGenBuffers(1, &m_bufInterleave_transparent);
+}
+
+void Drawable::generateIdx_after_transparent()
+{
+    m_idxGenerated_after_transparent = true;
+    // Create a VBO on our GPU and store its handle in bufIdx
+    mp_context->glGenBuffers(1, &m_bufIdx_after_transparent);
+}
+
+void Drawable::generateInterleave_after_transparent(){
+    m_interleaveGenerated_after_transparent = true;
+    mp_context->glGenBuffers(1, &m_bufInterleave_after_transparent);
 }
 
 void Drawable::generateCol()
@@ -124,6 +142,21 @@ bool Drawable::bindInterleave_transparent(){
         mp_context->glBindBuffer(GL_ARRAY_BUFFER, m_bufInterleave_transparent);
     }
     return m_interleaveGenerated_transparent;
+}
+
+bool Drawable::bindIdx_after_transparent()
+{
+    if(m_idxGenerated_after_transparent) {
+        mp_context->glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_bufIdx_after_transparent);
+    }
+    return m_idxGenerated_after_transparent;
+}
+
+bool Drawable::bindInterleave_after_transparent(){
+    if (m_interleaveGenerated_after_transparent){
+        mp_context->glBindBuffer(GL_ARRAY_BUFFER, m_bufInterleave_after_transparent);
+    }
+    return m_interleaveGenerated_after_transparent;
 }
 
 bool Drawable::bindPos()

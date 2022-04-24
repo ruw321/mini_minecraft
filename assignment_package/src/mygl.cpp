@@ -345,6 +345,7 @@ void MyGL::keyReleaseEvent(QKeyEvent *e) {
 }
 
 void MyGL::mouseMoveEvent(QMouseEvent *e) {
+
     QPoint lastPosition = QPoint(width() / 2.f, height() / 2.f);
     float delta_x = GLfloat(lastPosition.x() - e->pos().x()) / width();
     float delta_y = GLfloat(lastPosition.y() - e->pos().y()) / height();
@@ -352,6 +353,7 @@ void MyGL::mouseMoveEvent(QMouseEvent *e) {
     m_player.rotateOnRightLocal(delta_y * 360 * 0.05f);
     // move mouse back to center
     moveMouseToCenter();
+
 }
 
 void MyGL::mousePressEvent(QMouseEvent *e) {

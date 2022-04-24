@@ -1,3 +1,4 @@
+
 #version 150
 // ^ Change this to version 130 if you have compatibility issues
 
@@ -88,16 +89,65 @@ float fbm(vec3 p) {
     return sum;
 }
 
+
+float vec2Fbm(vec2 uv){
+    float amp = 0.5;
+    float freq = 8.0;
+    float sum = 0.0;
+    for(int i = 0; i < 8; i++) {
+        sum += cubicTriMix(vec3(uv, 0) * freq) * amp;
+        amp *= 0.5;
+        freq *= 2.0;
+    }
+    return sum;
+}
+
+float waterHeight(vec2 uv){
+    return vec2Fbm((uv + vec2(u_Time)) * 0.01);
+}
+
+vec3 waterNormalDisplacement(vec2 uv){
+    vec2 dx = vec2(0.1, 0);
+    vec2 dy = vec2(0, 0.1);
+    vec2 grad = vec2(waterHeight(uv + dx) - waterHeight(uv - dx),
+                     waterHeight(uv + dy) - waterHeight(uv - dy));
+    grad = grad * 20.f;
+    float z = sqrt(1.f - grad.x * grad.x - grad.y * grad.y);
+    return vec3(grad.xy, z);
+}
+
+void coordinateSystem(in vec3 nor, out vec3 tan, out vec3 bit){
+    if (abs(nor.x) > abs(nor.y)){
+        tan = vec3(-nor.z, 0, nor.x);
+    }else{
+        tan = vec3(0, nor.z, -nor.y);
+    }
+    bit = cross(nor, tan);
+}
+//https://vicrucann.github.io/tutorials/osg-shader-fog/
+//float getFogFactor(float d){
+//    float fogMax = 20.f;
+//    float fogMin = 10.f;
+
+//    if (d >= fogMax)
+//        return 1;
+//    if (d <= fogMin)
+//        return 0;
+//    return 1 - (fogMax - d) / (fogMax - fogMin);
+//}
+
+
 void main()
 {
     // time loop for a day
     // -1 < t < -0.3 night
     // -0.3 < t < 0.3 sunset / sunrise
     // 0.3 < t < 1 daytime
-    float time = sin(u_Time * SUN_VELOCITY + TIME_OFFSET); // negative for night and positive for daytime
+
+    float time = sin(TIME_OFFSET);//sin(u_Time * SUN_VELOCITY + TIME_OFFSET); // negative for night and positive for daytime
 
     // Direction of sun light
-    vec3 sunDir = normalize(vec3(cos(u_Time * SUN_VELOCITY + TIME_OFFSET), sin(u_Time * SUN_VELOCITY + TIME_OFFSET), 0.f));
+    vec3 sunDir = normalize(vec3(cos(0 * SUN_VELOCITY + TIME_OFFSET), sin(0 * SUN_VELOCITY + TIME_OFFSET), 0.f));//normalize(vec3(cos(u_Time * SUN_VELOCITY + TIME_OFFSET), sin(u_Time * SUN_VELOCITY + TIME_OFFSET), 0.f));
 
     // Color of sun light
     vec3 sunColor;
@@ -120,42 +170,66 @@ void main()
 
     // Material base color (before shading)
     vec4 diffuseColor = vec4(0);
-
+    vec4 Nor = fs_Nor;
 
     float diffuseTerm = 0;
+    //fs_Col.z == 0.2, use betterTexture, fs_Nor.w == 0.5 no
+    //animation
     if (fs_Nor.w == 0.5){
         if (fs_Col.z == 0.2){
             diffuseColor = texture(u_textureBetter, fs_UV);
+            Nor = texture(u_normTexture, vec2(3 * 0.0625, 15 * 0.0625));
         }
         else{
             diffuseColor = texture(u_texture, fs_UV);
+            diffuseColor.xyz = diffuseColor.xyz * (0.5 * fbm(fs_Pos.xyz) + 0.5);
+            Nor = texture(u_normTexture, fs_UV);
         }
-        diffuseColor.xyz = diffuseColor.xyz * (0.5 * fbm(fs_Pos.xyz) + 0.5);
-        vec4 my_Nor = texture(u_normTexture, fs_UV);
-        diffuseTerm = dot(normalize(vec3(fs_Nor) + vec3(my_Nor)), sunDir);
+
+//        vec4 my_Nor = texture(u_normTexture, fs_UV);
+        diffuseTerm = dot(normalize(vec3(fs_Nor) + vec3(Nor)), sunDir);
 
     } else{
         if (fs_Col.z == 0.2){
+
             diffuseColor = texture(u_textureBetter, vec2(fs_UV.x + (u_Time % 10) * 0.01 * 0.0625, fs_UV.y));
-            diffuseColor.xyz = diffuseColor.xyz * (0.5 * fbm(fs_Pos.xyz) + 0.5);
+            Nor = texture(u_normTexture, vec2(3 * 0.0625, 15 * 0.0625));
+//            diffuseColor.xyz = diffuseColor.xyz * (0.5 * fbm(fs_Pos.xyz) + 0.5);
         }
         else{
-            diffuseColor = texture(u_texture, vec2(fs_UV.x + (u_Time % 10) * 0.01 * 0.0625, fs_UV.y));
-            diffuseColor.xyz = diffuseColor.xyz * (0.5 * fbm(fs_Pos.xyz) + 0.5);
+            if (fs_UV.x >= 14.f * 0.0625 && fs_UV.x < 15.f * 0.0625
+                    && fs_UV.y >= 2.f * 0.0625 && fs_UV.y < 3.f * 0.0625){
+                vec3 tan, bit;
+                coordinateSystem(normalize(fs_Nor.xyz), tan, bit);
+                mat3 tanWorld = mat3(tan, bit, normalize(fs_Nor.xyz));
+                vec3 shadingNormal = waterNormalDisplacement(ivec2(fs_Pos.xz * 4));
+                shadingNormal = tanWorld * shadingNormal;
+                Nor = vec4(shadingNormal.x, shadingNormal.y, shadingNormal.z,  0.f);
+//                diffuseColor = texture(u_texture, vec2(floor(fs_UV.x * 4.f) / 4.f, floor(fs_UV.y * 4.f) / 4.f));
+//                diffuseColor = vec4(0);
+                diffuseColor = texture(u_texture, vec2(fs_UV.x + (u_Time % 10) * 0.01 * 0.0625, fs_UV.y));
+            }else{
+                diffuseColor = texture(u_texture, vec2(fs_UV.x + (u_Time % 10) * 0.01 * 0.0625, fs_UV.y));
+                diffuseColor.rgb = diffuseColor.rgb * (0.5 * fbm(fs_Pos.xyz) + 0.5);
+            }
+//            diffuseColor.xyz = diffuseColor.xyz * (0.5 * fbm(fs_Pos.xyz) + 0.5);
         }
 
 
-        diffuseTerm = dot(normalize(vec3(fs_Nor)), sunDir);
+        diffuseTerm = dot(normalize(vec3(Nor)), sunDir);
+    }
+    if (diffuseColor.a < 0.1){
+        discard;
     }
     diffuseTerm = clamp(diffuseTerm, 0, 1);
 
     // Blinn-Phong
-    float shininess = 32;
+    float shininess = 50;
     // Calculate the specularTerm
     vec3 view_dir = u_Eye - vec3(fs_Pos);
-    vec3 H = (normalize(view_dir) + normalize(sunDir)) / 2;
-    float specularTerm = pow(dot(normalize(vec3(fs_Nor)), normalize(H)), shininess);
-    specularTerm = clamp(specularTerm, 0, 1);
+    vec3 H = normalize((normalize(view_dir) + normalize(sunDir)));
+    float specularTerm = pow(dot(normalize(vec3(Nor)), H), shininess);
+    specularTerm = clamp(specularTerm, 0.f, 1.f);
 
     if (time < -0.3) {
         diffuseTerm = 0.f;
@@ -168,10 +242,10 @@ void main()
 
 
 
-    diffuseColor.rgb = diffuseColor.rgb * (0.5 * fbm(fs_Pos.xyz) + 0.5); // make each block different
+//    diffuseColor.rgb = diffuseColor.rgb * (0.5 * fbm(fs_Pos.xyz) + 0.5); // make each block different
 
     float ambientTerm = 0.2;
-    float lightIntensity = diffuseTerm + ambientTerm + specularTerm;   //Add a small float value to the color multiplier
+    float lightIntensity = diffuseTerm + ambientTerm;   //Add a small float value to the color multiplier
                                                                    //to simulate ambient lighting. This ensures that faces that are not
                                                                    //lit by our point light are not completely black.
 
@@ -179,6 +253,10 @@ void main()
     float d = distance(u_CamPos, fs_Pos);
     float fogAlpha = smoothstep(30.f, 200.f, d);
 
-    out_Col = mix(vec4(diffuseColor.rgb * lightIntensity * sunColor, diffuseColor.a), fogColor, fogAlpha * 0.7);
+//    if (fs_Col.z == 0.2){
+       out_Col = mix(vec4(diffuseColor.rgb * lightIntensity * sunColor + vec3(specularTerm), diffuseColor.a + specularTerm), vec4(sunColor, 1.f), fogAlpha * 0.7);
+//    }else{
+//        out_Col = mix(diffuseColor, fogColor, fogAlpha * 0.7);
+//    }
 
 }

@@ -9,6 +9,8 @@ class Drawable
 protected:
     int m_count;     // The number of indices stored in bufIdx.
     int m_count_transparent;
+    int m_count_after_transparent;
+
     GLuint m_bufIdx; // A Vertex Buffer Object that we will use to store triangle indices (GLuints)
     GLuint m_bufPos; // A Vertex Buffer Object that we will use to store mesh vertices (vec4s)
     GLuint m_bufNor; // A Vertex Buffer Object that we will use to store mesh normals (vec4s)
@@ -20,11 +22,17 @@ protected:
     GLuint m_bufIdx_transparent;
     GLuint m_bufInterleave_transparent;
 
+    GLuint m_bufIdx_after_transparent;
+    GLuint m_bufInterleave_after_transparent;
+
     bool m_idxGenerated; // Set to TRUE by generateIdx(), returned by bindIdx().
     bool m_interleaveGenerated;
 
     bool m_idxGenerated_transparent; // Set to TRUE by generateIdx(), returned by bindIdx().
     bool m_interleaveGenerated_transparent;
+
+    bool m_idxGenerated_after_transparent; // Set to TRUE by generateIdx(), returned by bindIdx().
+    bool m_interleaveGenerated_after_transparent;
 
     bool m_posGenerated;
     bool m_norGenerated;
@@ -48,6 +56,7 @@ public:
     virtual GLenum drawMode();
     int elemCount();
     int elemCount_transparent();
+    int elemCount_after_transparent();
 
     // Call these functions when you want to call glGenBuffers on the buffers stored in the Drawable
     // These will properly set the values of idxBound etc. which need to be checked in ShaderProgram::draw()
@@ -56,6 +65,9 @@ public:
 
     void generateIdx_transparent();
     void generateInterleave_transparent();
+
+    void generateIdx_after_transparent();
+    void generateInterleave_after_transparent();
 
     void generatePos();
     void generateNor();
@@ -67,6 +79,9 @@ public:
 
     bool bindIdx_transparent();
     bool bindInterleave_transparent();
+
+    bool bindIdx_after_transparent();
+    bool bindInterleave_after_transparent();
 
     bool bindPos();
     bool bindNor();

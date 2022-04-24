@@ -22,6 +22,7 @@ uniform mat4 u_ViewProj;    // The matrix that defines the camera's transformati
 
 uniform vec4 u_Color;       // When drawing the cube instance, we'll set our uniform color to represent different block types.
 
+uniform int u_Time;
 
 in vec4 vs_UV;
 
@@ -53,11 +54,37 @@ void main()
                                                             // perpendicular to the surface after the surface is transformed by
                                                             // the model matrix.
 //    fs_Nor = vs_Nor;
+    vec4 modelposition = u_Model * vs_Pos;   // Temporarily store the transformed vertex positions for use below
     if (vs_Nor.w == 0.5){
         fs_Nor = vs_Nor;
+    }else{
+        //WATER
+        float tx = modelposition.x * 0.1 + u_Time / 10.f;
+        float tz = modelposition.z * 0.1 + u_Time / 10.f;
+        float hx = (sin(0.5f * tx) + sin(0.6 * tx + 6.f) +
+                sin(0.3 * tx + 1.f) +
+                    sin(0.7 * tx + 9.f)) / 4.f;
+        float hz = (sin(0.5 * tz) + sin(0.6 * tz + 6.f) +
+                sin(0.3 * tz + 1.f) +
+                    sin(0.7 * tz + 9.f)) / 4.f;
+        float h = 0.25f * (hz - 1.f + hx - 1.f);
+        modelposition.y += h;
+    }
+    if (fs_UV.x >= 15.f * 0.0625 && fs_UV.x < 16.f * 0.0625
+                        && fs_UV.y >= 14.f * 0.0625 && fs_UV.y < 15.f * 0.0625){
+        float tx = modelposition.x * 0.1 + u_Time / 10.f;
+        float tz = modelposition.z * 0.1 + u_Time / 10.f;
+        float hx = (sin(1.5f * tx) + sin(2.6 * tx + 6.f) +
+                sin(3.3 * tx + 1.f) +
+                    sin(4.7 * tx + 9.f)) / 4.f;
+        float hz = (sin(1.5 * tz) + sin(3.6 * tz + 6.f) +
+                sin(2.3 * tz + 1.f) +
+                    sin(4.7 * tz + 9.f)) / 4.f;
+        float h = 0.25f * (hz - 1.f + hx - 1.f);
+        modelposition.x += h;
+        modelposition.z -= h;
     }
 
-    vec4 modelposition = u_Model * vs_Pos;   // Temporarily store the transformed vertex positions for use below
 
     fs_LightVec = (lightDir);  // Compute the direction in which the light source lies
 
