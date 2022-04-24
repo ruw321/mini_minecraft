@@ -251,7 +251,7 @@ void main()
 
     // Compute final shaded color
     float d = distance(u_CamPos, fs_Pos);
-    float fogAlpha = smoothstep(30.f, 200.f, d);
+    float fogAlpha = smoothstep(30.f, 100.f, d);
 
 //    if (fs_Col.z == 0.2){
        out_Col = mix(vec4(diffuseColor.rgb * lightIntensity * sunColor + vec3(specularTerm), diffuseColor.a + specularTerm), vec4(sunColor, 1.f), fogAlpha * 0.7);
