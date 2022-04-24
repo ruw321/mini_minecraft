@@ -5,3 +5,19 @@ https://www.google.com/search?q=no+viable+overloaded+%27%5B%5D%27+for+unordered+
 
 2022.3.29:
 https://stackoverflow.com/questions/4296276/c-cannot-declare-field-to-be-of-abstract-type
+
+2022.4.8：
+https://rtouti.github.io/graphics/perlin-noise-algorithm
+https://forum.qt.io/topic/93771/how-to-get-decimal-value-from-table
+
+2022.4.7：
+https://minecraft.fandom.com/wiki/Biome#Temperature
+https://learnopengl.com/Advanced-Lighting/Shadows/Shadow-Mapping
+
+2022.4.5：
+https://webglfundamentals.org/webgl/lessons/webgl-fog.html
+https://vicrucann.github.io/tutorials/osg-shader-fog/
+
+2022.4.4：
+https://www.nvidia.com/en-us/geforce/guides/minecraft-rtx-texturing-guide/
+https://www.pngkey.com/download/u2q8y3w7e6t4w7e6_5-01remix-original-sandstone-minecraft-texture-packs-png/

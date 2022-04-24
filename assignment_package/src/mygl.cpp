@@ -23,7 +23,10 @@ MyGL::MyGL(QWidget *parent)
       m_textureNormal(this),
       m_textureBetter(this),
       m_time(0),
-      m_currentMSecsSinceEpoch(QDateTime::currentMSecsSinceEpoch())
+      m_currentMSecsSinceEpoch(QDateTime::currentMSecsSinceEpoch()),
+      openInventory(false), numGrass(10), numDirt(10), numStone(10),
+      numSand(10), numSnow(10), numIce(10), numRedStone(10), numPumpkin(10),
+      currBlockType(GRASS)
 {
     // Connect the timer to a function so that when the timer ticks the function is executed
     connect(&m_timer, SIGNAL(timeout()), this, SLOT(tick()));
@@ -122,7 +125,7 @@ void MyGL::resizeGL(int w, int h) {
     m_progLambert.set_eye(m_player.mcr_camera.mcr_position.x, m_player.mcr_camera.mcr_position.y, m_player.mcr_camera.mcr_position.z);
 
     m_progSky.setViewProjMatrix(glm::inverse(viewproj));
-    m_progSky.set_dimensions(this->width()* this->devicePixelRatio(), this->height()* this->devicePixelRatio());
+    m_progSky.set_dimensions(this->width() * this->devicePixelRatio(), this->height() * this->devicePixelRatio());
     m_progSky.set_eye(m_player.mcr_camera.mcr_position.x, m_player.mcr_camera.mcr_position.y, m_player.mcr_camera.mcr_position.z);
 
 
@@ -152,6 +155,7 @@ void MyGL::tick() {
 
     update(); // Calls paintGL() as part of a larger QOpenGLWidget pipeline
     sendPlayerDataToGUI(); // Updates the info in the secondary window displaying player data
+    sendInventoryDataToGUI(); // Updates the info in the third window displaying inventory data
 }
 
 void MyGL::sendPlayerDataToGUI() const {
@@ -164,6 +168,17 @@ void MyGL::sendPlayerDataToGUI() const {
     glm::ivec2 zone(64 * glm::ivec2(glm::floor(pPos / 64.f)));
     emit sig_sendPlayerChunk(QString::fromStdString("( " + std::to_string(chunk.x) + ", " + std::to_string(chunk.y) + " )"));
     emit sig_sendPlayerTerrainZone(QString::fromStdString("( " + std::to_string(zone.x) + ", " + std::to_string(zone.y) + " )"));
+}
+
+void MyGL::sendInventoryDataToGUI() const {
+    emit sig_sendNumGrass(numGrass);
+    emit sig_sendNumDirt(numDirt);
+    emit sig_sendNumStone(numStone);
+    emit sig_sendNumSand(numSand);
+    emit sig_sendNumIce(numIce);
+    emit sig_sendNumSnow(numSnow);
+    emit sig_sendNumRedStone(numRedStone);
+    emit sig_sendNumPumpkin(numPumpkin);
 }
 
 // This function is called whenever update() is called.
@@ -188,7 +203,6 @@ void MyGL::paintGL() {
 
     m_progLambert.setTime(m_time++);
     m_progLambert.setCamPos(glm::vec4(m_player.mcr_position, 1));
-//    std::cout<<m_player.mcr_position.x<< " "<<m_player.mcr_position.y<<" "<<m_player.mcr_position.z<<std::endl;
     m_progInstanced.setViewProjMatrix(m_player.mcr_camera.getViewProj());
 
     m_progPost.setTime(m_time);
@@ -236,6 +250,7 @@ void MyGL::paintGL() {
     m_progFlat.setViewProjMatrix(m_player.mcr_camera.getViewProj());
 
     m_progFlat.draw(m_worldAxes);
+
     glEnable(GL_DEPTH_TEST);
 }
 
@@ -295,11 +310,14 @@ void MyGL::keyPressEvent(QKeyEvent *e) {
         }
     } else if (e->key() == Qt::Key_F) {
         m_inputs.flight_mode = !m_inputs.flight_mode;
+    } else if (e->key() == Qt::Key_I) {
+        openInventory = true;
+        emit sig_inventoryOpenClose(openInventory);
     }
 }
 
 void MyGL::keyReleaseEvent(QKeyEvent *e) {
-    // not lazy and actually endured the switch statement
+    // not lazy and actually used the switch statement
     switch(e->key())
     {
         case Qt::Key_W:
@@ -328,21 +346,59 @@ void MyGL::keyReleaseEvent(QKeyEvent *e) {
 
 void MyGL::mouseMoveEvent(QMouseEvent *e) {
 
-
-    float dx = (width() * 0.5 - e->pos().x()) / width();
-    float dy = (height() * 0.5 - e->pos().y()) / height();
-    m_player.rotateOnUpGlobal(dx * 360 * 0.1f);
-    m_player.rotateOnRightLocal(dy * 360 * 0.1f);
+    QPoint lastPosition = QPoint(width() / 2.f, height() / 2.f);
+    float delta_x = GLfloat(lastPosition.x() - e->pos().x()) / width();
+    float delta_y = GLfloat(lastPosition.y() - e->pos().y()) / height();
+    m_player.rotateOnUpGlobal(delta_x * 360 * 0.05f);
+    m_player.rotateOnRightLocal(delta_y * 360 * 0.05f);
+    // move mouse back to center
     moveMouseToCenter();
 
 }
 
 void MyGL::mousePressEvent(QMouseEvent *e) {
-    // TODO
+    // TODO: change the m_player remove and place block functions
     if (e->button() == Qt::LeftButton) {
-        m_player.removeBlock(&m_terrain);
+        BlockType removedBlock = m_player.removeBlock(&m_terrain);
+        if (removedBlock == GRASS) {
+            numGrass++;
+        } else if (removedBlock == DIRT) {
+            numDirt++;
+        } else if (removedBlock == STONE) {
+            numStone++;
+        } else if (removedBlock == SAND) {
+            numSand++;
+        } else if (removedBlock == SNOW) {
+            numSnow++;
+        } else if (removedBlock == ICE) {
+            numIce++;
+        } else if (removedBlock == REDSTONE) {
+            numRedStone++;
+        } else if (removedBlock == PUMPKIN) {
+            numPumpkin++;
+        }
     } else if (e->button() == Qt::RightButton) {
-        m_player.placeBlock(&m_terrain);
+        bool ifPlaced = false;
+        ifPlaced = m_player.placeBlock(&m_terrain, currBlockType);
+        if (ifPlaced) {
+            if (currBlockType == GRASS && numGrass > 0) {
+                numGrass--;
+            } else if (currBlockType == DIRT && numDirt > 0) {
+                numDirt--;
+            } else if (currBlockType == STONE && numStone > 0) {
+                numStone--;
+            } else if (currBlockType == SAND && numSand > 0) {
+                numSand--;
+            } else if (currBlockType == SNOW && numSnow > 0) {
+                numSnow--;
+            } else if (currBlockType == ICE && numIce > 0) {
+                numIce--;
+            } else if (currBlockType == REDSTONE && numRedStone > 0) {
+                numRedStone--;
+            } else if (currBlockType == PUMPKIN && numPumpkin > 0) {
+                numPumpkin--;
+            }
+        }
     }
 }
 

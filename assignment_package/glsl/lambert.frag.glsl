@@ -89,6 +89,7 @@ float fbm(vec3 p) {
     return sum;
 }
 
+
 float vec2Fbm(vec2 uv){
     float amp = 0.5;
     float freq = 8.0;
@@ -134,6 +135,7 @@ void coordinateSystem(in vec3 nor, out vec3 tan, out vec3 bit){
 //        return 0;
 //    return 1 - (fogMax - d) / (fogMax - fogMin);
 //}
+
 
 void main()
 {
@@ -220,7 +222,6 @@ void main()
         discard;
     }
     diffuseTerm = clamp(diffuseTerm, 0, 1);
-
 
     // Blinn-Phong
     float shininess = 50;

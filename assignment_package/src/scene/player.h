@@ -2,12 +2,14 @@
 #include "entity.h"
 #include "camera.h"
 #include "terrain.h"
+#include <QSoundEffect>
 
 class Player : public Entity {
 private:
     glm::vec3 m_velocity, m_acceleration;
     Camera m_camera;
     const Terrain &mcr_terrain;
+    int ray_axis;
 
     void processInputs(InputBundle &inputs);
     void computePhysics(float dT, const Terrain &terrain, InputBundle &inputs);
@@ -20,14 +22,16 @@ public:
     // for easy access from MyGL
     const Camera& mcr_camera;
 
+    QSoundEffect effect;
+
     Player(glm::vec3 pos, const Terrain &terrain);
     virtual ~Player() override;
 
     void setCameraWidthHeight(unsigned int w, unsigned int h);
 
     void tick(float dT, InputBundle &input) override;
-    void removeBlock(Terrain *terrain);
-    void placeBlock(Terrain *terrain);
+    BlockType removeBlock(Terrain *terrain);
+    bool placeBlock(Terrain *terrain, BlockType currBlockType);
 
     BlockType getCameraBlock(const Terrain &terrain);
     BlockType getPositionBlock(const Terrain &terrain);

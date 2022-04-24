@@ -1,5 +1,49 @@
-# Milestone 2:
+# Milestone 3:
+## Day and Night (Zhiyuan Liang)
+I followed Adam's reference code of sky implementation.
 
+- Sky:
+
+The moving cloud is implemented by the WorleyFBM noise. The cloud(sky) color will be affected by the ambient(sun color). The moving cloud will not be drawn during night time.
+
+I set a time cycle where I use a variable which changes periodic to represent the time. The value is ranged from -1 to 1. When the time is negative, it means that it is night now. When the time is positive, it means that it is daytime now. The sun will move as time passing. The sunlight will be calculated according to the sun position.
+
+I hardcoded 4 time slots: night, day sunset and sunrise. Each time slot will use a color palette and the color will be interploted according to the time. 
+
+I also added a feature of stars when it is night. I used some pepper noise to simulate the stars in the night sky.
+
+- Lighting:
+
+The velocity of sun's movement is fixed. So we can know the sun position at any time. I set the light direction as the real-timed sun direction in the lambert.frag.glsl. I changed lambert reflection model to the Blinn-Phong model. I use the real-timed sun light color as ambient term.
+
+
+## Sound and Inventory GUI (Ruifan Wang)
+- Sound:
+
+I followed this tutorial to add sounds to the game:
+https://www.youtube.com/watch?v=DS7CDpIrwN4
+
+I also downloaded the sounds from freesound.com
+
+I had problem with QSound class not being found, even after I modified the .pro file, it still couldn't be found. I then used QMediaPlayer to get around it, but then setMedia function for this class was not found either. 
+
+I found out that it is the version problem, the new version 6.2 doesn't have that class so I instead started using the sound effect class. 
+
+Then I had a problem with the sound being laggy and played with electric noise, later I found out that it was the problem of the sound file because other sounds played just fine.
+
+However the sound still didn’t turn out to be too good, the wind wav file is still lagging, and when you enter the water, there is a static noise before it starts playing the actual water sound effect. I went to the Professor's office hours, but they couldn’t help much.  
+
+
+- Inventory GUI:
+
+I made inventory as a separate window, but it works just like an overlay so the user experience is the same. I started off with 10 blocks of each block type in the inventory, and players can gain more blocks by destroying the corresponding blocks, the number of blocks left in inventory is also shown. The player is not able to place any blocks if they don’t have anything left. 
+
+For this, I had to modify the place block and remove block from the player class. Before the place block was a little buggy, it sometimes replaces a block. Now it will only place a block on top of a block or next to an existing one. It took me some time to make the GUI, and the difficult part was that there is so many things that you have to connect in order for a button from the GUI to work. So I spent a lot of time to debug and find where the missing connection is. 
+
+
+
+# Milestone 2:
+[Milestone 2 demonstration](https://www.youtube.com/watch?v=hBTctWhnhlQ&t=14s)
 ## Texturing and Texture Animation (Zongxin Cui)
 - Texture
    - Initially having trouble figure out how to load texture file, but evetually figured out
@@ -9,11 +53,16 @@
    - Initially struggling to get the right changing offset for the uv to make runing water and lava, but later figure it out
 - Currently working on fog effect
 
-
 ## Multi-Thread (Zhiyuan Liang)
 I used to implement multi-thread in a wrong way. But my teammate told me that Adam said our multi-thread method was wrong. Then I checked the example code from the lecture. I re-implemented the multi-thread and only called thread.join when the application is going to end.
 I used newChunks, BlockTypeBuffer and VBOdataBuffer to temporarily store the created chunks' uPtr. I used to two mutexes to make sure that the modifications to these buffers are atomic.
 
+## Cave Systems (Ruifan Wang)
+Cave: I initially tried the 3D perlin noises (summed and recursive version) but the cave turned out to be not really realistic. So I decided to use the 2D perlin noise to generated cave cell and cave floor, which makes the cave seem a lot more realistic.
+
+Post shader: I utilized the provided framebuffer code. At first, we want to used two textures and I figured out how to set the texture slot id. After I implemented the framebuffer, the scene did not display normally. The scene was painted only in the left-bottom corner. I debugged for quite a while and multily the width and height of framebuffer by devicePixelRatio, then it displayed correctly. I also added a cool underwater-view effect.
+
+Physics under water and lava: I first had trouble with detecting the water with either the camera perspective or the player perspective, and when to switch on the underwater-view effect. EVentually I used the camera perspective. The physics applied under water was also very tricky, especially the intersection between water and outside world, when to apply real gravity and when to apply water gravity, I had to make sure the player was able to get out of the water as well. I also fixed the physics when the player is not in flight mode, now the player will move in constant speed in stead of increasing acceleration. 
 
 
 # Milestone 1: 

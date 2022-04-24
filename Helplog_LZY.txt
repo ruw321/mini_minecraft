@@ -3,4 +3,6 @@ I refered to the code from https://www.shadertoy.com/view/tlKXzh of simplex nois
 I refered to https://www.redblobgames.com/maps/terrain-from-noise/.
 
 
-I referred to the code from lecture recording.
+I referred to the code from lecture recordingI to implement multi-threading.
+
+I referred to the sky code from the link on the syllabus page.

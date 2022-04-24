@@ -1,4 +1,5 @@
 QT += core widgets openglwidgets
+greaterThan(QT_MAJOR_VERSION, 4): QT += widgets multimedia
 
 TARGET = MiniMinecraft
 TEMPLATE = app
@@ -18,9 +19,12 @@ include(src/src.pri)
 
 FORMS += forms/mainwindow.ui \
     forms/cameracontrolshelp.ui \
+    forms/inventory.ui \
     forms/playerinfo.ui
 
 RESOURCES += glsl.qrc \
+    inventories.qrc \
+    sound.qrc \
     texture.qrc
 RESOURCES += texture.qrc
 
@@ -53,3 +57,5 @@ address_sanitizer {
 HEADERS +=
 
 SOURCES +=
+
+DISTFILES +=

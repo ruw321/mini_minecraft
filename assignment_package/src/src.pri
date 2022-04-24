@@ -2,6 +2,7 @@ INCLUDEPATH += $$PWD
 DEPENDPATH += $$PWD
 
 SOURCES += \
+    $$PWD/inventory.cpp \
     $$PWD/la.cpp \
     $$PWD/main.cpp \
     $$PWD/mainwindow.cpp \
@@ -24,6 +25,7 @@ SOURCES += \
     $$PWD/framebuffer.cpp
 
 HEADERS += \
+    $$PWD/inventory.h \
     $$PWD/la.h \
     $$PWD/mainwindow.h \
     $$PWD/mygl.h \
