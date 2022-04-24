@@ -21,6 +21,9 @@ void Chunk::createVBOdata() {
    std::vector<glm::vec4> VBOdata_transparent;
    std::vector<GLuint> idx_transparent;
 
+   std::vector<glm::vec4> VBOdata_after_transparent;
+   std::vector<GLuint> idx_after_transparent;
+
 //    std::unordered_map<BlockType, glm::vec4> blockColorMp = {
 
 //        {GRASS, glm::vec4(95.f, 159.f, 53.f, 0) / 255.f},
@@ -37,6 +40,7 @@ void Chunk::createVBOdata() {
 
     int currentIdx = 0;
     int currentIdx_transparent = 0;
+    int currentIdx_after_transparent = 0;
     for (int z = 0; z < 16; z++){
         for (int y = 0; y < 256; y++){
             for (int x = 0; x < 16; x++){
@@ -51,7 +55,7 @@ void Chunk::createVBOdata() {
                             continue;
                         }
                         if (current == PAD){
-                            if (neighborFace.direction != YNEG){
+                            if (neighborFace.direction != YPOS){
                                 continue;
                             }
                         }
@@ -141,9 +145,13 @@ void Chunk::createVBOdata() {
 
                             }
                        }
-                       else  { // Water
-                            if (current != WATER || neighborType == EMPTY){
+                       else  { // Current block is transparent, don't put walls b/t water but do b/t different transp block types
+                            if (current != WATER || (neighborType == EMPTY || neighborType == PAD)){
                                 glm::vec4 offset;
+                                if(neighborType == PAD) {
+                                    int x = 10;
+                                    std::cout << x << std::endl;
+                                }
                                 if (diagnalBlock.find(current) == diagnalBlock.end()){
 
                                     if (current == CACTUS || current == BAMBOO){
@@ -158,27 +166,58 @@ void Chunk::createVBOdata() {
                                         offset = glm::vec4(0, -0.5f, -0.1, 0);
                                     }else if (current == CAKE && neighborFace.direction == ZNEG){
                                         offset = glm::vec4(0, -0.5f, 0.1, 0);
+                                    }else if (current == PAD){
+                                        offset = glm::vec4(0, -1.f, 0, 0);
                                     }
                                     else{
                                         offset = glm::vec4(0);
                                     }
-                                    for (int i = 0; i < 4; i++){
+                                    if (false/*current == PAD*/){
+                                        for (int i = 0; i < 4; i++){
 
-                                        VBOdata_transparent.push_back(neighborFace.vertices[i].m_pos + currentPos+ offset);
-                                        if (usingBetterTexture.find(current) == usingBetterTexture.end()){
-                                            VBOdata_transparent.push_back(glm::vec4(neighborFace.vertices[i].m_uv +
-                                                                    blockFaceUV[current][neighborFace.direction], 0, 0));
-                                        }else{
+                                            VBOdata_after_transparent.push_back(neighborFace.vertices[i].m_pos + currentPos+ offset);
+                                            if (usingBetterTexture.find(current) == usingBetterTexture.end()){
+                                                VBOdata_after_transparent.push_back(glm::vec4(neighborFace.vertices[i].m_uv +
+                                                                        blockFaceUV[current][neighborFace.direction], 0, 0));
+                                            }else{
 
-                                            VBOdata_transparent.push_back(glm::vec4(neighborFace.vertices[i].m_uv +
-                                                                    blockFaceUV[current][neighborFace.direction], 0.2, 0));
+                                                VBOdata_after_transparent.push_back(glm::vec4(neighborFace.vertices[i].m_uv +
+                                                                        blockFaceUV[current][neighborFace.direction], 0.2, 0));
+                                            }
+                                            if (noNormal.find(current) != noNormal.end()){
+                                                VBOdata_after_transparent.push_back(glm::vec4(neighborFace.directionVec, 0));
+                                            }else{
+                                                VBOdata_after_transparent.push_back(glm::vec4(neighborFace.directionVec, 0.5));
+                                            }
+
                                         }
-                                        if (noNormal.find(current) != noNormal.end()){
-                                            VBOdata_transparent.push_back(glm::vec4(neighborFace.directionVec, 0));
-                                        }else{
-                                            VBOdata_transparent.push_back(glm::vec4(neighborFace.directionVec, 0.5));
-                                        }
+                                        idx_after_transparent.push_back(currentIdx_after_transparent);
+                                        idx_after_transparent.push_back(currentIdx_after_transparent + 1);
+                                        idx_after_transparent.push_back(currentIdx_after_transparent + 2);
+                                        idx_after_transparent.push_back(currentIdx_after_transparent);
+                                        idx_after_transparent.push_back(currentIdx_after_transparent + 2);
+                                        idx_after_transparent.push_back(currentIdx_after_transparent + 3);
+                                        currentIdx_after_transparent += 4;
 
+                                    }else{
+                                        for (int i = 0; i < 4; i++){
+
+                                            VBOdata_transparent.push_back(neighborFace.vertices[i].m_pos + currentPos+ offset);
+                                            if (usingBetterTexture.find(current) == usingBetterTexture.end()){
+                                                VBOdata_transparent.push_back(glm::vec4(neighborFace.vertices[i].m_uv +
+                                                                        blockFaceUV[current][neighborFace.direction], 0, 0));
+                                            }else{
+
+                                                VBOdata_transparent.push_back(glm::vec4(neighborFace.vertices[i].m_uv +
+                                                                        blockFaceUV[current][neighborFace.direction], 0.2, 0));
+                                            }
+                                            if (noNormal.find(current) != noNormal.end()){
+                                                VBOdata_transparent.push_back(glm::vec4(neighborFace.directionVec, 0));
+                                            }else{
+                                                VBOdata_transparent.push_back(glm::vec4(neighborFace.directionVec, 0.5));
+                                            }
+
+                                        }
                                     }
                                 }else{
                                     int diagIdx;
@@ -206,13 +245,15 @@ void Chunk::createVBOdata() {
                                         }
                                     }
                                 }
-                                idx_transparent.push_back(currentIdx_transparent);
-                                idx_transparent.push_back(currentIdx_transparent + 1);
-                                idx_transparent.push_back(currentIdx_transparent + 2);
-                                idx_transparent.push_back(currentIdx_transparent);
-                                idx_transparent.push_back(currentIdx_transparent + 2);
-                                idx_transparent.push_back(currentIdx_transparent + 3);
-                                currentIdx_transparent += 4;
+                                if (true/*current != PAD*/){
+                                    idx_transparent.push_back(currentIdx_transparent);
+                                    idx_transparent.push_back(currentIdx_transparent + 1);
+                                    idx_transparent.push_back(currentIdx_transparent + 2);
+                                    idx_transparent.push_back(currentIdx_transparent);
+                                    idx_transparent.push_back(currentIdx_transparent + 2);
+                                    idx_transparent.push_back(currentIdx_transparent + 3);
+                                    currentIdx_transparent += 4;
+                                }
 
                             }
                        }
@@ -236,6 +277,9 @@ void Chunk::createVBOdata() {
 
    this->m_VBOdata_transparent.idx = idx_transparent;
    this->m_VBOdata_transparent.data = VBOdata_transparent;
+
+   this->m_VBOdata_after_transparent.idx = idx_after_transparent;
+   this->m_VBOdata_after_transparent.data = VBOdata_after_transparent;
 
 
 }
@@ -274,6 +318,19 @@ void Chunk::sendVBOdata() {
                             this->m_VBOdata_transparent.data.data(),
                             GL_STATIC_DRAW);
 
+   generateIdx_after_transparent();
+   bindIdx_after_transparent();
+   mp_context->glBufferData(GL_ELEMENT_ARRAY_BUFFER,
+                            this->m_VBOdata_after_transparent.idx.size() * sizeof (GLuint),
+                            this->m_VBOdata_after_transparent.idx.data(),
+                            GL_STATIC_DRAW);
+
+   generateInterleave_after_transparent();
+   bindInterleave_after_transparent();
+   mp_context->glBufferData(GL_ARRAY_BUFFER,
+                            this->m_VBOdata_after_transparent.data.size() * sizeof (glm::vec4),
+                            this->m_VBOdata_after_transparent.data.data(),
+                            GL_STATIC_DRAW);
 }
 
 

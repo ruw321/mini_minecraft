@@ -309,6 +309,10 @@ void Terrain::fillColumn(Chunk *chunk, int x, int z) {
         float decide = moisture(glm::vec2(map_x, map_z) / 50.f);
         for (int k = maxHeight + 1; k < 165; k++) {
             chunk->setBlockAt(x, k, z, WATER);
+
+        }
+        if (maxHeight == 163){
+            chunk->setBlockAt(x, maxHeight + 2, z, PAD);
         }
         if (maxHeight > 165){
 //            std::cout<<decide<<std::endl;
@@ -525,6 +529,7 @@ void Terrain::updateTerrian(glm::vec3 currPlayerPos) {
 
     int r = 2; // 5x5
     std::vector<glm::ivec2> newZones = getSurroundingZones(currPlayerPos.x, currPlayerPos.z, r);
+    std::vector<Chunk*> newChunks;
 
     for (glm::ivec2 newZone : newZones) {
         if (!hasZoneAt(newZone[0], newZone[1])) {
@@ -532,6 +537,7 @@ void Terrain::updateTerrian(glm::vec3 currPlayerPos) {
             for (int x = 0; x < 64; x += 16) {
                 for (int z = 0; z < 64; z += 16) {
                     newChunkBuffer[toKey(newZone.x + x, newZone.y + z)] = mkU<Chunk>(mp_context, newZone[0]+x, newZone[1]+z);
+
                 }
             }
         }
@@ -541,11 +547,28 @@ void Terrain::updateTerrian(glm::vec3 currPlayerPos) {
     for (auto & [key, chunk]: newChunkBuffer) {
         // link to neighbour
         instantiateChunkAt(chunk->m_pos[0], chunk->m_pos[1]);
+        int x = chunk->m_pos[0];
+        int z = chunk->m_pos[1];
+//        for (auto neighbor : adjacentFaces){
+//            if (neighbor.direction != YPOS and neighbor.direction != YNEG){
+//                if (chunk.get()->m_neighbors[neighbor.direction] != nullptr){
+//                    chunk.get()->m_neighbors[neighbor.direction]->destroyVBOdata();
+//                    newChunks.push_back(chunk.get()->m_neighbors[neighbor.direction]);
+
+//                }
+//            }
+//        }
+
     }
 
     for (auto & [key, chunk]: newChunkBuffer) {
         BlockTypeWorkers.push_back(std::thread(&Terrain::BlockTypeWorker, this, move(chunk)));
     }
+
+//    for (Chunk *c : newChunks){
+//        BlockTypeWorkers.push_back(std::thread(&Terrain::BlockTypeWorker, this, c));
+//    }
+
 
     newChunkBuffer.clear(); // all uPtrs have been moved
 

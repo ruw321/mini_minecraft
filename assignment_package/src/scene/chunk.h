@@ -405,4 +405,5 @@ public:
     glm::ivec2 m_pos;
     ChunkVBOData m_VBOdata;
     ChunkVBOData m_VBOdata_transparent;
+    ChunkVBOData m_VBOdata_after_transparent;
 };
