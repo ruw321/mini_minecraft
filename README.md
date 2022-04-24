@@ -2,7 +2,8 @@
 ## Day and Night (Zhiyuan Liang)
 I followed Adam's reference code of sky implementation.
 
-- Sky
+- Sky:
+
 The moving cloud is implemented by the WorleyFBM noise. The cloud(sky) color will be affected by the ambient(sun color). The moving cloud will not be drawn during night time.
 
 I set a time cycle where I use a variable which changes periodic to represent the time. The value is ranged from -1 to 1. When the time is negative, it means that it is night now. When the time is positive, it means that it is daytime now. The sun will move as time passing. The sunlight will be calculated according to the sun position.
@@ -11,7 +12,8 @@ I hardcoded 4 time slots: night, day sunset and sunrise. Each time slot will use
 
 I also added a feature of stars when it is night. I used some pepper noise to simulate the stars in the night sky.
 
-- Lighting
+- Lighting:
+
 The velocity of sun's movement is fixed. So we can know the sun position at any time. I set the light direction as the real-timed sun direction in the lambert.frag.glsl. I changed lambert reflection model to the Blinn-Phong model. I use the real-timed sun light color as ambient term.
 
 
