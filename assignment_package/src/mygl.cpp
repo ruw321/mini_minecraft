@@ -125,7 +125,7 @@ void MyGL::resizeGL(int w, int h) {
     m_progLambert.set_eye(m_player.mcr_camera.mcr_position.x, m_player.mcr_camera.mcr_position.y, m_player.mcr_camera.mcr_position.z);
 
     m_progSky.setViewProjMatrix(glm::inverse(viewproj));
-    m_progSky.set_dimensions(this->width()* this->devicePixelRatio(), this->height()* this->devicePixelRatio());
+    m_progSky.set_dimensions(this->width() * this->devicePixelRatio(), this->height() * this->devicePixelRatio());
     m_progSky.set_eye(m_player.mcr_camera.mcr_position.x, m_player.mcr_camera.mcr_position.y, m_player.mcr_camera.mcr_position.z);
 
 
