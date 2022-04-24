@@ -59,8 +59,8 @@ void main()
         fs_Nor = vs_Nor;
     }else{
         //WATER
-        float tx = modelposition.x * 0.1 + u_Time / 10.f;
-        float tz = modelposition.z * 0.1 + u_Time / 10.f;
+        float tx = modelposition.x * 0.1 + u_Time / 5.f;
+        float tz = modelposition.z * 0.1 + u_Time / 5.f;
         float hx = (sin(0.5f * tx) + sin(0.6 * tx + 6.f) +
                 sin(0.3 * tx + 1.f) +
                     sin(0.7 * tx + 9.f)) / 4.f;

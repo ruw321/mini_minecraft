@@ -144,10 +144,10 @@ void main()
     // -0.3 < t < 0.3 sunset / sunrise
     // 0.3 < t < 1 daytime
 
-    float time = sin(TIME_OFFSET);//sin(u_Time * SUN_VELOCITY + TIME_OFFSET); // negative for night and positive for daytime
+    float time = sin(u_Time * SUN_VELOCITY + TIME_OFFSET); // negative for night and positive for daytime
 
     // Direction of sun light
-    vec3 sunDir = normalize(vec3(cos(0 * SUN_VELOCITY + TIME_OFFSET), sin(0 * SUN_VELOCITY + TIME_OFFSET), 0.f));//normalize(vec3(cos(u_Time * SUN_VELOCITY + TIME_OFFSET), sin(u_Time * SUN_VELOCITY + TIME_OFFSET), 0.f));
+    vec3 sunDir = normalize(vec3(cos(u_Time * SUN_VELOCITY + TIME_OFFSET), sin(u_Time * SUN_VELOCITY + TIME_OFFSET), 0.f));
 
     // Color of sun light
     vec3 sunColor;
