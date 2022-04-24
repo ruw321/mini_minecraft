@@ -1,4 +1,8 @@
 # Milestone 3:
+
+## Additional Biomes, Procedurally placed assets, Water waves and Distance fog (Zongxin Cui)
+### Aditional Biomes
+
 ## Day and Night (Zhiyuan Liang)
 I followed Adam's reference code of sky implementation.
 
