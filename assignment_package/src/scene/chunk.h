@@ -133,7 +133,7 @@ static std::set<BlockType> transparentBlock{
 
 static std::set<BlockType> usingBetterTexture{
 
-    LAVA, SAND, PUMPKIN, CACTUS, ROSE, BAMBOO, PAD, ANGELBREATH, YELLOWFLOWER, MUSHROOM, FIRE
+    SAND, PUMPKIN, CACTUS, ROSE, BAMBOO, PAD, ANGELBREATH, YELLOWFLOWER, MUSHROOM, FIRE
             , WHITETREESTEM, BROWNTREESTEM, MOUNTAINLEAF, CAKE
 };
 
@@ -193,12 +193,12 @@ std::unordered_map<Direction, glm::vec2, EnumHash>, EnumHash> blockFaceUV{
             {ZNEG, glm::vec2(2.f BLK_UVX, 14.f BLK_UVY)}
         }},
     {LAVA, std::unordered_map<Direction, glm::vec2, EnumHash>{
-            {XPOS, glm::vec2(13.f BLK_UVX, 0.f BLK_UVY)},
-            {XNEG, glm::vec2(13.f BLK_UVX, 0.f BLK_UVY)},
-            {YPOS, glm::vec2(13.f BLK_UVX, 0.f BLK_UVY)},
-            {YNEG, glm::vec2(13.f BLK_UVX, 0.f BLK_UVY)},
-            {ZPOS, glm::vec2(13.f BLK_UVX, 0.f BLK_UVY)},
-            {ZNEG, glm::vec2(13.f BLK_UVX, 0.f BLK_UVY)}
+            {XPOS, glm::vec2(14.f BLK_UVX, 0.f BLK_UVY)},
+            {XNEG, glm::vec2(14.f BLK_UVX, 0.f BLK_UVY)},
+            {YPOS, glm::vec2(14.f BLK_UVX, 0.f BLK_UVY)},
+            {YNEG, glm::vec2(14.f BLK_UVX, 0.f BLK_UVY)},
+            {ZPOS, glm::vec2(14.f BLK_UVX, 0.f BLK_UVY)},
+            {ZNEG, glm::vec2(14.f BLK_UVX, 0.f BLK_UVY)}
         }},
     {BEDROCK, std::unordered_map<Direction, glm::vec2, EnumHash>{
             {XPOS, glm::vec2(1.f BLK_UVX, 14.f BLK_UVY)},

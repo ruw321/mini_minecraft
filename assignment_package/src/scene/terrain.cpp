@@ -224,20 +224,20 @@ void Terrain::fillColumn(Chunk *chunk, int x, int z) {
     int caveCeilHeight = caveCeil(glm::vec2(map_x, map_z));
     int caveFloorHeight = caveCeil(glm::vec2(map_x, map_z));
 
-    // Cave
-//    for (int k = 0; k < 64; k++) { // start from the ground
-//        chunk->setBlockAt(x, k, z, BEDROCK);
-//    }
+//     Cave
+    for (int k = 0; k < 64; k++) { // start from the ground
+        chunk->setBlockAt(x, k, z, BEDROCK);
+    }
 
-//    for (int k = 64; k < 64 + caveFloorHeight; k++) {
-//        chunk->setBlockAt(x, k, z, STONE);
-//    }
+    for (int k = 64; k < 64 + caveFloorHeight; k++) {
+        chunk->setBlockAt(x, k, z, STONE);
+    }
 
-//    for (int k = 64; k < 75; k++) {
-//        if (chunk->getBlockAt(x, k, z) == EMPTY) {
-//            chunk->setBlockAt(x, k, z, LAVA);
-//        }
-//    }
+    for (int k = 64; k < 75; k++) {
+        if (chunk->getBlockAt(x, k, z) == EMPTY) {
+            chunk->setBlockAt(x, k, z, LAVA);
+        }
+    }
 
     for (int k = 127; k > 127 - caveCeilHeight; k--) {
         if ( k <= 64 + caveFloorHeight) {

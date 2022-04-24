@@ -146,9 +146,15 @@ void main()
 
     float time = sin(u_Time * SUN_VELOCITY + TIME_OFFSET); // negative for night and positive for daytime
 
+
     // Direction of sun light
     vec3 sunDir = normalize(vec3(cos(u_Time * SUN_VELOCITY + TIME_OFFSET), sin(u_Time * SUN_VELOCITY + TIME_OFFSET), 0.f));
 
+    if (fs_Nor.w != 0.5 && !(fs_UV.x >= 14.f * 0.0625 && fs_UV.x < 15.f * 0.0625
+                             && fs_UV.y >= 2.f * 0.0625 && fs_UV.y < 3.f * 0.0625)){
+        time = sin(TIME_OFFSET);
+        sunDir = normalize(vec3(cos(0 * SUN_VELOCITY + TIME_OFFSET), sin(0 * SUN_VELOCITY + TIME_OFFSET), 0.f));
+    }
     // Color of sun light
     vec3 sunColor;
     if (time > 0.3) {
@@ -207,10 +213,11 @@ void main()
                 Nor = vec4(shadingNormal.x, shadingNormal.y, shadingNormal.z,  0.f);
 //                diffuseColor = texture(u_texture, vec2(floor(fs_UV.x * 4.f) / 4.f, floor(fs_UV.y * 4.f) / 4.f));
 //                diffuseColor = vec4(0);
-                diffuseColor = texture(u_texture, vec2(fs_UV.x + (u_Time % 10) * 0.01 * 0.0625, fs_UV.y));
+                diffuseColor = texture(u_texture, vec2(fs_UV.x + (u_Time % 20) * 0.05 * 0.0625, fs_UV.y));
             }else{
-                diffuseColor = texture(u_texture, vec2(fs_UV.x + (u_Time % 10) * 0.01 * 0.0625, fs_UV.y));
+                diffuseColor = texture(u_texture, vec2(fs_UV.x + (u_Time % 20) * 0.05 * 0.0625, fs_UV.y));
                 diffuseColor.rgb = diffuseColor.rgb * (0.5 * fbm(fs_Pos.xyz) + 0.5);
+                Nor = texture(u_normTexture, vec2(3 * 0.0625, 15 * 0.0625));
             }
 //            diffuseColor.xyz = diffuseColor.xyz * (0.5 * fbm(fs_Pos.xyz) + 0.5);
         }
@@ -251,7 +258,7 @@ void main()
 
     // Compute final shaded color
     float d = distance(u_CamPos, fs_Pos);
-    float fogAlpha = smoothstep(30.f, 100.f, d);
+    float fogAlpha = smoothstep(30.f, 70.f, d);
 
 //    if (fs_Col.z == 0.2){
        out_Col = mix(vec4(diffuseColor.rgb * lightIntensity * sunColor + vec3(specularTerm), diffuseColor.a + specularTerm), vec4(sunColor, 1.f), fogAlpha * 0.7);
