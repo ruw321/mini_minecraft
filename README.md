@@ -21,7 +21,7 @@ I also added a feature of stars when it is night. I used some pepper noise to si
 The velocity of sun's movement is fixed. So we can know the sun position at any time. I set the light direction as the real-timed sun direction in the lambert.frag.glsl. I changed lambert reflection model to the Blinn-Phong model. I use the real-timed sun light color as ambient term.
 
 
-## Sound and Inventory GUI (Ruifan Wang)
+## Sound and Inventory GUI and Post-process Camera Overlay (Ruifan Wang)
 - Sound:
 
 I followed this tutorial to add sounds to the game:
@@ -44,6 +44,10 @@ I made inventory as a separate window, but it works just like an overlay so the 
 
 For this, I had to modify the place block and remove block from the player class. Before the place block was a little buggy, it sometimes replaces a block. Now it will only place a block on top of a block or next to an existing one. It took me some time to make the GUI, and the difficult part was that there is so many things that you have to connect in order for a button from the GUI to work. So I spent a lot of time to debug and find where the missing connection is. 
 
+
+- Post-process Camera Overlay:
+
+I applied screen distortion. I basically used the same thing I used from homework 4, it is in the post.frag.glsl, it is a fraction of Professor Adam's code that was shown during homework 4. 
 
 
 # Milestone 2:
