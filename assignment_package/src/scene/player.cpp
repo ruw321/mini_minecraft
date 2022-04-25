@@ -141,13 +141,13 @@ void Player::computePhysics(float dT, const Terrain &terrain, InputBundle &input
     } else {
          rayDirection *= 0.2;
          // sound effect for flight mode
-         if (effect.source() != QUrl("qrc:/sound/wind.wav")) {
-             effect.stop();
-             effect.setSource(QUrl("qrc:/sound/wind.wav"));
-             effect.setLoopCount(100);
-             effect.setVolume(10.f);
-             effect.play();
-         }
+//         if (effect.source() != QUrl("qrc:/sound/wind.wav")) {
+//             effect.stop();
+//             effect.setSource(QUrl("qrc:/sound/wind.wav"));
+//             effect.setLoopCount(100);
+//             effect.setVolume(10.f);
+//             effect.play();
+//         }
     }
     this->moveAlongVector(rayDirection);
 }
@@ -268,7 +268,7 @@ void Player::detectCollision(glm::vec3 *rayDirection, const Terrain &terrain) {
 BlockType Player::removeBlock(Terrain *terrain) {
     glm::vec3 rayOrigin = m_camera.mcr_position;
     // block is within 3 units of distance from the camera
-    glm::vec3 rayDirection = 3.f * glm::normalize(this->m_forward);
+    glm::vec3 rayDirection = 4.f * glm::normalize(this->m_forward);
     glm::ivec3 outBlockHit = glm::ivec3();
     float outDist = 0.f;
     // if we found a block
