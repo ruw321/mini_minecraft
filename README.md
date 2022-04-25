@@ -21,7 +21,7 @@ I also added a feature of stars when it is night. I used some pepper noise to si
 The velocity of sun's movement is fixed. So we can know the sun position at any time. I set the light direction as the real-timed sun direction in the lambert.frag.glsl. I changed lambert reflection model to the Blinn-Phong model. I use the real-timed sun light color as ambient term.
 
 
-## Sound and Inventory GUI and Post-process Camera Overlay (Ruifan Wang)
+## Sound, Inventory GUI and Post-process Camera Overlay (Ruifan Wang)
 - Sound:
 
 I followed this tutorial to add sounds to the game:
