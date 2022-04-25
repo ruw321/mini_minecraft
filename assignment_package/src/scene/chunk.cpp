@@ -150,7 +150,6 @@ void Chunk::createVBOdata() {
                                 glm::vec4 offset;
                                 if(neighborType == PAD) {
                                     int x = 10;
-                                    std::cout << x << std::endl;
                                 }
                                 if (diagnalBlock.find(current) == diagnalBlock.end()){
 
