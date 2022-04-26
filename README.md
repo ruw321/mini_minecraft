@@ -1,5 +1,7 @@
 # Milestone 3:
 
+[Milestone e demonstration](https://www.youtube.com/watch?v=YDFq1TONUFo)
+
 ## Additional Biomes, Procedurally placed assets, Water waves and Distance fog (Zongxin Cui)
 ### Aditional Biomes
  - initially struggling to get smooth transition betwween different biomes, then adjust the frequency of biome noise function and linear interpolation to fix it
