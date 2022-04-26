@@ -21,3 +21,11 @@ https://vicrucann.github.io/tutorials/osg-shader-fog/
 2022.4.4：
 https://www.nvidia.com/en-us/geforce/guides/minecraft-rtx-texturing-guide/
 https://www.pngkey.com/download/u2q8y3w7e6t4w7e6_5-01remix-original-sandstone-minecraft-texture-packs-png/
+
+2022.4.18:
+https://www.google.com/search?q=bilerp+noise+function&sxsrf=APq-WBv-rZgRIwosPez7VE7OIirShESlcA%3A1650335779108&ei=IyBeYq-aBoubptQPhvudoA8&ved=0ahUKEwjvt_7ui5_3AhWLjYkEHYZ9B_QQ4dUDCA4&uact=5&oq=bilerp+noise+function&gs_lcp=Cgdnd3Mtd2l6EAM6BwgAEEcQsAM6BwgjELACECc6BAgAEA06BggAEA0QHjoICAAQDRAFEB46CAgAEAgQDRAeOgUIABCGAzoHCCEQChCgAUoECEEYAEoECEYYAFCaAVjAdWDNd2gBcAF4AIABigKIAYIJkgEFOC4yLjGYAQCgAQHIAQjAAQE&sclient=gws-wiz
+https://www.reddit.com/r/gamedev/comments/fcx8b1/i_always_wanted_to_create_water_reflection_shader/
+https://www.google.com/search?q=shader+water+reflection&oq=shader+water+re&aqs=chrome.1.69i57j0i22i30l9.4450j0j7&sourceid=chrome&ie=UTF-8
+
+2022.4.17:
+https://stackoverflow.com/questions/52669563/glsl-uniform-grid-bucketing
