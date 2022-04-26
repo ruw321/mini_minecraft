@@ -2,6 +2,20 @@
 
 ## Additional Biomes, Procedurally placed assets, Water waves and Distance fog (Zongxin Cui)
 ### Aditional Biomes
+ - initially struggling to get smooth transition betwween different biomes, then adjust the frequency of biome noise function and linear interpolation to fix it
+ - then i encountered that the height field for grassland and desert are approximatelly the same. i fixed it by generate another two different terrian noise function and double interpolation among them to better distinguish.
+
+### Procedurally placed assets
+ - this process is pretty smooth and fun. I experiement with a lot of object and find different texture map online to try to make differnt fun assets.
+ - interesting part is makeing lilypads on the water and flaming fire in the mountain. I took inspiration from the water wave to make fire moving.
+
+### Water waves
+ - Using time variant trigonometry function to make water waves, referencing Adam's lecture
+ - Using noise funtion to create variant water sureface normal, and then using water surface normal and sunlight directions to apply Blinn-Phong effect and making shining water surface
+ 
+### Distance Fog
+ - Linear interpolating between each blocks original color and current suncolor based on block's distance to camera to create fog effect that is also relating to the day and night cycle
+ - Referencing Adam's lecture
 
 ## Day and Night (Zhiyuan Liang)
 I followed Adam's reference code of sky implementation.
